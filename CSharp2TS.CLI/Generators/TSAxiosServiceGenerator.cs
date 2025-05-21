@@ -10,6 +10,7 @@ namespace CSharp2TS.CLI.Generators {
         private readonly string oldAppendedFileName = "Controller";
         private readonly string newAppendedFileName = "Service";
 
+        private bool importFormFactory = false;
         private string apiClientImportPath;
         private IList<TSServiceMethod> items;
 
@@ -64,6 +65,8 @@ namespace CSharp2TS.CLI.Generators {
                     bodyParam,
                     queryString));
             }
+
+            importFormFactory = items.Any(i => i.IsBodyFormObject);
         }
 
         private string GetMethodName(string name, int? count) {
@@ -80,7 +83,7 @@ namespace CSharp2TS.CLI.Generators {
             foreach (ParameterDefinition param in parameterDefinitions) {
                 var tsProperty = GetTSPropertyType(param.ParameterType, Options.ServicesOutputFolder!);
                 bool isBodyParam = param.HasAttribute<FromBodyAttribute>() || (!tsProperty.TypeRef.Resolve().IsEnum && tsProperty.IsObject);
-                bool isFormData = param.HasAttribute<FromFormAttribute>() || tsProperty.TSType == TSType.FormData || tsProperty.TSType == TSType.File;
+                bool isFormData = param.HasAttribute<FromFormAttribute>() && tsProperty.TSType != TSType.FormData;
 
                 converted.Add(new TSServiceMethodParam(param.Name.ToCamelCase(), tsProperty, isBodyParam, isFormData));
             }
@@ -215,7 +218,7 @@ namespace CSharp2TS.CLI.Generators {
             StringBuilder sb = new StringBuilder();
             sb.AppendLine($"// Auto-generated from {Type.Name}.cs");
             sb.AppendLine();
-            sb.AppendLine($"import {{ apiClient }} from '{apiClientImportPath}apiClient';");
+            sb.AppendLine($"import {{ apiClient{(importFormFactory ? ", FormDataFactory" : string.Empty)} }} from '{apiClientImportPath}apiClient';");
 
             foreach (var import in Imports) {
                 sb.AppendLine($"import {import.Value.Name} from '{import.Value.Path}';");
@@ -257,6 +260,10 @@ namespace CSharp2TS.CLI.Generators {
                 }
 
                 sb.AppendLine();
+            } else if (method.IsBodyFormObject) {
+                useFormData = true;
+                sb.AppendLine($"    const formData = FormDataFactory.Create({method.BodyParam!.Name});");
+                sb.AppendLine();
             }
 
             sb.Append("    ");
@@ -279,7 +286,9 @@ namespace CSharp2TS.CLI.Generators {
                 sb.Append($", {method.BodyParam.Name}");
             }
 
-            if (method.IsResponseFile || method.IsBodyFormData) {
+            bool shouldAddFormHeader = useFormData || method.IsBodyFormData;
+
+            if (method.IsResponseFile || shouldAddFormHeader) {
                 sb.Append(", {");
                 sb.AppendLine();
 
@@ -287,7 +296,7 @@ namespace CSharp2TS.CLI.Generators {
                     sb.AppendLine("      responseType: 'blob',");
                 }
 
-                if (method.IsBodyFormData) {
+                if (shouldAddFormHeader) {
                     sb.AppendLine("      headers: { 'Content-Type': 'multipart/form-data' },");
                 }
 

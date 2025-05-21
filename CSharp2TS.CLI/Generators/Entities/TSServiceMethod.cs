@@ -21,8 +21,9 @@
             }
         }
 
-        public bool IsBodyRawFile => BodyParam?.Property.TSType == TSType.File && BodyParam.Property.TSType != TSType.FormData;
-        public bool IsBodyFormData => BodyParam?.Property.TSType is TSType.File or TSType.FormData || (BodyParam?.IsFormData ?? false);
+        public bool IsBodyRawFile => BodyParam?.Property.TSType == TSType.File;
+        public bool IsBodyFormData => BodyParam?.Property.TSType == TSType.FormData;
+        public bool IsBodyFormObject => BodyParam != null && BodyParam.Property.TSType == TSType.Object && BodyParam.IsFormData;
         public bool IsResponseFile => ReturnType.TSType == TSType.File;
     }
 }

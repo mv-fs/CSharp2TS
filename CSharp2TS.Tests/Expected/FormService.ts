@@ -1,6 +1,6 @@
 // Auto-generated from FormController.cs
 
-import { apiClient } from './apiClient';
+import { apiClient, FormDataFactory } from './apiClient';
 import TestClass from '../TestClass';
 
 export default {
@@ -11,7 +11,9 @@ export default {
   },
 
   async postForm2(obj: TestClass): Promise<void> {
-    await apiClient.instance.post(`api/form`, obj, {
+    const formData = FormDataFactory.Create(obj);
+
+    await apiClient.instance.post(`api/form`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
   },
