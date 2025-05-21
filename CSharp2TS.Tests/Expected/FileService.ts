@@ -1,6 +1,7 @@
 // Auto-generated from FileController.cs
 
 import { apiClient } from './apiClient';
+import type { AxiosProgressEvent } from 'axios';
 
 export default {
   async getFile(): Promise<File> {
@@ -10,16 +11,17 @@ export default {
     return response.data;
   },
 
-  async postFile(file: File): Promise<void> {
+  async postFile(file: File, onUploadProgress?: (event: AxiosProgressEvent) => void): Promise<void> {
     const formData = new FormData();
     formData.append('file', file);
 
     await apiClient.instance.post(`api/file`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
+      onUploadProgress,
     });
   },
 
-  async postFiles(files: File[]): Promise<void> {
+  async postFiles(files: File[], onUploadProgress?: (event: AxiosProgressEvent) => void): Promise<void> {
     const formData = new FormData();
     for (let i = 0; i < files.length; i++) {
       const f = files[i];
@@ -28,16 +30,18 @@ export default {
 
     await apiClient.instance.post(`api/file`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
+      onUploadProgress,
     });
   },
 
-  async postAndReceiveFile(file: File): Promise<File> {
+  async postAndReceiveFile(file: File, onUploadProgress?: (event: AxiosProgressEvent) => void): Promise<File> {
     const formData = new FormData();
     formData.append('file', file);
 
     const response = await apiClient.instance.post<File>(`api/file`, formData, {
       responseType: 'blob',
       headers: { 'Content-Type': 'multipart/form-data' },
+      onUploadProgress,
     });
     return response.data;
   },

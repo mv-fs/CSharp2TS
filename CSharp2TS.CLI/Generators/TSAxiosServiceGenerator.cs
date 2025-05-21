@@ -11,6 +11,7 @@ namespace CSharp2TS.CLI.Generators {
         private readonly string newAppendedFileName = "Service";
 
         private bool importFormFactory = false;
+        private bool importProgressEvent = false;
         private string apiClientImportPath;
         private IList<TSServiceMethod> items;
 
@@ -67,6 +68,7 @@ namespace CSharp2TS.CLI.Generators {
             }
 
             importFormFactory = items.Any(i => i.IsBodyFormObject);
+            importProgressEvent = items.Any(i => i.IsBodyRawFile);
         }
 
         private string GetMethodName(string name, int? count) {
@@ -220,6 +222,10 @@ namespace CSharp2TS.CLI.Generators {
             sb.AppendLine();
             sb.AppendLine($"import {{ apiClient{(importFormFactory ? ", FormDataFactory" : string.Empty)} }} from '{apiClientImportPath}apiClient';");
 
+            if (importProgressEvent) {
+                sb.AppendLine("import type { AxiosProgressEvent } from 'axios';");
+            }
+
             foreach (var import in Imports) {
                 sb.AppendLine($"import {import.Value.Name} from '{import.Value.Path}';");
             }
@@ -241,7 +247,9 @@ namespace CSharp2TS.CLI.Generators {
         }
 
         private void BuildMethod(StringBuilder sb, TSServiceMethod method) {
-            sb.AppendLine($"  async {method.MethodName}({string.Join(", ", method.AllParams.Select(i => $"{i.Name}: {i.Property}"))}): Promise<{method.ReturnType}> {{");
+            sb.AppendLine($"  async {method.MethodName}({string.Join(", ", method.AllParams.Select(i => $"{i.Name}: {i.Property}"))}" +
+                $"{(method.IsBodyRawFile ? ", onUploadProgress?: (event: AxiosProgressEvent) => void" : string.Empty)}):" +
+                $" Promise<{method.ReturnType}> {{");
 
             bool useFormData = false;
 
@@ -288,7 +296,7 @@ namespace CSharp2TS.CLI.Generators {
 
             bool shouldAddFormHeader = useFormData || method.IsBodyFormData;
 
-            if (method.IsResponseFile || shouldAddFormHeader) {
+            if (method.IsResponseFile || shouldAddFormHeader || method.IsBodyRawFile) {
                 sb.Append(", {");
                 sb.AppendLine();
 
@@ -298,6 +306,10 @@ namespace CSharp2TS.CLI.Generators {
 
                 if (shouldAddFormHeader) {
                     sb.AppendLine("      headers: { 'Content-Type': 'multipart/form-data' },");
+                }
+
+                if (method.IsBodyRawFile) {
+                    sb.AppendLine("      onUploadProgress,");
                 }
 
                 sb.AppendLine("    });");
