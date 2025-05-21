@@ -216,6 +216,8 @@ namespace CSharp2TS.CLI.Generators {
             return str;
         }
 
+        #region Build File
+
         private string BuildTsFile() {
             StringBuilder sb = new StringBuilder();
             sb.AppendLine($"// Auto-generated from {Type.Name}.cs");
@@ -342,6 +344,8 @@ namespace CSharp2TS.CLI.Generators {
 
             return useFormData;
         }
+
+        #endregion
 
         private record HttpAttribute(string HttpMethod, string? Template);
     }
