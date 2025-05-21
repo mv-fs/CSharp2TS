@@ -247,32 +247,8 @@ namespace CSharp2TS.CLI.Generators {
         }
 
         private void BuildMethod(StringBuilder sb, TSServiceMethod method) {
-            sb.AppendLine($"  async {method.MethodName}({string.Join(", ", method.AllParams.Select(i => $"{i.Name}: {i.Property}"))}" +
-                $"{(method.IsBodyRawFile ? ", onUploadProgress?: (event: AxiosProgressEvent) => void" : string.Empty)}):" +
-                $" Promise<{method.ReturnType}> {{");
-
-            bool useFormData = false;
-
-            if (method.IsBodyRawFile) {
-                useFormData = true;
-
-                sb.AppendLine($"    const formData = new FormData();");
-
-                if (method.BodyParam!.Property.IsCollection) {
-                    sb.AppendLine($"    for (let i = 0; i < {method.BodyParam.Name}.length; i++) {{");
-                    sb.AppendLine($"      const f = {method.BodyParam.Name}[i];");
-                    sb.AppendLine($"      formData.append('{method.BodyParam.Name}[' + i + ']', f);");
-                    sb.AppendLine($"    }}");
-                } else {
-                    sb.AppendLine($"    formData.append('{method.BodyParam.Name}', {method.BodyParam.Name});");
-                }
-
-                sb.AppendLine();
-            } else if (method.IsBodyFormObject) {
-                useFormData = true;
-                sb.AppendLine($"    const formData = FormDataFactory.Create({method.BodyParam!.Name});");
-                sb.AppendLine();
-            }
+            BuildMethodSignature(sb, method);
+            bool useFormData = BuildFormDataCreation(sb, method);
 
             sb.Append("    ");
 
@@ -297,22 +273,7 @@ namespace CSharp2TS.CLI.Generators {
             bool shouldAddFormHeader = useFormData || method.IsBodyFormData;
 
             if (method.IsResponseFile || shouldAddFormHeader || method.IsBodyRawFile) {
-                sb.Append(", {");
-                sb.AppendLine();
-
-                if (method.IsResponseFile) {
-                    sb.AppendLine("      responseType: 'blob',");
-                }
-
-                if (shouldAddFormHeader) {
-                    sb.AppendLine("      headers: { 'Content-Type': 'multipart/form-data' },");
-                }
-
-                if (method.IsBodyRawFile) {
-                    sb.AppendLine("      onUploadProgress,");
-                }
-
-                sb.AppendLine("    });");
+                BuildOptions(sb, method, shouldAddFormHeader);
             } else {
                 sb.Append(");");
                 sb.AppendLine();
@@ -323,6 +284,63 @@ namespace CSharp2TS.CLI.Generators {
             }
 
             sb.AppendLine($"  }},");
+        }
+
+        private void BuildMethodSignature(StringBuilder sb, TSServiceMethod method) {
+            sb.Append($"  async {method.MethodName}(");
+            sb.Append(string.Join(", ", method.AllParams.Select(i => $"{i.Name}: {i.Property}")));
+
+            if (method.IsBodyRawFile) {
+                sb.Append(", onUploadProgress?: (event: AxiosProgressEvent) => void");
+            }
+
+            sb.AppendLine($"): Promise<{method.ReturnType}> {{");
+        }
+
+        private void BuildOptions(StringBuilder sb, TSServiceMethod method, bool shouldAddFormHeader) {
+            sb.Append(", {");
+            sb.AppendLine();
+
+            if (method.IsResponseFile) {
+                sb.AppendLine("      responseType: 'blob',");
+            }
+
+            if (shouldAddFormHeader) {
+                sb.AppendLine("      headers: { 'Content-Type': 'multipart/form-data' },");
+            }
+
+            if (method.IsBodyRawFile) {
+                sb.AppendLine("      onUploadProgress,");
+            }
+
+            sb.AppendLine("    });");
+        }
+
+        private bool BuildFormDataCreation(StringBuilder sb, TSServiceMethod method) {
+            bool useFormData = false;
+
+            if (method.IsBodyRawFile) {
+                useFormData = true;
+
+                sb.AppendLine($"    const formData = new FormData();");
+
+                if (method.BodyParam!.Property.IsCollection) {
+                    sb.AppendLine($"    for (let i = 0; i < {method.BodyParam.Name}.length; i++) {{");
+                    sb.AppendLine($"      const f = {method.BodyParam.Name}[i];");
+                    sb.AppendLine($"      formData.append('{method.BodyParam.Name}[' + i + ']', f);");
+                    sb.AppendLine($"    }}");
+                } else {
+                    sb.AppendLine($"    formData.append('{method.BodyParam.Name}', {method.BodyParam.Name});");
+                }
+
+                sb.AppendLine();
+            } else if (method.IsBodyFormObject) {
+                useFormData = true;
+                sb.AppendLine($"    const formData = FormDataFactory.Create({method.BodyParam!.Name});");
+                sb.AppendLine();
+            }
+
+            return useFormData;
         }
 
         private record HttpAttribute(string HttpMethod, string? Template);
