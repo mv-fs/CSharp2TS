@@ -25,25 +25,28 @@ namespace CSharp2TS.CLI.Templates
         /// </summary>
         public virtual string TransformText()
         {
-            this.Write(@"import axios, { AxiosInstance } from 'axios';
-
-export const apiClient = {
-  instance:  axios.create({
-    baseURL: ""/"",
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  }),
-  
-  setApiClient(newApiClient: AxiosInstance) {
-    this.instance = newApiClient;
-  },
-
-  setBaseUrl(baseUrl: string) {
-    this.instance.defaults.baseURL = baseUrl;
-  },
-}
-");
+            this.Write("import axios, { AxiosInstance } from \'axios\';\r\n\r\nexport const apiClient = {\r\n  in" +
+                    "stance:  axios.create({\r\n    baseURL: \"/\",\r\n    headers: {\r\n      \'Content-Type\'" +
+                    ": \'application/json\',\r\n    },\r\n  }),\r\n  \r\n  setApiClient(newApiClient: AxiosInst" +
+                    "ance) {\r\n    this.instance = newApiClient;\r\n  },\r\n\r\n  setBaseUrl(baseUrl: string" +
+                    ") {\r\n    this.instance.defaults.baseURL = baseUrl;\r\n  },\r\n}\r\n\r\nexport class Form" +
+                    "DataFactory {\r\n  /**\r\n   * Creates a FormData object from a model. If the model " +
+                    "contains arrays, each element will be appended separately.\r\n   * @param model Th" +
+                    "e model to convert to FormData.\r\n   * @returns A FormData object containing the " +
+                    "model\'s data.\r\n   */\r\n  public static Create<T>(model: T): FormData {\r\n    const" +
+                    " formData = new FormData();\r\n\r\n    for (const key in model) {\r\n      const value" +
+                    " = model[key];\r\n\r\n      if (Array.isArray(value)) {\r\n        value.forEach(v => " +
+                    "this.appendToFormData(formData, key, v));\r\n      } else {\r\n        this.appendTo" +
+                    "FormData(formData, key, value);\r\n      }\r\n    }\r\n    return formData;\r\n  }\r\n\r\n  " +
+                    "/**\r\n   * Appends a value to FormData. If the value is an object, it will be str" +
+                    "ingified.\r\n   * If the value is null, it will not be appended.\r\n   * @param form" +
+                    "Data The FormData object to append to.\r\n   * @param key The key under which to a" +
+                    "ppend the value.\r\n   * @param value The value to append.\r\n   */\r\n  public static" +
+                    " appendToFormData<T>(formData: FormData, key: string, value: T): void {\r\n    if " +
+                    "(value instanceof Blob) {\r\n      formData.append(key, value);\r\n    } else if (va" +
+                    "lue instanceof Object) {\r\n      formData.append(key, JSON.stringify(value));\r\n  " +
+                    "  } else {\r\n      if (value === null) {\r\n        return;\r\n      }\r\n\r\n      formD" +
+                    "ata.append(key, String(value));\r\n    }\r\n  }\r\n}");
             return this.GenerationEnvironment.ToString();
         }
     }

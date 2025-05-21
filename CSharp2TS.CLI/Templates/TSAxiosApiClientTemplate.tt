@@ -16,3 +16,46 @@ export const apiClient = {
     this.instance.defaults.baseURL = baseUrl;
   },
 }
+
+export class FormDataFactory {
+  /**
+   * Creates a FormData object from a model. If the model contains arrays, each element will be appended separately.
+   * @param model The model to convert to FormData.
+   * @returns A FormData object containing the model's data.
+   */
+  public static Create<T>(model: T): FormData {
+    const formData = new FormData();
+
+    for (const key in model) {
+      const value = model[key];
+
+      if (Array.isArray(value)) {
+        value.forEach(v => this.appendToFormData(formData, key, v));
+      } else {
+        this.appendToFormData(formData, key, value);
+      }
+    }
+    return formData;
+  }
+
+  /**
+   * Appends a value to FormData. If the value is an object, it will be stringified.
+   * If the value is null, it will not be appended.
+   * @param formData The FormData object to append to.
+   * @param key The key under which to append the value.
+   * @param value The value to append.
+   */
+  public static appendToFormData<T>(formData: FormData, key: string, value: T): void {
+    if (value instanceof Blob) {
+      formData.append(key, value);
+    } else if (value instanceof Object) {
+      formData.append(key, JSON.stringify(value));
+    } else {
+      if (value === null) {
+        return;
+      }
+
+      formData.append(key, String(value));
+    }
+  }
+}

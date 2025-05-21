@@ -58,5 +58,4 @@ export default {
   async getWithTypedParam(id: number): Promise<void> {
     await apiClient.instance.get(`api/Test/${id}`);
   },
-
 };

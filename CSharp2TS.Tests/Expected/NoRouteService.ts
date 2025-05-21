@@ -7,5 +7,4 @@ export default {
     const response = await apiClient.instance.get<string>(`noroute`);
     return response.data;
   },
-
 };

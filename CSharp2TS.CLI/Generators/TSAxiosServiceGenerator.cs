@@ -1,9 +1,9 @@
 ﻿using CSharp2TS.CLI.Generators.Entities;
-using CSharp2TS.CLI.Templates;
 using CSharp2TS.CLI.Utility;
 using CSharp2TS.Core.Attributes;
 using Microsoft.AspNetCore.Mvc;
 using Mono.Cecil;
+using System.Text;
 
 namespace CSharp2TS.CLI.Generators {
     public class TSAxiosServiceGenerator : GeneratorBase<TSServiceAttribute> {
@@ -212,12 +212,96 @@ namespace CSharp2TS.CLI.Generators {
         }
 
         private string BuildTsFile() {
-            return new TSAxiosServiceTemplate {
-                Items = items,
-                ApiClientImportPath = apiClientImportPath,
-                Imports = Imports.Select(i => i.Value).ToList(),
-                TypeName = Type.Name,
-            }.TransformText();
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine($"// Auto-generated from {Type.Name}.cs");
+            sb.AppendLine();
+            sb.AppendLine($"import {{ apiClient }} from '{apiClientImportPath}apiClient';");
+
+            foreach (var import in Imports) {
+                sb.AppendLine($"import {import.Value.Name} from '{import.Value.Path}';");
+            }
+
+            sb.AppendLine();
+            sb.AppendLine("export default {");
+
+            for (int i = 0; i < items.Count; i++) {
+                BuildMethod(sb, items[i]);
+
+                if (i != items.Count - 1) {
+                    sb.AppendLine();
+                }
+            }
+
+            sb.AppendLine("};");
+
+            return sb.ToString();
+        }
+
+        private void BuildMethod(StringBuilder sb, TSServiceMethod method) {
+            sb.AppendLine($"  async {method.MethodName}({string.Join(", ", method.AllParams.Select(i => $"{i.Name}: {i.Property}"))}): Promise<{method.ReturnType}> {{");
+
+            bool useFormData = false;
+
+            if (method.IsBodyRawFile) {
+                useFormData = true;
+
+                sb.AppendLine($"    const formData = new FormData();");
+
+                if (method.BodyParam!.Property.IsCollection) {
+                    sb.AppendLine($"    for (let i = 0; i < {method.BodyParam.Name}.length; i++) {{");
+                    sb.AppendLine($"      const f = {method.BodyParam.Name}[i];");
+                    sb.AppendLine($"      formData.append('{method.BodyParam.Name}[' + i + ']', f);");
+                    sb.AppendLine($"    }}");
+                } else {
+                    sb.AppendLine($"    formData.append('{method.BodyParam.Name}', {method.BodyParam.Name});");
+                }
+
+                sb.AppendLine();
+            }
+
+            sb.Append("    ");
+
+            if (method.ReturnType.TSType != TSType.Void) {
+                sb.Append("const response = ");
+            }
+
+            sb.Append($"await apiClient.instance.{method.HttpMethod}");
+
+            if (method.ReturnType.TSType != TSType.Void) {
+                sb.Append($"<{method.ReturnType}>");
+            }
+
+            sb.Append($"(`{method.Route}{(method.QueryString.Length > 0 ? method.QueryString : string.Empty)}`");
+
+            if (useFormData) {
+                sb.Append(", formData");
+            } else if (method.BodyParam != null) {
+                sb.Append($", {method.BodyParam.Name}");
+            }
+
+            if (method.IsResponseFile || method.IsBodyFormData) {
+                sb.Append(", {");
+                sb.AppendLine();
+
+                if (method.IsResponseFile) {
+                    sb.AppendLine("      responseType: 'blob',");
+                }
+
+                if (method.IsBodyFormData) {
+                    sb.AppendLine("      headers: { 'Content-Type': 'multipart/form-data' },");
+                }
+
+                sb.AppendLine("    });");
+            } else {
+                sb.Append(");");
+                sb.AppendLine();
+            }
+
+            if (method.ReturnType.TSType != TSType.Void) {
+                sb.AppendLine($"    return response.data;");
+            }
+
+            sb.AppendLine($"  }},");
         }
 
         private record HttpAttribute(string HttpMethod, string? Template);

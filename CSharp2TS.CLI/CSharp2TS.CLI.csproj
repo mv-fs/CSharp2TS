@@ -48,10 +48,6 @@
       <LastGenOutput>TSAxiosApiClientTemplate.cs</LastGenOutput>
       <Generator>TextTemplatingFilePreprocessor</Generator>
     </None>
-    <None Update="Templates\TSAxiosServiceTemplate.tt">
-      <LastGenOutput>TSAxiosServiceTemplate.cs</LastGenOutput>
-      <Generator>TextTemplatingFilePreprocessor</Generator>
-    </None>
     <None Update="Templates\TSInterfaceTemplate.tt">
       <LastGenOutput>TSInterfaceTemplate.cs</LastGenOutput>
       <Generator>TextTemplatingFilePreprocessor</Generator>
@@ -69,11 +65,6 @@
   <ItemGroup>
     <Compile Update="Templates\TSAxiosApiClientTemplate.cs">
       <DependentUpon>TSAxiosApiClientTemplate.tt</DependentUpon>
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-    </Compile>
-    <Compile Update="Templates\TSAxiosServiceTemplate.cs">
-      <DependentUpon>TSAxiosServiceTemplate.tt</DependentUpon>
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
     </Compile>
