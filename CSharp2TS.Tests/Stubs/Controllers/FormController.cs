@@ -17,5 +17,10 @@ namespace CSharp2TS.Tests.Stubs.Controllers {
         public ActionResult PostForm([FromForm] TestClass obj) {
             return Ok();
         }
+
+        [HttpPost]
+        public ActionResult PostForm([FromForm] string str) {
+            return Ok();
+        }
     }
 }

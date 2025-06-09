@@ -84,10 +84,10 @@ namespace CSharp2TS.CLI.Generators {
 
             foreach (ParameterDefinition param in parameterDefinitions) {
                 var tsProperty = GetTSPropertyType(param.ParameterType, Options.ServicesOutputFolder!);
-                bool isBodyParam = param.HasAttribute<FromBodyAttribute>() || (!tsProperty.TypeRef.Resolve().IsEnum && tsProperty.IsObject);
-                bool isFormData = param.HasAttribute<FromFormAttribute>() && tsProperty.TSType != TSType.FormData;
+                bool isFormObject = param.HasAttribute<FromFormAttribute>() && tsProperty.TSType != TSType.FormData;
+                bool isBodyParam = param.HasAttribute<FromBodyAttribute>() || isFormObject || (!tsProperty.TypeRef.Resolve().IsEnum && tsProperty.IsObject);
 
-                converted.Add(new TSServiceMethodParam(param.Name.ToCamelCase(), tsProperty, isBodyParam, isFormData));
+                converted.Add(new TSServiceMethodParam(param.Name.ToCamelCase(), tsProperty, isBodyParam, isFormObject));
             }
 
             return converted;
@@ -272,7 +272,7 @@ namespace CSharp2TS.CLI.Generators {
                 sb.Append($", {method.BodyParam.Name}");
             }
 
-            bool shouldAddFormHeader = useFormData || method.IsBodyFormData;
+            bool shouldAddFormHeader = useFormData || method.IsBodyFormData || method.IsOtherFormObject;
 
             if (method.IsResponseFile || shouldAddFormHeader || method.IsBodyRawFile) {
                 BuildOptions(sb, method, shouldAddFormHeader);

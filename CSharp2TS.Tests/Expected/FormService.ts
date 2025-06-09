@@ -17,4 +17,10 @@ export default {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
   },
+
+  async postForm3(str: string): Promise<void> {
+    await apiClient.instance.post(`api/form`, str, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  },
 };
