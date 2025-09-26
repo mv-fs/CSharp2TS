@@ -182,7 +182,10 @@ namespace CSharp2TS.CLI.Generators {
             IList<string> querySections = [];
 
             foreach (var param in queryParameters) {
-                querySections.Add($"{param.Name}=${{{param.Name}{(param.Property.IsNullable ? " ?? ''" : string.Empty)}}}");
+                // Add null check for strings to avoid passing "null" in the query string
+                bool addNullCheck = param.Property.IsNullable || param.Property.TSType == TSType.String;
+
+                querySections.Add($"{param.Name}=${{{param.Name}{(addNullCheck ? " ?? ''" : string.Empty)}}}");
             }
 
             if (querySections.Count == 0) {

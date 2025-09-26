@@ -27,7 +27,7 @@ export default {
   },
 
   async getFiltered(filter: string, limit: number): Promise<TestClass[]> {
-    const response = await apiClient.instance.get<TestClass[]>(`api/Test/filtered?filter=${filter}&limit=${limit}`);
+    const response = await apiClient.instance.get<TestClass[]>(`api/Test/filtered?filter=${filter ?? ''}&limit=${limit}`);
     return response.data;
   },
 
