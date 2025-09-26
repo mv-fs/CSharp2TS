@@ -13,7 +13,7 @@
     <RepositoryUrl>https://github.com/ormesam/CSharp2TS</RepositoryUrl>
     <Title>$(AssemblyName)</Title>
     <Authors>Sam Orme</Authors>
-    <PackageVersion>0.0.24-alpha</PackageVersion>
+    <PackageVersion>0.0.25-alpha</PackageVersion>
     <PackageReadmeFile>PACKAGE.md</PackageReadmeFile>
     <Copyright>Sam Orme</Copyright>
     <PackageTags>csharp2ts;typescript-generator</PackageTags>
