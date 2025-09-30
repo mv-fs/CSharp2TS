@@ -9,7 +9,7 @@ using System.Text.Json;
 
 namespace CSharp2TS.CLI.Generators {
     public abstract class GeneratorBase<TAttribute> where TAttribute : TSAttributeBase {
-        private static readonly Type[] dateTypes = [typeof(DateTime), typeof(DateTimeOffset)];
+        private static readonly Type[] dateTypes = [typeof(DateTime), typeof(DateTimeOffset), typeof(DateOnly)];
         private static readonly Type[] stringTypes = [typeof(char), typeof(string), typeof(Guid), .. dateTypes];
         private static readonly Type[] voidTypes = [typeof(void), typeof(Task), typeof(ActionResult), typeof(IActionResult)];
         private static readonly Type[] fileCollectionTypes = [typeof(FormFileCollection), typeof(IFormFileCollection)];
