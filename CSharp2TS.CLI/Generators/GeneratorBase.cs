@@ -49,8 +49,10 @@ namespace CSharp2TS.CLI.Generators {
             TryExtractFromGenericIfRequired(typeof(Task<>), ref type);
             TryExtractFromGenericIfRequired(typeof(ActionResult<>), ref type);
 
+            int jaggedCount = 0;
+
             bool isDictionary = TryExtractFromDictionary(ref type);
-            bool isCollection = TryExtractFromCollection(ref type);
+            bool isCollection = TryExtractFromCollection(ref type, ref jaggedCount);
 
             bool isNullable = TryExtractFromGenericIfRequired(typeof(Nullable<>), ref type);
             bool isObject = false;
@@ -83,6 +85,7 @@ namespace CSharp2TS.CLI.Generators {
 
                 if (fileCollectionTypes.Any(i => SimpleTypeCheck(type, i))) {
                     isCollection = true;
+                    jaggedCount = 1;
                 }
             } else if (formDataTypes.Any(i => SimpleTypeCheck(type, i))) {
                 isObject = true;
@@ -100,6 +103,7 @@ namespace CSharp2TS.CLI.Generators {
                 TSType = tsType,
                 GenericArguments = genericArguments,
                 IsCollection = isCollection,
+                JaggedCount = jaggedCount,
                 IsDictionary = isDictionary,
                 IsTypeNullable = isNullable,
                 IsPropertyNullable = isNullableProperty,
@@ -135,9 +139,13 @@ namespace CSharp2TS.CLI.Generators {
             return false;
         }
 
-        private bool TryExtractFromCollection(ref TypeReference type) {
+        private bool TryExtractFromCollection(ref TypeReference type, ref int currentIteration) {
             if (type.IsArray) {
                 type = ((ArrayType)type).ElementType;
+                currentIteration++;
+
+                TryExtractFromCollection(ref type, ref currentIteration);
+
                 return true;
             }
 
@@ -150,6 +158,10 @@ namespace CSharp2TS.CLI.Generators {
             // If it's a collection type, extract the generic argument
             if (isCollection && type is GenericInstanceType genericInstance && genericInstance.GenericArguments.Count > 0) {
                 type = genericInstance.GenericArguments[0];
+                currentIteration++;
+
+                TryExtractFromCollection(ref type, ref currentIteration);
+
                 return true;
             }
 

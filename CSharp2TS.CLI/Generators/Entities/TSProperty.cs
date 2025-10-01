@@ -10,6 +10,7 @@ namespace CSharp2TS.CLI.Generators.Entities {
         public required bool IsPropertyNullable { get; init; }
         public required bool IsDictionary { get; init; }
         public required bool IsCollection { get; init; }
+        public required int JaggedCount { get; init; }
         public required IList<TSProperty> GenericArguments { get; init; }
 
         public bool IsNullable => IsTypeNullable || IsPropertyNullable;
@@ -40,7 +41,9 @@ namespace CSharp2TS.CLI.Generators.Entities {
             }
 
             if (IsCollection) {
-                tsType += "[]";
+                for (int i = 0; i < JaggedCount; i++) {
+                    tsType += "[]";
+                }
             }
 
             if (IsDictionary) {

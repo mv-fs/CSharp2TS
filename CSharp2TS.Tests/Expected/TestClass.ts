@@ -61,7 +61,11 @@ interface TestClass {
   intCollection: number[];
   intIList: number[];
   intList: number[];
+  int2JaggedList: number[][];
+  int3JaggedList: number[][][];
   intArray: number[];
+  int2JaggedArray: number[][];
+  int3JaggedArray: number[][][];
   intDictionary: { [key: string]: number };
   intIDictionary: { [key: string]: number };
   intArrayIDictionary: { [key: string]: number[] };

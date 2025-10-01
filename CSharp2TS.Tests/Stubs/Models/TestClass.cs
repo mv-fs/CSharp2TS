@@ -68,7 +68,11 @@ namespace CSharp2TS.Tests.Stubs.Models {
         public ICollection<int> IntCollection { get; set; }
         public IList<int> IntIList { get; set; }
         public List<int> IntList { get; set; }
+        public List<List<int>> Int2JaggedList { get; set; }
+        public List<List<List<int>>> Int3JaggedList { get; set; }
         public int[] IntArray { get; set; }
+        public int[][] Int2JaggedArray { get; set; }
+        public int[][][] Int3JaggedArray { get; set; }
         public Dictionary<int, int> IntDictionary { get; set; }
         public IDictionary<int, int> IntIDictionary { get; set; }
         public IDictionary<int, int[]> IntArrayIDictionary { get; set; }
