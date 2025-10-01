@@ -17,7 +17,7 @@
     <PackageReadmeFile>PACKAGE.md</PackageReadmeFile>
     <Copyright>Sam Orme</Copyright>
     <PackageTags>csharp2ts;typescript-generator</PackageTags>
-    <PackageReleaseNotes>Handle nested collections and arrays</PackageReleaseNotes>
+    <PackageReleaseNotes>Handle jagged arrays</PackageReleaseNotes>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
     <Description>CSharp2TS.CLI is a tool to generate TypeScript files for C# classes, enums and API endpoints. Requires the CSharp2TS.Core nuget package to be installed on the target project.</Description>
   </PropertyGroup>
