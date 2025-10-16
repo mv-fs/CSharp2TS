@@ -44,6 +44,21 @@ namespace CSharp2TS.CLI.Utility {
             return attribute != null;
         }
 
+        public static T? GetAttributeValue<T>(this CustomAttribute attr, string name) {
+            return attr.Properties
+                .Where(i => i.Name == name)
+                .Select(i => (T)i.Argument.Value)
+                .FirstOrDefault();
+        }
+
+        public static T? GetConstructorArgument<T>(this CustomAttribute attr) {
+            if (!attr.HasConstructorArguments) {
+                return default;
+            }
+
+            return attr.ConstructorArguments[0].Value is T value ? value : default;
+        }
+
         public static bool TryGetHttpAttributeTemplate<T>(this MethodDefinition typeDef, out string template) {
             if (!typeDef.TryGetAttribute<T>(out CustomAttribute? attribute)) {
                 template = string.Empty;

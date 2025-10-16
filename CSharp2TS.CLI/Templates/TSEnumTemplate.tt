@@ -13,7 +13,26 @@ enum <#= TypeName #> {
 }
 
 export default <#= TypeName #>;
+<# if (GenerateDescriptions) { #>
+
+export const <#= TypeName #>Descriptions: Record<number, string> = {
+<# foreach (var item in Items) { #>
+  [<#= TypeName #>.<#= item.Name #>]: '<#= item.Description #>',
+<# } #>
+};
+<# } #>
+<# if (GenerateItemsArray) { #>
+
+export const <#= TypeName #>Items = Object.entries(<#= TypeName #>Descriptions).map(
+  ([key, value]) => ({
+    value: Number(key),
+    title: value,
+  })
+);
+<# } #>
 <#+
 public string TypeName { get; set; }
 public IList<TSEnumProperty> Items { get; set; }
+public bool GenerateDescriptions { get; set; }
+public bool GenerateItemsArray { get; set; }
 #>

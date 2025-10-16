@@ -79,13 +79,98 @@ namespace CSharp2TS.CLI.Templates
             #line default
             #line hidden
             this.Write(";\r\n");
+            
+            #line 16 "C:\Working\CSharp2TS\CSharp2TS.CLI\Templates\TSEnumTemplate.tt"
+ if (GenerateDescriptions) { 
+            
+            #line default
+            #line hidden
+            this.Write("\r\nexport const ");
+            
+            #line 18 "C:\Working\CSharp2TS\CSharp2TS.CLI\Templates\TSEnumTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(TypeName));
+            
+            #line default
+            #line hidden
+            this.Write("Descriptions: Record<number, string> = {\r\n");
+            
+            #line 19 "C:\Working\CSharp2TS\CSharp2TS.CLI\Templates\TSEnumTemplate.tt"
+ foreach (var item in Items) { 
+            
+            #line default
+            #line hidden
+            this.Write("  [");
+            
+            #line 20 "C:\Working\CSharp2TS\CSharp2TS.CLI\Templates\TSEnumTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(TypeName));
+            
+            #line default
+            #line hidden
+            this.Write(".");
+            
+            #line 20 "C:\Working\CSharp2TS\CSharp2TS.CLI\Templates\TSEnumTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(item.Name));
+            
+            #line default
+            #line hidden
+            this.Write("]: \'");
+            
+            #line 20 "C:\Working\CSharp2TS\CSharp2TS.CLI\Templates\TSEnumTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(item.Description));
+            
+            #line default
+            #line hidden
+            this.Write("\',\r\n");
+            
+            #line 21 "C:\Working\CSharp2TS\CSharp2TS.CLI\Templates\TSEnumTemplate.tt"
+ } 
+            
+            #line default
+            #line hidden
+            this.Write("};\r\n");
+            
+            #line 23 "C:\Working\CSharp2TS\CSharp2TS.CLI\Templates\TSEnumTemplate.tt"
+ } 
+            
+            #line default
+            #line hidden
+            
+            #line 24 "C:\Working\CSharp2TS\CSharp2TS.CLI\Templates\TSEnumTemplate.tt"
+ if (GenerateItemsArray) { 
+            
+            #line default
+            #line hidden
+            this.Write("\r\nexport const ");
+            
+            #line 26 "C:\Working\CSharp2TS\CSharp2TS.CLI\Templates\TSEnumTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(TypeName));
+            
+            #line default
+            #line hidden
+            this.Write("Items = Object.entries(");
+            
+            #line 26 "C:\Working\CSharp2TS\CSharp2TS.CLI\Templates\TSEnumTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(TypeName));
+            
+            #line default
+            #line hidden
+            this.Write("Descriptions).map(\r\n  ([key, value]) => ({\r\n    value: Number(key),\r\n    title: v" +
+                    "alue,\r\n  })\r\n);\r\n");
+            
+            #line 32 "C:\Working\CSharp2TS\CSharp2TS.CLI\Templates\TSEnumTemplate.tt"
+ } 
+            
+            #line default
+            #line hidden
             return this.GenerationEnvironment.ToString();
         }
         
-        #line 16 "C:\Working\CSharp2TS\CSharp2TS.CLI\Templates\TSEnumTemplate.tt"
+        #line 33 "C:\Working\CSharp2TS\CSharp2TS.CLI\Templates\TSEnumTemplate.tt"
 
 public string TypeName { get; set; }
 public IList<TSEnumProperty> Items { get; set; }
+public bool GenerateDescriptions { get; set; }
+public bool GenerateItemsArray { get; set; }
 
         
         #line default

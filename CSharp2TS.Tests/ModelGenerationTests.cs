@@ -44,6 +44,8 @@ namespace CSharp2TS.Tests {
 
         [Test]
         [TestCase("TestEnum.ts", "Expected\\TestEnum.ts")]
+        [TestCase("TestEnumDescriptions.ts", "Expected\\TestEnumDescriptions.ts")]
+        [TestCase("TestEnumDescriptionsAndItemArray.ts", "Expected\\TestEnumDescriptionsAndItemArray.ts")]
         public void Generation_TestEnum(string generatedFile, string expectedFile) {
             TestFilesMatch(generatedFile, expectedFile);
         }
