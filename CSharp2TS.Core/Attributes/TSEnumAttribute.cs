@@ -9,5 +9,11 @@
         /// Generate an array of value and description objects for the enum.
         /// </summary>
         public bool GenerateItemsArray { get; set; }
+
+        public TSEnumAttribute() : base(null) {
+        }
+
+        public TSEnumAttribute(string typeName) : base(typeName) {
+        }
     }
 }
