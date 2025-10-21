@@ -23,7 +23,7 @@ namespace CSharp2TS.CLI.Generators.Utilities {
         public static TSFileInfo GetFileDetails(TypeDefinition type, Options options, string basePath) {
             string typeName = GetName(type);
             string? customFolder = GetCustomFolderLocation(type);
-            string folder = string.IsNullOrWhiteSpace(customFolder) ? basePath : Path.Combine(basePath, customFolder);
+            string folder = Path.Combine(basePath, customFolder ?? string.Empty);
 
             return new TSFileInfo {
                 TypeName = typeName,
