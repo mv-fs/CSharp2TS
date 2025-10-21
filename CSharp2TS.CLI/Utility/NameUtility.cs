@@ -1,10 +1,8 @@
-﻿
-using CSharp2TS.CLI.Generators.Entities;
-using CSharp2TS.CLI.Utility;
+﻿using CSharp2TS.CLI.Generators.Entities;
 using CSharp2TS.Core.Attributes;
 using Mono.Cecil;
 
-namespace CSharp2TS.CLI.Generators.Utilities {
+namespace CSharp2TS.CLI.Utility {
     public static class NameUtility {
         private static string ApplyCasing(string str, Options options) {
             return options.FileNameCasingStyle == Consts.CamelCase ? str.ToCamelCase() : str;

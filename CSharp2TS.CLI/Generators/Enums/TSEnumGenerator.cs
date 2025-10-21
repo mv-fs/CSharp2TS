@@ -1,5 +1,4 @@
-﻿using CSharp2TS.CLI.Generators.Utilities;
-using CSharp2TS.CLI.Templates;
+﻿using CSharp2TS.CLI.Templates;
 using CSharp2TS.CLI.Utility;
 using CSharp2TS.Core.Attributes;
 using Mono.Cecil;
