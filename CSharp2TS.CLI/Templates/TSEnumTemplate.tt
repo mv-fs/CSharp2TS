@@ -3,27 +3,27 @@
 <#@ import namespace="System.Linq" #>
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
-<#@ import namespace="CSharp2TS.CLI.Generators.Entities" #>
-// Auto-generated from <#= TypeName #>.cs
+<#@ import namespace="CSharp2TS.CLI.Generators.Enums" #>
+// Auto-generated from <#= TSEnum.Name #>.cs
 
-enum <#= TypeName #> {
-<# foreach (var item in Items) { #>
+enum <#= TSEnum.Name #> {
+<# foreach (var item in TSEnum.Values) { #>
   <#= item.Name #> = <#= item.Number #>,
 <# } #>
 }
 
-export default <#= TypeName #>;
+export default <#= TSEnum.Name #>;
 <# if (GenerateDescriptions) { #>
 
-export const <#= TypeName #>Descriptions: Record<number, string> = {
-<# foreach (var item in Items) { #>
-  [<#= TypeName #>.<#= item.Name #>]: '<#= item.Description #>',
+export const <#= TSEnum.Name #>Descriptions: Record<number, string> = {
+<# foreach (var item in TSEnum.Values) { #>
+  [<#= TSEnum.Name #>.<#= item.Name #>]: '<#= item.Description #>',
 <# } #>
 };
 <# } #>
 <# if (GenerateItemsArray) { #>
 
-export const <#= TypeName #>Items = Object.entries(<#= TypeName #>Descriptions).map(
+export const <#= TSEnum.Name #>Items = Object.entries(<#= TSEnum.Name #>Descriptions).map(
   ([key, value]) => ({
     value: Number(key),
     title: value,
@@ -31,8 +31,7 @@ export const <#= TypeName #>Items = Object.entries(<#= TypeName #>Descriptions).
 );
 <# } #>
 <#+
-public string TypeName { get; set; }
-public IList<TSEnumProperty> Items { get; set; }
+public TSEnum TSEnum { get; set; }
 public bool GenerateDescriptions { get; set; }
 public bool GenerateItemsArray { get; set; }
 #>

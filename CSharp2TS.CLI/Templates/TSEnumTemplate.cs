@@ -12,7 +12,7 @@ namespace CSharp2TS.CLI.Templates
     using System.Linq;
     using System.Text;
     using System.Collections.Generic;
-    using CSharp2TS.CLI.Generators.Entities;
+    using CSharp2TS.CLI.Generators.Enums;
     using System;
     
     /// <summary>
@@ -32,21 +32,21 @@ namespace CSharp2TS.CLI.Templates
             this.Write("// Auto-generated from ");
             
             #line 7 "C:\Working\CSharp2TS\CSharp2TS.CLI\Templates\TSEnumTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(TypeName));
+            this.Write(this.ToStringHelper.ToStringWithCulture(TSEnum.Name));
             
             #line default
             #line hidden
             this.Write(".cs\r\n\r\nenum ");
             
             #line 9 "C:\Working\CSharp2TS\CSharp2TS.CLI\Templates\TSEnumTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(TypeName));
+            this.Write(this.ToStringHelper.ToStringWithCulture(TSEnum.Name));
             
             #line default
             #line hidden
             this.Write(" {\r\n");
             
             #line 10 "C:\Working\CSharp2TS\CSharp2TS.CLI\Templates\TSEnumTemplate.tt"
- foreach (var item in Items) { 
+ foreach (var item in TSEnum.Values) { 
             
             #line default
             #line hidden
@@ -74,7 +74,7 @@ namespace CSharp2TS.CLI.Templates
             this.Write("}\r\n\r\nexport default ");
             
             #line 15 "C:\Working\CSharp2TS\CSharp2TS.CLI\Templates\TSEnumTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(TypeName));
+            this.Write(this.ToStringHelper.ToStringWithCulture(TSEnum.Name));
             
             #line default
             #line hidden
@@ -88,21 +88,21 @@ namespace CSharp2TS.CLI.Templates
             this.Write("\r\nexport const ");
             
             #line 18 "C:\Working\CSharp2TS\CSharp2TS.CLI\Templates\TSEnumTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(TypeName));
+            this.Write(this.ToStringHelper.ToStringWithCulture(TSEnum.Name));
             
             #line default
             #line hidden
             this.Write("Descriptions: Record<number, string> = {\r\n");
             
             #line 19 "C:\Working\CSharp2TS\CSharp2TS.CLI\Templates\TSEnumTemplate.tt"
- foreach (var item in Items) { 
+ foreach (var item in TSEnum.Values) { 
             
             #line default
             #line hidden
             this.Write("  [");
             
             #line 20 "C:\Working\CSharp2TS\CSharp2TS.CLI\Templates\TSEnumTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(TypeName));
+            this.Write(this.ToStringHelper.ToStringWithCulture(TSEnum.Name));
             
             #line default
             #line hidden
@@ -143,14 +143,14 @@ namespace CSharp2TS.CLI.Templates
             this.Write("\r\nexport const ");
             
             #line 26 "C:\Working\CSharp2TS\CSharp2TS.CLI\Templates\TSEnumTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(TypeName));
+            this.Write(this.ToStringHelper.ToStringWithCulture(TSEnum.Name));
             
             #line default
             #line hidden
             this.Write("Items = Object.entries(");
             
             #line 26 "C:\Working\CSharp2TS\CSharp2TS.CLI\Templates\TSEnumTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(TypeName));
+            this.Write(this.ToStringHelper.ToStringWithCulture(TSEnum.Name));
             
             #line default
             #line hidden
@@ -167,8 +167,7 @@ namespace CSharp2TS.CLI.Templates
         
         #line 33 "C:\Working\CSharp2TS\CSharp2TS.CLI\Templates\TSEnumTemplate.tt"
 
-public string TypeName { get; set; }
-public IList<TSEnumProperty> Items { get; set; }
+public TSEnum TSEnum { get; set; }
 public bool GenerateDescriptions { get; set; }
 public bool GenerateItemsArray { get; set; }
 
