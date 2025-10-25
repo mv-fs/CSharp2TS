@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Mono.Cecil;
 using System.Text;
 
-namespace CSharp2TS.CLI.Generators.Services {
+namespace CSharp2TS.CLI.Generators.TSServices {
     public class TSAxiosServiceGenerator {
         private const string oldAppendedFileName = "Controller";
         private const string newAppendedFileName = "Service";

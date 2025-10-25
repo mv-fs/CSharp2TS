@@ -1,6 +1,6 @@
 ﻿using CSharp2TS.CLI.Generators.Entities;
 
-namespace CSharp2TS.CLI.Generators.Services {
+namespace CSharp2TS.CLI.Generators.TSServices {
     public record TSServiceMethod(
         string MethodName,
         string HttpMethod,
