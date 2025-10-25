@@ -12,7 +12,7 @@ namespace CSharp2TS.CLI.Templates
     using System.Linq;
     using System.Text;
     using System.Collections.Generic;
-    using CSharp2TS.CLI.Generators.Enums;
+    using CSharp2TS.CLI.Generators.TSEnums;
     using System;
     
     /// <summary>

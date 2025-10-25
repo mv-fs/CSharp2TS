@@ -3,7 +3,7 @@
 <#@ import namespace="System.Linq" #>
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
-<#@ import namespace="CSharp2TS.CLI.Generators.Enums" #>
+<#@ import namespace="CSharp2TS.CLI.Generators.TSEnums" #>
 // Auto-generated from <#= TSEnum.Name #>.cs
 
 enum <#= TSEnum.Name #> {

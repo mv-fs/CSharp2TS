@@ -4,7 +4,7 @@ using CSharp2TS.CLI.Utility;
 using CSharp2TS.Core.Attributes;
 using Mono.Cecil;
 
-namespace CSharp2TS.CLI.Generators {
+namespace CSharp2TS.CLI.Generators.TSInterfaces {
     public class TSInterfaceGenerator {
         private IList<TSInterfaceProperty> properties;
         private IList<string> genericParameters;
