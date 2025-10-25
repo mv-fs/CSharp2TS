@@ -140,10 +140,12 @@ namespace CSharp2TS.CLI.Generators {
                 files.Add(type.FullName, TSAxiosServiceGenerator.GetFileInfo(type, options));
             }
 
-            foreach (TypeDefinition type in types) {
-                var generator = new TSAxiosServiceGenerator(type, options, files);
+            var generator = new TSAxiosServiceGenerator(options, files);
 
-                GenerateFile(files[type.FullName], generator.Generate());
+            foreach (TypeDefinition type in types) {
+                string fileContents = generator.Generate(type);
+
+                GenerateFile(files[type.FullName], fileContents);
             }
         }
 

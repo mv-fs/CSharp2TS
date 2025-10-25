@@ -10,34 +10,24 @@ namespace CSharp2TS.CLI.Generators.Services {
         private const string oldAppendedFileName = "Controller";
         private const string newAppendedFileName = "Service";
         private readonly Dictionary<string, TSFileInfo> files;
+        private readonly Options options;
 
-        private bool importFormFactory = false;
-        private bool importProgressEvent = false;
-        private string apiClientImportPath;
-        private IList<TSServiceMethod> items;
-
-        // Merged from GeneratorBase
-        protected IDictionary<string, TSImport> Imports { get; } = new Dictionary<string, TSImport>();
-        public TypeDefinition Type { get; }
-        public Options Options { get; }
-
-        public TSAxiosServiceGenerator(TypeDefinition type, Options options, Dictionary<string, TSFileInfo> files) {
-            Type = type;
-            Options = options;
+        public TSAxiosServiceGenerator(Options options, Dictionary<string, TSFileInfo> files) {
+            this.options = options;
             this.files = files;
-            apiClientImportPath = "./";
-            items = [];
         }
 
-        public string Generate() {
-            ParseTypes();
+        public string Generate(TypeDefinition typeDef) {
+            TSService service = new(NameUtility.GetName(typeDef));
 
-            return BuildTsFile();
+            ParseTypes(service, typeDef);
+
+            return BuildTsFile(service);
         }
 
-        private void ParseTypes() {
-            var methods = Type.Methods;
-            apiClientImportPath = GetApiClientImport();
+        private void ParseTypes(TSService service, TypeDefinition typeDef) {
+            var methods = typeDef.Methods;
+            service.ApiClientImportPath = GetApiClientImport(typeDef);
 
             foreach (var method in methods) {
                 if (method == null || method.IsSpecialName || method.HasAttribute<TSExcludeAttribute>()) {
@@ -50,11 +40,11 @@ namespace CSharp2TS.CLI.Generators.Services {
                     continue;
                 }
 
-                string name = GetMethodName(method.Name.ToCamelCase(), null);
-                string route = GetRoute(httpMethodAttribute);
-                var returnType = GetReturnType(method);
+                string name = GetMethodName(service, method.Name.ToCamelCase(), null);
+                string route = GetRoute(typeDef, httpMethodAttribute);
+                var returnType = GetReturnType(service, typeDef, method);
 
-                var allParams = ParseParams(method.Parameters.ToArray());
+                var allParams = ParseParams(service, typeDef, method.Parameters.ToArray());
                 var routeParams = GetRouteParams(route, allParams);
                 var queryParams = GetQueryParams(route, allParams);
                 TSServiceMethodParam? bodyParam = null;
@@ -65,7 +55,7 @@ namespace CSharp2TS.CLI.Generators.Services {
 
                 string queryString = GetQueryString(route, queryParams);
 
-                items.Add(new TSServiceMethod(
+                service.Methods.Add(new TSServiceMethod(
                     name,
                     httpMethodAttribute.HttpMethod,
                     route,
@@ -76,23 +66,23 @@ namespace CSharp2TS.CLI.Generators.Services {
                     queryString));
             }
 
-            importFormFactory = items.Any(i => i.IsBodyFormObject);
-            importProgressEvent = items.Any(i => i.IsBodyRawFile);
+            service.ImportFormFactory = service.Methods.Any(i => i.IsBodyFormObject);
+            service.ImportProgressEvent = service.Methods.Any(i => i.IsBodyRawFile);
         }
 
-        private string GetMethodName(string name, int? count) {
-            if (items.Any(i => i.MethodName.Equals(name + count, StringComparison.OrdinalIgnoreCase))) {
-                return GetMethodName(name, count == null ? 2 : count + 1);
+        private string GetMethodName(TSService service, string name, int? count) {
+            if (service.Methods.Any(i => i.MethodName.Equals(name + count, StringComparison.OrdinalIgnoreCase))) {
+                return GetMethodName(service, name, count == null ? 2 : count + 1);
             }
 
             return name + count;
         }
 
-        private List<TSServiceMethodParam> ParseParams(ParameterDefinition[] parameterDefinitions) {
+        private List<TSServiceMethodParam> ParseParams(TSService service, TypeDefinition typeDef, ParameterDefinition[] parameterDefinitions) {
             List<TSServiceMethodParam> converted = [];
 
             foreach (ParameterDefinition param in parameterDefinitions) {
-                var tsProperty = GetTSPropertyType(param.ParameterType, Options.ServicesOutputFolder!);
+                var tsProperty = GetTSPropertyType(service, typeDef, param.ParameterType, options.ServicesOutputFolder!);
                 bool isFormObject = param.HasAttribute<FromFormAttribute>() && tsProperty.TSType != TSType.FormData;
                 bool isBodyParam = param.HasAttribute<FromBodyAttribute>() || isFormObject || !tsProperty.TypeRef.Resolve().IsEnum && tsProperty.IsObject;
 
@@ -102,9 +92,9 @@ namespace CSharp2TS.CLI.Generators.Services {
             return converted;
         }
 
-        private string GetApiClientImport() {
-            string currentFolder = Path.Combine(Options.ServicesOutputFolder!, files[Type.FullName].Folder);
-            return FolderUtility.GetRelativeImportPath(currentFolder, Options.ServicesOutputFolder!);
+        private string GetApiClientImport(TypeDefinition typeDef) {
+            string currentFolder = Path.Combine(options.ServicesOutputFolder!, files[typeDef.FullName].Folder);
+            return FolderUtility.GetRelativeImportPath(currentFolder, options.ServicesOutputFolder!);
         }
 
         private TSServiceMethodParam[] GetRouteParams(string template, List<TSServiceMethodParam> allParams) {
@@ -164,11 +154,11 @@ namespace CSharp2TS.CLI.Generators.Services {
             return null;
         }
 
-        private string GetRoute(HttpAttribute httpMethodAttribute) {
+        private string GetRoute(TypeDefinition typeDef, HttpAttribute httpMethodAttribute) {
             string controllerRoute;
-            string controllerName = StripController(Type.Name).ToLowerInvariant();
+            string controllerName = StripController(typeDef.Name).ToLowerInvariant();
 
-            if (Type.TryGetAttribute<RouteAttribute>(out CustomAttribute? attribute)) {
+            if (typeDef.TryGetAttribute<RouteAttribute>(out CustomAttribute? attribute)) {
                 string? controllerTemplate = (string)attribute!.ConstructorArguments[0].Value;
                 controllerRoute = controllerTemplate.Replace("[controller]", controllerName, StringComparison.OrdinalIgnoreCase);
             } else {
@@ -204,16 +194,16 @@ namespace CSharp2TS.CLI.Generators.Services {
             return $"?{string.Join('&', querySections)}";
         }
 
-        private TSProperty GetReturnType(MethodDefinition method) {
+        private TSProperty GetReturnType(TSService service, TypeDefinition typeDef, MethodDefinition method) {
             if (method.TryGetAttribute<TSEndpointAttribute>(out CustomAttribute? attribute)) {
                 var customReturnType = attribute!.ConstructorArguments[0].Value as TypeReference;
 
                 if (customReturnType != null) {
-                    return GetTSPropertyType(customReturnType, Options.ServicesOutputFolder!);
+                    return GetTSPropertyType(service, typeDef, customReturnType, options.ServicesOutputFolder!);
                 }
             }
 
-            return GetTSPropertyType(method.ReturnType, Options.ServicesOutputFolder!);
+            return GetTSPropertyType(service, typeDef, method.ReturnType, options.ServicesOutputFolder!);
         }
 
         public static TSFileInfo GetFileInfo(TypeDefinition typeDef, Options options) {
@@ -234,23 +224,22 @@ namespace CSharp2TS.CLI.Generators.Services {
             return str;
         }
 
-        protected TSProperty GetTSPropertyType(TypeReference type, string currentFolder, bool isNullableProperty = false) {
-            return TSTypeMapper.GetTSPropertyType(type, Options, isNullableProperty, (tsProperty) => {
-                if (Type != tsProperty.TypeRef) {
-                    TryAddTSImport(tsProperty, currentFolder, Options.ModelOutputFolder);
+        private TSProperty GetTSPropertyType(TSService service, TypeDefinition typeDef, TypeReference type, string currentFolder, bool isNullableProperty = false) {
+            return TSTypeMapper.GetTSPropertyType(type, options, isNullableProperty, (tsProperty) => {
+                if (typeDef != tsProperty.TypeRef) {
+                    TryAddTSImport(service, tsProperty, currentFolder, options.ModelOutputFolder);
                 }
 
                 return true;
             });
         }
 
-        private void TryAddTSImport(TSProperty tsType, string? currentFolderRoot, string? targetFolderRoot) {
+        private void TryAddTSImport(TSService service, TSProperty tsType, string? currentFolderRoot, string? targetFolderRoot) {
             if (tsType.IsObject && !string.IsNullOrEmpty(tsType.ObjectName)) {
                 string importPath = FolderUtility.GetRelativeImportPath(currentFolderRoot ?? "", targetFolderRoot ?? "");
-                string key = tsType.ObjectName;
 
-                if (!Imports.ContainsKey(key)) {
-                    Imports[key] = new TSImport(tsType.ObjectName, importPath + tsType.ObjectName);
+                if (!service.Imports.Any(i => i.Name == tsType.ObjectName)) {
+                    service.Imports.Add(new TSImport(tsType.ObjectName, importPath + tsType.ObjectName));
                 }
             }
         }
@@ -261,27 +250,27 @@ namespace CSharp2TS.CLI.Generators.Services {
 
         #region Build File
 
-        private string BuildTsFile() {
+        private string BuildTsFile(TSService service) {
             StringBuilder sb = new StringBuilder();
-            sb.AppendLine($"// Auto-generated from {Type.Name}.cs");
+            sb.AppendLine($"// Auto-generated from {service.Name}.cs");
             sb.AppendLine();
-            sb.AppendLine($"import {{ apiClient{(importFormFactory ? ", FormDataFactory" : string.Empty)} }} from '{apiClientImportPath}apiClient';");
+            sb.AppendLine($"import {{ apiClient{(service.ImportFormFactory ? ", FormDataFactory" : string.Empty)} }} from '{service.ApiClientImportPath}apiClient';");
 
-            if (importProgressEvent) {
+            if (service.ImportProgressEvent) {
                 sb.AppendLine("import type { AxiosProgressEvent } from 'axios';");
             }
 
-            foreach (var import in Imports) {
-                sb.AppendLine($"import {import.Value.Name} from '{import.Value.Path}';");
+            foreach (var import in service.Imports) {
+                sb.AppendLine($"import {import.Name} from '{import.Path}';");
             }
 
             sb.AppendLine();
             sb.AppendLine("export default {");
 
-            for (int i = 0; i < items.Count; i++) {
-                BuildMethod(sb, items[i]);
+            for (int i = 0; i < service.Methods.Count; i++) {
+                BuildMethod(sb, service.Methods[i]);
 
-                if (i != items.Count - 1) {
+                if (i != service.Methods.Count - 1) {
                     sb.AppendLine();
                 }
             }
