@@ -5,27 +5,35 @@ using CSharp2TS.Core.Attributes;
 using Mono.Cecil;
 
 namespace CSharp2TS.CLI.Generators {
-    public class TSInterfaceGenerator : GeneratorBase<TSInterfaceAttribute> {
+    public class TSInterfaceGenerator {
         private IList<TSInterfaceProperty> properties;
         private IList<string> genericParameters;
         private Dictionary<string, TSFileInfo> files;
+        private Options options;
+        private Dictionary<string, TSImport> imports;
 
-        public TSInterfaceGenerator(TypeDefinition type, Options options, Dictionary<string, TSFileInfo> files) : base(type, options) {
+        public TSInterfaceGenerator(Dictionary<string, TSFileInfo> files, Options options) {
             this.files = files;
+            this.options = options;
 
             properties = [];
             genericParameters = [];
+            imports = [];
         }
 
-        public override string Generate() {
-            ParseTypes(Type);
+        public string Generate(TypeDefinition typeDef) {
+            properties = [];
+            genericParameters = [];
+            imports = [];
 
-            return BuildTsFile();
+            ParseTypes(typeDef);
+
+            return BuildTsFile(typeDef);
         }
 
         private void ParseTypes(TypeDefinition typeDef) {
-            if (typeDef == Type && typeDef.HasGenericParameters) {
-                ParseGenericParams();
+            if (typeDef.HasGenericParameters) {
+                ParseGenericParams(typeDef);
             }
 
             foreach (var property in typeDef.Properties) {
@@ -33,7 +41,15 @@ namespace CSharp2TS.CLI.Generators {
                     continue;
                 }
 
-                var tsType = GetTSPropertyType(property.PropertyType, Options.ModelOutputFolder!, property.HasAttribute<TSNullableAttribute>());
+                var currentFolder = files[typeDef.FullName].Folder;
+
+                var tsType = TSTypeMapper.GetTSPropertyType(property.PropertyType, options, property.HasAttribute<TSNullableAttribute>(), (tsProperty) => {
+                    if (typeDef != tsProperty.TypeRef) {
+                        TryAddTSImport(typeDef, tsProperty, options);
+                    }
+
+                    return true;
+                });
 
                 properties.Add(new TSInterfaceProperty(property.Name.ToCamelCase(), tsType));
             }
@@ -43,8 +59,8 @@ namespace CSharp2TS.CLI.Generators {
             }
         }
 
-        private void ParseGenericParams() {
-            foreach (var genericParam in Type.GenericParameters) {
+        private void ParseGenericParams(TypeDefinition type) {
+            foreach (var genericParam in type.GenericParameters) {
                 genericParameters.Add(genericParam.Name);
             }
         }
@@ -53,16 +69,12 @@ namespace CSharp2TS.CLI.Generators {
             return property.PropertyType.FullName == typeof(Type).FullName && property.FullName.EndsWith("::EqualityContract()");
         }
 
-        public override string GetFileName() {
-            return ApplyCasing(GetCleanedTypeName(Type));
-        }
-
-        protected override void TryAddTSImport(TSProperty tsType, string? currentFolderRoot, string? targetFolderRoot) {
-            if (currentFolderRoot == null || targetFolderRoot == null || Imports.ContainsKey(tsType.GetTypeName()) || !tsType.IsObject || tsType.TypeRef.IsGenericParameter) {
+        private void TryAddTSImport(TypeDefinition typeDef, TSProperty tsType, Options options) {
+            if (imports.ContainsKey(tsType.GetTypeName()) || !tsType.IsObject || tsType.TypeRef.IsGenericParameter) {
                 return;
             }
 
-            var currentType = files[Type.FullName];
+            var currentType = files[typeDef.FullName];
             string targetTypeName = tsType.TypeRef.Resolve().FullName;
 
             if (!files.TryGetValue(targetTypeName, out var targetType)) {
@@ -71,13 +83,13 @@ namespace CSharp2TS.CLI.Generators {
 
             string importPath = currentType.GetImportPathTo(targetType);
 
-            Imports.Add(tsType.GetTypeName(), new TSImport(tsType.GetTypeName(), importPath));
+            imports.Add(tsType.GetTypeName(), new TSImport(tsType.GetTypeName(), importPath));
         }
 
-        private string BuildTsFile() {
+        private string BuildTsFile(TypeDefinition typeDef) {
             return new TSInterfaceTemplate {
-                TypeName = GetCleanedTypeName(Type),
-                Imports = Imports.Select(i => i.Value).ToList(),
+                TypeName = files[typeDef.FullName].TypeName,
+                Imports = imports.Select(i => i.Value).ToList(),
                 Properties = properties,
                 GenericParameters = genericParameters,
             }.TransformText();

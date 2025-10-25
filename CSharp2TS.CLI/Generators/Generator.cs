@@ -99,8 +99,12 @@ namespace CSharp2TS.CLI.Generators {
                 return;
             }
 
+            TSInterfaceGenerator generator = new(files, options);
+
             foreach (TypeDefinition type in types) {
-                GenerateFile(options.ModelOutputFolder!, new TSInterfaceGenerator(type, options, files));
+                string fileContents = generator.Generate(type);
+
+                GenerateFile(files[type.FullName], fileContents);
             }
         }
 
