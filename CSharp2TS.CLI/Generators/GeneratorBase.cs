@@ -199,7 +199,7 @@ namespace CSharp2TS.CLI.Generators {
             return str;
         }
 
-        protected void TryAddTSImport(TSProperty tsType, string? currentFolderRoot, string? targetFolderRoot) {
+        protected virtual void TryAddTSImport(TSProperty tsType, string? currentFolderRoot, string? targetFolderRoot) {
             if (currentFolderRoot == null || targetFolderRoot == null || Imports.ContainsKey(tsType.GetTypeName()) || !tsType.IsObject || tsType.TypeRef.IsGenericParameter) {
                 return;
             }

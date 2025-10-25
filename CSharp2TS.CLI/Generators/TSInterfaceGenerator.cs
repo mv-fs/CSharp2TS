@@ -8,8 +8,11 @@ namespace CSharp2TS.CLI.Generators {
     public class TSInterfaceGenerator : GeneratorBase<TSInterfaceAttribute> {
         private IList<TSInterfaceProperty> properties;
         private IList<string> genericParameters;
+        private Dictionary<string, TSFileInfo> files;
 
-        public TSInterfaceGenerator(TypeDefinition type, Options options) : base(type, options) {
+        public TSInterfaceGenerator(TypeDefinition type, Options options, Dictionary<string, TSFileInfo> files) : base(type, options) {
+            this.files = files;
+
             properties = [];
             genericParameters = [];
         }
@@ -52,6 +55,23 @@ namespace CSharp2TS.CLI.Generators {
 
         public override string GetFileName() {
             return ApplyCasing(GetCleanedTypeName(Type));
+        }
+
+        protected override void TryAddTSImport(TSProperty tsType, string? currentFolderRoot, string? targetFolderRoot) {
+            if (currentFolderRoot == null || targetFolderRoot == null || Imports.ContainsKey(tsType.GetTypeName()) || !tsType.IsObject || tsType.TypeRef.IsGenericParameter) {
+                return;
+            }
+
+            var currentType = files[Type.FullName];
+            string targetTypeName = tsType.TypeRef.Resolve().FullName;
+
+            if (!files.TryGetValue(targetTypeName, out var targetType)) {
+                return;
+            }
+
+            string importPath = currentType.GetImportPathTo(targetType);
+
+            Imports.Add(tsType.GetTypeName(), new TSImport(tsType.GetTypeName(), importPath));
         }
 
         private string BuildTsFile() {

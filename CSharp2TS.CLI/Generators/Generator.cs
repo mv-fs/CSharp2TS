@@ -95,15 +95,19 @@ namespace CSharp2TS.CLI.Generators {
         private void GenerateInterfaces(ModuleDefinition module, Options options) {
             var types = GetTypesByAttribute(module, typeof(TSInterfaceAttribute));
 
+            if (!types.Any()) {
+                return;
+            }
+
             foreach (TypeDefinition type in types) {
-                GenerateFile(options.ModelOutputFolder!, new TSInterfaceGenerator(type, options));
+                GenerateFile(options.ModelOutputFolder!, new TSInterfaceGenerator(type, options, files));
             }
         }
 
         private void GenerateEnums(ModuleDefinition module, Options options) {
             var types = GetTypesByAttribute(module, typeof(TSEnumAttribute));
 
-            if (types.Count() == 0) {
+            if (!types.Any()) {
                 return;
             }
 

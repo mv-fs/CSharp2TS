@@ -26,7 +26,7 @@ namespace CSharp2TS.CLI.Utility {
             return new TSFileInfo {
                 TypeName = typeName,
                 Folder = folder,
-                FileFullPath = Path.Combine(folder, ApplyCasing(typeName, options) + ".ts"),
+                FileNameWithoutExtension = ApplyCasing(typeName, options),
             };
         }
 
