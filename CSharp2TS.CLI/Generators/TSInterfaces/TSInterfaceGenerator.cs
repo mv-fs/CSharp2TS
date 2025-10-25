@@ -6,34 +6,25 @@ using Mono.Cecil;
 
 namespace CSharp2TS.CLI.Generators.TSInterfaces {
     public class TSInterfaceGenerator {
-        private IList<TSInterfaceProperty> properties;
-        private IList<string> genericParameters;
         private Dictionary<string, TSFileInfo> files;
         private Options options;
-        private Dictionary<string, TSImport> imports;
 
         public TSInterfaceGenerator(Dictionary<string, TSFileInfo> files, Options options) {
             this.files = files;
             this.options = options;
-
-            properties = [];
-            genericParameters = [];
-            imports = [];
         }
 
         public string Generate(TypeDefinition typeDef) {
-            properties = [];
-            genericParameters = [];
-            imports = [];
+            TSInterface tsInterface = new(NameUtility.GetName(typeDef));
 
-            ParseTypes(typeDef);
+            ParseTypes(tsInterface, typeDef);
 
-            return BuildTsFile(typeDef);
+            return BuildTsFile(tsInterface);
         }
 
-        private void ParseTypes(TypeDefinition typeDef) {
+        private void ParseTypes(TSInterface tsInterface, TypeDefinition typeDef) {
             if (typeDef.HasGenericParameters) {
-                ParseGenericParams(typeDef);
+                ParseGenericParams(tsInterface, typeDef);
             }
 
             foreach (var property in typeDef.Properties) {
@@ -45,23 +36,23 @@ namespace CSharp2TS.CLI.Generators.TSInterfaces {
 
                 var tsType = TSTypeMapper.GetTSPropertyType(property.PropertyType, options, property.HasAttribute<TSNullableAttribute>(), (tsProperty) => {
                     if (typeDef != tsProperty.TypeRef) {
-                        TryAddTSImport(typeDef, tsProperty, options);
+                        TryAddTSImport(tsInterface, typeDef, tsProperty, options);
                     }
 
                     return true;
                 });
 
-                properties.Add(new TSInterfaceProperty(property.Name.ToCamelCase(), tsType));
+                tsInterface.Properties.Add(new TSInterfaceProperty(property.Name.ToCamelCase(), tsType));
             }
 
             if (typeDef.BaseType != null) {
-                ParseTypes(typeDef.BaseType.Resolve());
+                ParseTypes(tsInterface, typeDef.BaseType.Resolve());
             }
         }
 
-        private void ParseGenericParams(TypeDefinition type) {
+        private void ParseGenericParams(TSInterface tsInterface, TypeDefinition type) {
             foreach (var genericParam in type.GenericParameters) {
-                genericParameters.Add(genericParam.Name);
+                tsInterface.GenericParameters.Add(genericParam.Name);
             }
         }
 
@@ -69,8 +60,8 @@ namespace CSharp2TS.CLI.Generators.TSInterfaces {
             return property.PropertyType.FullName == typeof(Type).FullName && property.FullName.EndsWith("::EqualityContract()");
         }
 
-        private void TryAddTSImport(TypeDefinition typeDef, TSProperty tsType, Options options) {
-            if (imports.ContainsKey(tsType.GetTypeName()) || !tsType.IsObject || tsType.TypeRef.IsGenericParameter) {
+        private void TryAddTSImport(TSInterface tsInterface, TypeDefinition typeDef, TSProperty tsType, Options options) {
+            if (tsInterface.Imports.Any(i => i.Name == tsType.GetTypeName()) || !tsType.IsObject || tsType.TypeRef.IsGenericParameter) {
                 return;
             }
 
@@ -83,15 +74,12 @@ namespace CSharp2TS.CLI.Generators.TSInterfaces {
 
             string importPath = currentType.GetImportPathTo(targetType);
 
-            imports.Add(tsType.GetTypeName(), new TSImport(tsType.GetTypeName(), importPath));
+            tsInterface.Imports.Add(new TSImport(tsType.GetTypeName(), importPath));
         }
 
-        private string BuildTsFile(TypeDefinition typeDef) {
+        private string BuildTsFile(TSInterface tsInterface) {
             return new TSInterfaceTemplate {
-                TypeName = files[typeDef.FullName].TypeName,
-                Imports = imports.Select(i => i.Value).ToList(),
-                Properties = properties,
-                GenericParameters = genericParameters,
+                TSInterface = tsInterface,
             }.TransformText();
         }
     }

@@ -33,21 +33,21 @@ namespace CSharp2TS.CLI.Templates
             this.Write("// Auto-generated from ");
             
             #line 8 "C:\Working\CSharp2TS\CSharp2TS.CLI\Templates\TSInterfaceTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(TypeName));
+            this.Write(this.ToStringHelper.ToStringWithCulture(TSInterface.Name));
             
             #line default
             #line hidden
             this.Write(".cs\r\n");
             
             #line 9 "C:\Working\CSharp2TS\CSharp2TS.CLI\Templates\TSInterfaceTemplate.tt"
- if (Imports.Count > 0) { 
+ if (TSInterface.Imports.Count > 0) { 
             
             #line default
             #line hidden
             this.Write("\r\n");
             
             #line 11 "C:\Working\CSharp2TS\CSharp2TS.CLI\Templates\TSInterfaceTemplate.tt"
- foreach (var item in Imports) { 
+ foreach (var item in TSInterface.Imports) { 
             
             #line default
             #line hidden
@@ -81,7 +81,7 @@ namespace CSharp2TS.CLI.Templates
             this.Write("\r\ninterface ");
             
             #line 16 "C:\Working\CSharp2TS\CSharp2TS.CLI\Templates\TSInterfaceTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(TypeName));
+            this.Write(this.ToStringHelper.ToStringWithCulture(TSInterface.Name));
             
             #line default
             #line hidden
@@ -94,7 +94,7 @@ namespace CSharp2TS.CLI.Templates
             this.Write("<");
             
             #line 16 "C:\Working\CSharp2TS\CSharp2TS.CLI\Templates\TSInterfaceTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(string.Join(", ", GenericParameters)));
+            this.Write(this.ToStringHelper.ToStringWithCulture(string.Join(", ", TSInterface.GenericParameters)));
             
             #line default
             #line hidden
@@ -108,7 +108,7 @@ namespace CSharp2TS.CLI.Templates
             this.Write(" {\r\n");
             
             #line 17 "C:\Working\CSharp2TS\CSharp2TS.CLI\Templates\TSInterfaceTemplate.tt"
- foreach (var item in Properties) { 
+ foreach (var item in TSInterface.Properties) { 
             
             #line default
             #line hidden
@@ -136,7 +136,7 @@ namespace CSharp2TS.CLI.Templates
             this.Write("}\r\n\r\nexport default ");
             
             #line 22 "C:\Working\CSharp2TS\CSharp2TS.CLI\Templates\TSInterfaceTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(TypeName));
+            this.Write(this.ToStringHelper.ToStringWithCulture(TSInterface.Name));
             
             #line default
             #line hidden
@@ -146,11 +146,8 @@ namespace CSharp2TS.CLI.Templates
         
         #line 23 "C:\Working\CSharp2TS\CSharp2TS.CLI\Templates\TSInterfaceTemplate.tt"
 
-public string TypeName { get; set; }
-public IList<TSImport> Imports { get; set; }
-public IList<TSInterfaceProperty> Properties { get; set; }
-public IList<string> GenericParameters { get; set; }
-public bool HasGenericParameters => GenericParameters.Count > 0;
+public TSInterface TSInterface { get; set; }
+public bool HasGenericParameters => TSInterface.GenericParameters.Count > 0;
 
         
         #line default

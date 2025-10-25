@@ -5,25 +5,22 @@
 <#@ import namespace="System.Collections.Generic" #>
 <#@ import namespace="CSharp2TS.CLI.Generators.Entities" #>
 <#@ import namespace="CSharp2TS.CLI.Generators.TSInterfaces" #>
-// Auto-generated from <#= TypeName #>.cs
-<# if (Imports.Count > 0) { #>
+// Auto-generated from <#= TSInterface.Name #>.cs
+<# if (TSInterface.Imports.Count > 0) { #>
 
-<# foreach (var item in Imports) { #>
+<# foreach (var item in TSInterface.Imports) { #>
 import <#= item.Name #> from '<#= item.Path #>';
 <# } #>
 <# } #>
 
-interface <#= TypeName #><# if (HasGenericParameters) {#><<#= string.Join(", ", GenericParameters) #>><# } #> {
-<# foreach (var item in Properties) { #>
+interface <#= TSInterface.Name #><# if (HasGenericParameters) {#><<#= string.Join(", ", TSInterface.GenericParameters) #>><# } #> {
+<# foreach (var item in TSInterface.Properties) { #>
   <#= item.Name #>: <#= item.Property #>;
 <# } #>
 }
 
-export default <#= TypeName #>;
+export default <#= TSInterface.Name #>;
 <#+
-public string TypeName { get; set; }
-public IList<TSImport> Imports { get; set; }
-public IList<TSInterfaceProperty> Properties { get; set; }
-public IList<string> GenericParameters { get; set; }
-public bool HasGenericParameters => GenericParameters.Count > 0;
+public TSInterface TSInterface { get; set; }
+public bool HasGenericParameters => TSInterface.GenericParameters.Count > 0;
 #>
