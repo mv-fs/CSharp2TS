@@ -1,7 +1,6 @@
-﻿
-using CSharp2TS.CLI.Utility;
+﻿using CSharp2TS.CLI.Utility;
 
-namespace CSharp2TS.CLI.Generators.Entities {
+namespace CSharp2TS.CLI.Generators.Common {
     public class TSFileInfo {
         public required string TypeName { get; set; }
         public required string Folder { get; set; }

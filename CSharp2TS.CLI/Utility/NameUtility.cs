@@ -1,4 +1,4 @@
-﻿using CSharp2TS.CLI.Generators.Entities;
+﻿using CSharp2TS.CLI.Generators.Common;
 using CSharp2TS.Core.Attributes;
 using Mono.Cecil;
 

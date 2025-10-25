@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Mono.Cecil;
 using System.Text.Json;
 
-namespace CSharp2TS.CLI.Utility {
+namespace CSharp2TS.CLI.Generators.Common {
     public static class TSTypeMapper {
         private static readonly Type[] dateTypes = [typeof(DateTime), typeof(DateTimeOffset), typeof(DateOnly)];
         private static readonly Type[] stringTypes = [typeof(char), typeof(string), typeof(Guid), .. dateTypes];
@@ -171,7 +171,7 @@ namespace CSharp2TS.CLI.Utility {
         }
 
         public static string GetCleanedTypeName(TypeReference type) {
-            if (type.HasGenericParameters || (type is GenericInstanceType genericType && genericType.GenericArguments.Count > 0)) {
+            if (type.HasGenericParameters || type is GenericInstanceType genericType && genericType.GenericArguments.Count > 0) {
                 return type.Name.Split('`')[0];
             }
 
