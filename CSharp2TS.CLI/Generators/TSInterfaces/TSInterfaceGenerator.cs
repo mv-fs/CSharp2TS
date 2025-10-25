@@ -18,12 +18,12 @@ namespace CSharp2TS.CLI.Generators.TSInterfaces {
         public string Generate(TypeDefinition typeDef) {
             TSInterface tsInterface = new(NameUtility.GetName(typeDef));
 
-            ParseTypes(tsInterface, typeDef);
+            ParseTypes(tsInterface, typeDef, typeDef);
 
             return BuildTsFile(tsInterface);
         }
 
-        private void ParseTypes(TSInterface tsInterface, TypeDefinition typeDef) {
+        private void ParseTypes(TSInterface tsInterface, TypeDefinition rootTypeDef, TypeDefinition typeDef) {
             if (typeDef.HasGenericParameters) {
                 ParseGenericParams(tsInterface, typeDef);
             }
@@ -33,11 +33,9 @@ namespace CSharp2TS.CLI.Generators.TSInterfaces {
                     continue;
                 }
 
-                var currentFolder = files[typeDef.FullName].Folder;
-
                 var tsType = TSTypeMapper.GetTSPropertyType(property.PropertyType, options, property.HasAttribute<TSNullableAttribute>(), (tsProperty) => {
                     if (typeDef != tsProperty.TypeRef) {
-                        TryAddTSImport(tsInterface, typeDef, tsProperty, options);
+                        TryAddTSImport(tsInterface, rootTypeDef, tsProperty, options);
                     }
 
                     return true;
@@ -46,8 +44,8 @@ namespace CSharp2TS.CLI.Generators.TSInterfaces {
                 tsInterface.Properties.Add(new TSInterfaceProperty(property.Name.ToCamelCase(), tsType));
             }
 
-            if (typeDef.BaseType != null) {
-                ParseTypes(tsInterface, typeDef.BaseType.Resolve());
+            if (typeDef.BaseType != null && typeDef.BaseType.FullName != "System.Object") {
+                ParseTypes(tsInterface, rootTypeDef, typeDef.BaseType.Resolve());
             }
         }
 
