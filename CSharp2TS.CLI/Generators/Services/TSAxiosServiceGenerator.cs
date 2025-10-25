@@ -228,25 +228,28 @@ namespace CSharp2TS.CLI.Generators.Services {
         private TSProperty GetTSPropertyType(TSService service, TypeDefinition typeDef, TypeReference type, string currentFolder, bool isNullableProperty = false) {
             return TSTypeMapper.GetTSPropertyType(type, options, isNullableProperty, (tsProperty) => {
                 if (typeDef != tsProperty.TypeRef) {
-                    TryAddTSImport(service, tsProperty, currentFolder, options.ModelOutputFolder);
+                    TryAddTSImport(service, typeDef, tsProperty, currentFolder, options.ModelOutputFolder);
                 }
 
                 return true;
             });
         }
 
-        private void TryAddTSImport(TSService service, TSProperty tsType, string? currentFolderRoot, string? targetFolderRoot) {
-            if (tsType.IsObject && !string.IsNullOrEmpty(tsType.ObjectName)) {
-                string importPath = FolderUtility.GetRelativeImportPath(currentFolderRoot ?? "", targetFolderRoot ?? "");
-
-                if (!service.Imports.Any(i => i.Name == tsType.ObjectName)) {
-                    service.Imports.Add(new TSImport(tsType.ObjectName, importPath + tsType.ObjectName));
-                }
+        private void TryAddTSImport(TSService service, TypeDefinition typeDef, TSProperty tsType, string? currentFolderRoot, string? targetFolderRoot) {
+            if (service.Imports.Any(i => i.Name == tsType.GetTypeName()) || !tsType.IsObject || string.IsNullOrEmpty(tsType.ObjectName)) {
+                return;
             }
-        }
 
-        private string GetCleanedTypeName(TypeReference type) {
-            return type.Name.Replace("`", "").Replace("&", "");
+            var currentType = files[typeDef.FullName];
+            string targetTypeName = tsType.TypeRef.Resolve().FullName;
+
+            if (!files.TryGetValue(targetTypeName, out var targetType)) {
+                return;
+            }
+
+            string importPath = currentType.GetImportPathTo(targetType);
+
+            service.Imports.Add(new TSImport(tsType.GetTypeName(), importPath));
         }
 
         #region Build File
