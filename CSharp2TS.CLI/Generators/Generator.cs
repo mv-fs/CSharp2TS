@@ -1,5 +1,5 @@
 ﻿using CSharp2TS.CLI.Generators.Entities;
-using CSharp2TS.CLI.Generators.Enums;
+using CSharp2TS.CLI.Generators.TSEnums;
 using CSharp2TS.CLI.Templates;
 using CSharp2TS.CLI.Utility;
 using CSharp2TS.Core.Attributes;

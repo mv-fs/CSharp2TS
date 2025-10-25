@@ -1,4 +1,4 @@
-﻿namespace CSharp2TS.CLI.Generators.Enums {
+﻿namespace CSharp2TS.CLI.Generators.TSEnums {
     public class TSEnum {
         public string Name { get; private set; }
         public IList<TSEnumValue> Values { get; private set; } = [];

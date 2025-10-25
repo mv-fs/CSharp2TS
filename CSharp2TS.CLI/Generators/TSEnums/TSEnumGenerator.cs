@@ -4,7 +4,7 @@ using CSharp2TS.Core.Attributes;
 using Mono.Cecil;
 using System.ComponentModel;
 
-namespace CSharp2TS.CLI.Generators.Enums {
+namespace CSharp2TS.CLI.Generators.TSEnums {
     public class TSEnumGenerator {
         public string Generate(TypeDefinition typeDef) {
             TSEnum tsEnum = new TSEnum(NameUtility.GetName(typeDef));
