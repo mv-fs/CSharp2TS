@@ -4,8 +4,16 @@ using Mono.Cecil;
 
 namespace CSharp2TS.CLI.Utility {
     public static class NameUtility {
-        private static string ApplyCasing(string str, Options options) {
-            return options.FileNameCasingStyle == Consts.CamelCase ? str.ToCamelCase() : str;
+        public static string ApplyCasing(string str, Options options) {
+            if (string.IsNullOrEmpty(str)) {
+                return str;
+            }
+
+            return options.FileNameCasingStyle switch {
+                Consts.CamelCase => char.ToLowerInvariant(str[0]) + str[1..],
+                Consts.PascalCase => char.ToUpperInvariant(str[0]) + str[1..],
+                _ => str
+            };
         }
 
         public static string GetName(TypeDefinition typeDef) {

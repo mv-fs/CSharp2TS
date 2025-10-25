@@ -6,21 +6,30 @@ using Mono.Cecil;
 using System.Text;
 
 namespace CSharp2TS.CLI.Generators.Services {
-    public class TSAxiosServiceGenerator : GeneratorBase<TSServiceAttribute> {
-        private readonly string oldAppendedFileName = "Controller";
-        private readonly string newAppendedFileName = "Service";
+    public class TSAxiosServiceGenerator {
+        private const string oldAppendedFileName = "Controller";
+        private const string newAppendedFileName = "Service";
+        private readonly Dictionary<string, TSFileInfo> files;
 
         private bool importFormFactory = false;
         private bool importProgressEvent = false;
         private string apiClientImportPath;
         private IList<TSServiceMethod> items;
 
-        public TSAxiosServiceGenerator(TypeDefinition type, Options options) : base(type, options) {
+        // Merged from GeneratorBase
+        protected IDictionary<string, TSImport> Imports { get; } = new Dictionary<string, TSImport>();
+        public TypeDefinition Type { get; }
+        public Options Options { get; }
+
+        public TSAxiosServiceGenerator(TypeDefinition type, Options options, Dictionary<string, TSFileInfo> files) {
+            Type = type;
+            Options = options;
+            this.files = files;
             apiClientImportPath = "./";
             items = [];
         }
 
-        public override string Generate() {
+        public string Generate() {
             ParseTypes();
 
             return BuildTsFile();
@@ -94,7 +103,7 @@ namespace CSharp2TS.CLI.Generators.Services {
         }
 
         private string GetApiClientImport() {
-            string currentFolder = Path.Combine(Options.ServicesOutputFolder!, GetFolderLocation());
+            string currentFolder = Path.Combine(Options.ServicesOutputFolder!, files[Type.FullName].Folder);
             return FolderUtility.GetRelativeImportPath(currentFolder, Options.ServicesOutputFolder!);
         }
 
@@ -207,16 +216,47 @@ namespace CSharp2TS.CLI.Generators.Services {
             return GetTSPropertyType(method.ReturnType, Options.ServicesOutputFolder!);
         }
 
-        public override string GetFileName() {
-            return ApplyCasing(StripController(Type.Name) + newAppendedFileName);
+        public static TSFileInfo GetFileInfo(TypeDefinition typeDef, Options options) {
+            string typeName = StripController(typeDef.Name) + newAppendedFileName;
+
+            return new TSFileInfo {
+                Folder = options.ServicesOutputFolder!,
+                TypeName = typeName,
+                FileNameWithoutExtension = NameUtility.ApplyCasing(typeName, options),
+            };
         }
 
-        private string StripController(string str) {
+        private static string StripController(string str) {
             if (str.EndsWith(oldAppendedFileName, StringComparison.OrdinalIgnoreCase)) {
                 str = str[..^oldAppendedFileName.Length];
             }
 
             return str;
+        }
+
+        protected TSProperty GetTSPropertyType(TypeReference type, string currentFolder, bool isNullableProperty = false) {
+            return TSTypeMapper.GetTSPropertyType(type, Options, isNullableProperty, (tsProperty) => {
+                if (Type != tsProperty.TypeRef) {
+                    TryAddTSImport(tsProperty, currentFolder, Options.ModelOutputFolder);
+                }
+
+                return true;
+            });
+        }
+
+        private void TryAddTSImport(TSProperty tsType, string? currentFolderRoot, string? targetFolderRoot) {
+            if (tsType.IsObject && !string.IsNullOrEmpty(tsType.ObjectName)) {
+                string importPath = FolderUtility.GetRelativeImportPath(currentFolderRoot ?? "", targetFolderRoot ?? "");
+                string key = tsType.ObjectName;
+
+                if (!Imports.ContainsKey(key)) {
+                    Imports[key] = new TSImport(tsType.ObjectName, importPath + tsType.ObjectName);
+                }
+            }
+        }
+
+        private string GetCleanedTypeName(TypeReference type) {
+            return type.Name.Replace("`", "").Replace("&", "");
         }
 
         #region Build File
