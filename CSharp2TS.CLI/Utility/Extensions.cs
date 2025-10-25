@@ -1,5 +1,4 @@
-﻿using CSharp2TS.Core.Attributes;
-using Mono.Cecil;
+﻿using Mono.Cecil;
 
 namespace CSharp2TS.CLI.Utility {
     public static class Extensions {
@@ -19,21 +18,6 @@ namespace CSharp2TS.CLI.Utility {
 
         public static bool HasAttribute<T>(this ICustomAttributeProvider entity) {
             return entity.HasAttribute(typeof(T));
-        }
-
-        public static string? GetCustomFolderLocation(this TypeDefinition typeDef) {
-            var attribute = typeDef.CustomAttributes
-                .Where(a => a.AttributeType.Resolve().BaseType.FullName == typeof(TSAttributeBase).FullName)
-                .FirstOrDefault();
-
-            if (attribute == null) {
-                return null;
-            }
-
-            return attribute.Properties
-                .Where(i => i.Name == nameof(TSAttributeBase.Folder))
-                .Select(i => (string)i.Argument.Value)
-                .FirstOrDefault();
         }
 
         public static bool TryGetAttribute<T>(this ICustomAttributeProvider entity, out CustomAttribute attribute) {
