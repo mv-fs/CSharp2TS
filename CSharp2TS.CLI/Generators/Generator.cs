@@ -1,4 +1,5 @@
 ﻿using CSharp2TS.CLI.Generators.Entities;
+using CSharp2TS.CLI.Generators.Services;
 using CSharp2TS.CLI.Generators.TSEnums;
 using CSharp2TS.CLI.Generators.TSInterfaces;
 using CSharp2TS.CLI.Templates;

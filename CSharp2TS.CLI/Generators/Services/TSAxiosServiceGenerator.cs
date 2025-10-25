@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Mono.Cecil;
 using System.Text;
 
-namespace CSharp2TS.CLI.Generators {
+namespace CSharp2TS.CLI.Generators.Services {
     public class TSAxiosServiceGenerator : GeneratorBase<TSServiceAttribute> {
         private readonly string oldAppendedFileName = "Controller";
         private readonly string newAppendedFileName = "Service";
@@ -85,7 +85,7 @@ namespace CSharp2TS.CLI.Generators {
             foreach (ParameterDefinition param in parameterDefinitions) {
                 var tsProperty = GetTSPropertyType(param.ParameterType, Options.ServicesOutputFolder!);
                 bool isFormObject = param.HasAttribute<FromFormAttribute>() && tsProperty.TSType != TSType.FormData;
-                bool isBodyParam = param.HasAttribute<FromBodyAttribute>() || isFormObject || (!tsProperty.TypeRef.Resolve().IsEnum && tsProperty.IsObject);
+                bool isBodyParam = param.HasAttribute<FromBodyAttribute>() || isFormObject || !tsProperty.TypeRef.Resolve().IsEnum && tsProperty.IsObject;
 
                 converted.Add(new TSServiceMethodParam(param.Name.ToCamelCase(), tsProperty, isBodyParam, isFormObject));
             }
