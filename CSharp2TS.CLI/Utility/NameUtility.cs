@@ -17,7 +17,7 @@ namespace CSharp2TS.CLI.Utility {
         }
 
         public static string GetName(TypeDefinition typeDef) {
-            if (!typeDef.TryGetAttribute<TSAttributeBase>(out var attr)) {
+            if (!typeDef.TryGetBaseAttribute<TSAttributeBase>(out var attr)) {
                 return typeDef.Name.Split('`')[0];
             }
 
