@@ -10,8 +10,8 @@ namespace CSharp2TS.CLI.Utility {
             }
 
             return options.FileNameCasingStyle switch {
-                Consts.CamelCase => char.ToLowerInvariant(str[0]) + str[1..],
-                Consts.PascalCase => char.ToUpperInvariant(str[0]) + str[1..],
+                Consts.CamelCase => str.ToCamelCase(),
+                Consts.PascalCase => str.ToPascalCase(),
                 _ => str
             };
         }
