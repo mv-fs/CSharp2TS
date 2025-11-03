@@ -1,7 +1,7 @@
 ﻿using CSharp2TS.CLI.Utility;
 
 namespace CSharp2TS.Tests.Utility {
-    public class GeneratorUtilityTests {
+    public class RouteUtilityTests {
         [Test]
         [TestCase(null, null)]
         [TestCase("", null)]
