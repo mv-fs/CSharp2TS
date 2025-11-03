@@ -1,6 +1,6 @@
 using CSharp2TS.CLI.Utility;
 
-namespace CSharp2TS.Tests {
+namespace CSharp2TS.Tests.Utility {
     public class FolderUtilityTests {
         [Test]
         [TestCase("/path/to/folder", "/path/to/folder", "./")]
