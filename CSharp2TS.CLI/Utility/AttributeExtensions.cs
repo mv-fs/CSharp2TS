@@ -1,7 +1,7 @@
 ﻿using Mono.Cecil;
 
 namespace CSharp2TS.CLI.Utility {
-    public static class Extensions {
+    public static class AttributeExtensions {
         public static bool HasAttribute(this ICustomAttributeProvider entity, Type type) {
             return entity.CustomAttributes
                 .Where(a => a.AttributeType.FullName == type.FullName)
