@@ -17,7 +17,7 @@ namespace CSharp2TS.CLI.Utility {
         public static TSFileInfo GetFileDetails(TypeDefinition type, Options options, string basePath) {
             string typeName = GetName(type);
             string? customFolder = GetCustomFolderLocation(type);
-            string folder = Path.Combine(basePath, customFolder ?? string.Empty);
+            string folder = string.IsNullOrWhiteSpace(customFolder) ? basePath : $"{basePath}/{customFolder}";
 
             return new TSFileInfo {
                 TypeName = typeName,
