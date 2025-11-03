@@ -5,7 +5,7 @@ using Mono.Cecil;
 namespace CSharp2TS.CLI.Utility {
     public static class NameUtility {
         public static string GetName(TypeDefinition typeDef) {
-            if (!typeDef.TryGetBaseAttribute<TSAttributeBase>(out var attr)) {
+            if (!typeDef.TryGetByBaseAttribute<TSAttributeBase>(out var attr)) {
                 return typeDef.Name.Split('`')[0];
             }
 

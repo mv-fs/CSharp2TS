@@ -27,7 +27,7 @@ namespace CSharp2TS.CLI.Utility {
             return true;
         }
 
-        public static bool TryGetBaseAttribute<T>(this ICustomAttributeProvider entity, out CustomAttribute attribute) {
+        public static bool TryGetByBaseAttribute<T>(this ICustomAttributeProvider entity, out CustomAttribute attribute) {
             var customAttribute = entity.CustomAttributes
                 .Where(a => a.AttributeType.Resolve().BaseType.FullName == typeof(T).FullName)
                 .FirstOrDefault();
