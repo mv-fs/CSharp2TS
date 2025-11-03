@@ -23,5 +23,17 @@
 
             return char.ToUpperInvariant(value[0]) + value[1..];
         }
+
+        public static string ApplyCasing(this string str, Options options) {
+            if (string.IsNullOrEmpty(str)) {
+                return str;
+            }
+
+            return options.FileNameCasingStyle switch {
+                Consts.CamelCase => str.ToCamelCase(),
+                Consts.PascalCase => str.ToPascalCase(),
+                _ => str
+            };
+        }
     }
 }

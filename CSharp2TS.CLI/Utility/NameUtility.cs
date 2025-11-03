@@ -4,18 +4,6 @@ using Mono.Cecil;
 
 namespace CSharp2TS.CLI.Utility {
     public static class NameUtility {
-        public static string ApplyCasing(string str, Options options) {
-            if (string.IsNullOrEmpty(str)) {
-                return str;
-            }
-
-            return options.FileNameCasingStyle switch {
-                Consts.CamelCase => str.ToCamelCase(),
-                Consts.PascalCase => str.ToPascalCase(),
-                _ => str
-            };
-        }
-
         public static string GetName(TypeDefinition typeDef) {
             if (!typeDef.TryGetBaseAttribute<TSAttributeBase>(out var attr)) {
                 return typeDef.Name.Split('`')[0];
@@ -34,7 +22,7 @@ namespace CSharp2TS.CLI.Utility {
             return new TSFileInfo {
                 TypeName = typeName,
                 Folder = folder,
-                FileNameWithoutExtension = ApplyCasing(typeName, options),
+                FileNameWithoutExtension = typeName.ApplyCasing(options),
             };
         }
 
