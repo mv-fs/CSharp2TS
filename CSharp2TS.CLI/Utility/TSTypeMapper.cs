@@ -17,9 +17,9 @@ namespace CSharp2TS.CLI.Generators.Common {
         private static readonly Type[] unknownTypes = [typeof(JsonElement)];
         private static readonly Type[] numberTypes = [
             typeof(sbyte), typeof(byte), typeof(short),
-            typeof(ushort), typeof(int), typeof(uint),
-            typeof(long), typeof(ulong), typeof(float),
-            typeof(double), typeof(decimal)
+                typeof(ushort), typeof(int), typeof(uint),
+                typeof(long), typeof(ulong), typeof(float),
+                typeof(double), typeof(decimal)
         ];
 
         public static TSProperty GetTSPropertyType(TypeReference type, Options options, bool isNullableProperty = false, Func<TSProperty, bool>? importHandler = null) {
@@ -99,11 +99,11 @@ namespace CSharp2TS.CLI.Generators.Common {
             return generationInfo;
         }
 
-        public static bool SimpleTypeCheck(TypeReference typeReference, Type type) {
+        private static bool SimpleTypeCheck(TypeReference typeReference, Type type) {
             return typeReference.FullName == type.FullName;
         }
 
-        public static bool TryExtractFromDictionary(ref TypeReference type) {
+        private static bool TryExtractFromDictionary(ref TypeReference type) {
             if (!type.IsGenericInstance) {
                 return false;
             }
@@ -119,7 +119,7 @@ namespace CSharp2TS.CLI.Generators.Common {
             return false;
         }
 
-        public static bool TryExtractFromCollection(ref TypeReference type, ref int currentIteration) {
+        private static bool TryExtractFromCollection(ref TypeReference type, ref int currentIteration) {
             if (type.IsArray) {
                 type = ((ArrayType)type).ElementType;
                 currentIteration++;
@@ -148,7 +148,7 @@ namespace CSharp2TS.CLI.Generators.Common {
             return false;
         }
 
-        public static bool HasInterface(TypeReference type, Type implementsType) {
+        private static bool HasInterface(TypeReference type, Type implementsType) {
             return type.GetElementType().FullName == implementsType.FullName ||
                 type.Resolve().Interfaces
                     .Where(i => i.InterfaceType.IsGenericInstance)
@@ -156,7 +156,7 @@ namespace CSharp2TS.CLI.Generators.Common {
                     .Any();
         }
 
-        public static bool TryExtractFromGenericIfRequired(Type type, ref TypeReference typeRef) {
+        private static bool TryExtractFromGenericIfRequired(Type type, ref TypeReference typeRef) {
             if (typeRef.IsGenericParameter) {
                 return false;
             }
@@ -170,7 +170,7 @@ namespace CSharp2TS.CLI.Generators.Common {
             return true;
         }
 
-        public static string GetCleanedTypeName(TypeReference type) {
+        private static string GetCleanedTypeName(TypeReference type) {
             if (type.HasGenericParameters || type is GenericInstanceType genericType && genericType.GenericArguments.Count > 0) {
                 return type.Name.Split('`')[0];
             }
