@@ -23,7 +23,7 @@ namespace CSharp2TS.CLI.Generators.Common {
         ];
 
         public static TSProperty GetTSPropertyType(TypeReference type, Options options, bool isNullableProperty = false, Func<TSProperty, bool>? importHandler = null) {
-            TSType tsType;
+            RawTSType tsType;
             List<TSProperty> genericArguments = new();
 
             TryExtractFromGenericIfRequired(typeof(Task<>), ref type);
@@ -48,20 +48,20 @@ namespace CSharp2TS.CLI.Generators.Common {
             }
 
             if (stringTypes.Any(i => SimpleTypeCheck(type, i))) {
-                tsType = TSType.String;
+                tsType = RawTSType.String;
 
                 if (!isNullable && SimpleTypeCheck(type, typeof(string)) && options.UseNullableStrings) {
                     isNullable = true;
                 }
             } else if (numberTypes.Any(i => SimpleTypeCheck(type, i))) {
-                tsType = TSType.Number;
+                tsType = RawTSType.Number;
             } else if (type.FullName == typeof(bool).FullName) {
-                tsType = TSType.Boolean;
+                tsType = RawTSType.Boolean;
             } else if (voidTypes.Any(i => SimpleTypeCheck(type, i))) {
-                tsType = TSType.Void;
+                tsType = RawTSType.Void;
             } else if (fileTypes.Any(i => SimpleTypeCheck(type, i))) {
                 isObject = true;
-                tsType = TSType.File;
+                tsType = RawTSType.File;
 
                 if (fileCollectionTypes.Any(i => SimpleTypeCheck(type, i))) {
                     isCollection = true;
@@ -69,13 +69,13 @@ namespace CSharp2TS.CLI.Generators.Common {
                 }
             } else if (formDataTypes.Any(i => SimpleTypeCheck(type, i))) {
                 isObject = true;
-                tsType = TSType.FormData;
+                tsType = RawTSType.FormData;
             } else if (unknownTypes.Any(i => SimpleTypeCheck(type, i))) {
-                tsType = TSType.Unknown;
+                tsType = RawTSType.Unknown;
             } else {
                 isObject = true;
                 requiresImport = true;
-                tsType = TSType.Object;
+                tsType = RawTSType.Object;
                 objectName = GetCleanedTypeName(type);
             }
 

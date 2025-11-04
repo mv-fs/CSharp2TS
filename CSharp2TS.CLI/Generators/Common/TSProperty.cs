@@ -3,7 +3,7 @@
 namespace CSharp2TS.CLI.Generators.Entities {
     public class TSProperty {
         public required TypeReference TypeRef { get; init; }
-        public required TSType TSType { get; init; }
+        public required RawTSType TSType { get; init; }
         public required bool IsObject { get; init; }
         public required string? ObjectName { get; init; }
         public required bool IsTypeNullable { get; init; }
@@ -17,14 +17,14 @@ namespace CSharp2TS.CLI.Generators.Entities {
 
         public string GetTypeName() {
             return TSType switch {
-                TSType.String => "string",
-                TSType.Number => "number",
-                TSType.Boolean => "boolean",
-                TSType.File => "File",
-                TSType.FormData => "FormData",
-                TSType.Void => "void",
-                TSType.Object => ObjectName ?? "Object",
-                TSType.Unknown => "unknown",
+                RawTSType.String => "string",
+                RawTSType.Number => "number",
+                RawTSType.Boolean => "boolean",
+                RawTSType.File => "File",
+                RawTSType.FormData => "FormData",
+                RawTSType.Void => "void",
+                RawTSType.Object => ObjectName ?? "Object",
+                RawTSType.Unknown => "unknown",
                 _ => throw new NotSupportedException($"Type '{TSType}' is not supported.")
             };
         }

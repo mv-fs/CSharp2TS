@@ -23,10 +23,10 @@ namespace CSharp2TS.CLI.Generators.TSServices {
             }
         }
 
-        public bool IsBodyRawFile => BodyParam?.Property.TSType == TSType.File;
-        public bool IsBodyFormData => BodyParam?.Property.TSType == TSType.FormData;
-        public bool IsBodyFormObject => BodyParam?.Property.TSType == TSType.Object && BodyParam.IsFormData;
+        public bool IsBodyRawFile => BodyParam?.Property.TSType == RawTSType.File;
+        public bool IsBodyFormData => BodyParam?.Property.TSType == RawTSType.FormData;
+        public bool IsBodyFormObject => BodyParam?.Property.TSType == RawTSType.Object && BodyParam.IsFormData;
         public bool IsOtherFormObject => BodyParam != null && !IsBodyFormData && !IsBodyFormObject && BodyParam.IsFormData;
-        public bool IsResponseFile => ReturnType.TSType == TSType.File;
+        public bool IsResponseFile => ReturnType.TSType == RawTSType.File;
     }
 }

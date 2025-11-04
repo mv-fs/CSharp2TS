@@ -84,7 +84,7 @@ namespace CSharp2TS.CLI.Generators.TSServices {
 
             foreach (ParameterDefinition param in parameterDefinitions) {
                 var tsProperty = GetTSPropertyType(service, typeDef, param.ParameterType, options.ServicesOutputFolder!);
-                bool isFormObject = param.HasAttribute<FromFormAttribute>() && tsProperty.TSType != TSType.FormData;
+                bool isFormObject = param.HasAttribute<FromFormAttribute>() && tsProperty.TSType != RawTSType.FormData;
                 bool isBodyParam = param.HasAttribute<FromBodyAttribute>() || isFormObject || !tsProperty.TypeRef.Resolve().IsEnum && tsProperty.IsObject;
 
                 converted.Add(new TSServiceMethodParam(param.Name.ToCamelCase(), tsProperty, isBodyParam, isFormObject));
@@ -183,7 +183,7 @@ namespace CSharp2TS.CLI.Generators.TSServices {
 
             foreach (var param in queryParameters) {
                 // Add null check for strings to avoid passing "null" in the query string
-                bool addNullCheck = param.Property.IsNullable || param.Property.TSType == TSType.String;
+                bool addNullCheck = param.Property.IsNullable || param.Property.TSType == RawTSType.String;
 
                 querySections.Add($"{param.Name}=${{{param.Name}{(addNullCheck ? " ?? ''" : string.Empty)}}}");
             }
@@ -290,13 +290,13 @@ namespace CSharp2TS.CLI.Generators.TSServices {
 
             sb.Append("    ");
 
-            if (method.ReturnType.TSType != TSType.Void) {
+            if (method.ReturnType.TSType != RawTSType.Void) {
                 sb.Append("const response = ");
             }
 
             sb.Append($"await apiClient.instance.{method.HttpMethod}");
 
-            if (method.ReturnType.TSType != TSType.Void) {
+            if (method.ReturnType.TSType != RawTSType.Void) {
                 sb.Append($"<{method.ReturnType}>");
             }
 
@@ -317,7 +317,7 @@ namespace CSharp2TS.CLI.Generators.TSServices {
                 sb.AppendLine();
             }
 
-            if (method.ReturnType.TSType != TSType.Void) {
+            if (method.ReturnType.TSType != RawTSType.Void) {
                 sb.AppendLine($"    return response.data;");
             }
 

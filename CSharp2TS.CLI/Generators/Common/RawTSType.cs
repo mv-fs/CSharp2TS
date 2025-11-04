@@ -1,5 +1,5 @@
 ﻿namespace CSharp2TS.CLI.Generators.Entities {
-    public enum TSType {
+    public enum RawTSType {
         String,
         Number,
         Boolean,
