@@ -1,5 +1,8 @@
 ﻿namespace CSharp2TS.CLI.Generators.Common {
-    public class TSType {
+    public struct TSType {
+        public TSType() {
+        }
+
         public required string TypeName { get; init; }
         public bool IsNullable { get; init; }
         public bool IsDictionary { get; init; }
