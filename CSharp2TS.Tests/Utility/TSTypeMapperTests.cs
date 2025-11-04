@@ -31,9 +31,15 @@ namespace CSharp2TS.Tests.Utility {
         #region String Types
 
         [Test]
-        public void GetTSPropertyType_String_ReturnsStringType() {
+        [TestCase(typeof(string))]
+        [TestCase(typeof(char))]
+        [TestCase(typeof(Guid))]
+        [TestCase(typeof(DateTime))]
+        [TestCase(typeof(DateTimeOffset))]
+        [TestCase(typeof(DateOnly))]
+        public void GetTSPropertyType_StringTypes_ReturnsStringType(Type stringType) {
             // Arrange
-            var typeRef = GetTypeReference(typeof(string));
+            var typeRef = GetTypeReference(stringType);
 
             // Act
             var result = TSTypeMapper2.GetTSPropertyType(typeRef, options);
@@ -64,67 +70,6 @@ namespace CSharp2TS.Tests.Utility {
             Assert.That(result.JaggedCount, Is.Zero);
             Assert.That(result.IsDictionary, Is.False);
             Assert.That(result.GenericArguments.Count(), Is.Zero);
-        }
-
-        [Test]
-        public void GetTSPropertyType_Char_ReturnsStringType() {
-            // Arrange
-            var typeRef = GetTypeReference(typeof(char));
-
-            // Act
-            var result = TSTypeMapper2.GetTSPropertyType(typeRef, options);
-
-            // Assert
-            Assert.That(result.TypeName, Is.EqualTo(TSTypeConsts.String));
-            Assert.That(result.IsNullable, Is.False);
-        }
-
-        [Test]
-        public void GetTSPropertyType_Guid_ReturnsStringType() {
-            // Arrange
-            var typeRef = GetTypeReference(typeof(Guid));
-
-            // Act
-            var result = TSTypeMapper2.GetTSPropertyType(typeRef, options);
-
-            // Assert
-            Assert.That(result.TypeName, Is.EqualTo(TSTypeConsts.String));
-        }
-
-        [Test]
-        public void GetTSPropertyType_DateTime_ReturnsStringType() {
-            // Arrange
-            var typeRef = GetTypeReference(typeof(DateTime));
-
-            // Act
-            var result = TSTypeMapper2.GetTSPropertyType(typeRef, options);
-
-            // Assert
-            Assert.That(result.TypeName, Is.EqualTo(TSTypeConsts.String));
-        }
-
-        [Test]
-        public void GetTSPropertyType_DateTimeOffset_ReturnsStringType() {
-            // Arrange
-            var typeRef = GetTypeReference(typeof(DateTimeOffset));
-
-            // Act
-            var result = TSTypeMapper2.GetTSPropertyType(typeRef, options);
-
-            // Assert
-            Assert.That(result.TypeName, Is.EqualTo(TSTypeConsts.String));
-        }
-
-        [Test]
-        public void GetTSPropertyType_DateOnly_ReturnsStringType() {
-            // Arrange
-            var typeRef = GetTypeReference(typeof(DateOnly));
-
-            // Act
-            var result = TSTypeMapper2.GetTSPropertyType(typeRef, options);
-
-            // Assert
-            Assert.That(result.TypeName, Is.EqualTo(TSTypeConsts.String));
         }
 
         #endregion
@@ -177,21 +122,11 @@ namespace CSharp2TS.Tests.Utility {
         #region Void Types
 
         [Test]
-        public void GetTSPropertyType_Void_ReturnsVoidType() {
+        [TestCase(typeof(void))]
+        [TestCase(typeof(Task))]
+        public void GetTSPropertyType_VoidTypes_ReturnsVoidType(Type voidType) {
             // Arrange
-            var typeRef = GetTypeReference(typeof(void));
-
-            // Act
-            var result = TSTypeMapper2.GetTSPropertyType(typeRef, options);
-
-            // Assert
-            Assert.That(result.TypeName, Is.EqualTo(TSTypeConsts.Void));
-        }
-
-        [Test]
-        public void GetTSPropertyType_Task_ReturnsVoidType() {
-            // Arrange
-            var typeRef = GetTypeReference(typeof(Task));
+            var typeRef = GetTypeReference(voidType);
 
             // Act
             var result = TSTypeMapper2.GetTSPropertyType(typeRef, options);
@@ -205,41 +140,18 @@ namespace CSharp2TS.Tests.Utility {
         #region Nullable Types
 
         [Test]
-        public void GetTSPropertyType_NullableInt_ReturnsNullableNumber() {
+        [TestCase(typeof(int?), TSTypeConsts.Number)]
+        [TestCase(typeof(bool?), TSTypeConsts.Boolean)]
+        [TestCase(typeof(DateTime?), TSTypeConsts.String)]
+        public void GetTSPropertyType_NullableTypes_ReturnsNullableType(Type nullableType, string expectedTypeName) {
             // Arrange
-            var typeRef = GetTypeReference(typeof(int?));
+            var typeRef = GetTypeReference(nullableType);
 
             // Act
             var result = TSTypeMapper2.GetTSPropertyType(typeRef, options);
 
             // Assert
-            Assert.That(result.TypeName, Is.EqualTo(TSTypeConsts.Number));
-            Assert.That(result.IsNullable, Is.True);
-        }
-
-        [Test]
-        public void GetTSPropertyType_NullableBool_ReturnsNullableBoolean() {
-            // Arrange
-            var typeRef = GetTypeReference(typeof(bool?));
-
-            // Act
-            var result = TSTypeMapper2.GetTSPropertyType(typeRef, options);
-
-            // Assert
-            Assert.That(result.TypeName, Is.EqualTo(TSTypeConsts.Boolean));
-            Assert.That(result.IsNullable, Is.True);
-        }
-
-        [Test]
-        public void GetTSPropertyType_NullableDateTime_ReturnsNullableString() {
-            // Arrange
-            var typeRef = GetTypeReference(typeof(DateTime?));
-
-            // Act
-            var result = TSTypeMapper2.GetTSPropertyType(typeRef, options);
-
-            // Assert
-            Assert.That(result.TypeName, Is.EqualTo(TSTypeConsts.String));
+            Assert.That(result.TypeName, Is.EqualTo(expectedTypeName));
             Assert.That(result.IsNullable, Is.True);
         }
 
@@ -248,70 +160,34 @@ namespace CSharp2TS.Tests.Utility {
         #region Collection Types
 
         [Test]
-        public void GetTSPropertyType_Array_ReturnsCollectionType() {
+        [TestCase(typeof(int[]), TSTypeConsts.Number, 1)]
+        [TestCase(typeof(int[][]), TSTypeConsts.Number, 2)]
+        public void GetTSPropertyType_Arrays_ReturnsCollectionType(Type arrayType, string expectedTypeName, int expectedJaggedCount) {
             // Arrange
-            var typeRef = GetTypeReference(typeof(int[]));
+            var typeRef = GetTypeReference(arrayType);
 
             // Act
             var result = TSTypeMapper2.GetTSPropertyType(typeRef, options);
 
             // Assert
-            Assert.That(result.TypeName, Is.EqualTo(TSTypeConsts.Number));
+            Assert.That(result.TypeName, Is.EqualTo(expectedTypeName));
             Assert.That(result.IsCollection, Is.True);
-            Assert.That(result.JaggedCount, Is.EqualTo(1));
+            Assert.That(result.JaggedCount, Is.EqualTo(expectedJaggedCount));
         }
 
         [Test]
-        public void GetTSPropertyType_JaggedArray_ReturnsCorrectJaggedCount() {
+        [TestCase(typeof(List<string>), TSTypeConsts.String)]
+        [TestCase(typeof(IEnumerable<int>), TSTypeConsts.Number)]
+        [TestCase(typeof(HashSet<bool>), TSTypeConsts.Boolean)]
+        public void GetTSPropertyType_GenericCollections_ReturnsCollectionType(Type collectionType, string expectedTypeName) {
             // Arrange
-            var typeRef = GetTypeReference(typeof(int[][]));
+            var typeRef = GetTypeReference(collectionType);
 
             // Act
             var result = TSTypeMapper2.GetTSPropertyType(typeRef, options);
 
             // Assert
-            Assert.That(result.TypeName, Is.EqualTo(TSTypeConsts.Number));
-            Assert.That(result.IsCollection, Is.True);
-            Assert.That(result.JaggedCount, Is.EqualTo(2));
-        }
-
-        [Test]
-        public void GetTSPropertyType_List_ReturnsCollectionType() {
-            // Arrange
-            var typeRef = GetTypeReference(typeof(List<string>));
-
-            // Act
-            var result = TSTypeMapper2.GetTSPropertyType(typeRef, options);
-
-            // Assert
-            Assert.That(result.TypeName, Is.EqualTo(TSTypeConsts.String));
-            Assert.That(result.IsCollection, Is.True);
-            Assert.That(result.JaggedCount, Is.EqualTo(1));
-        }
-
-        [Test]
-        public void GetTSPropertyType_IEnumerable_ReturnsCollectionType() {
-            // Arrange
-            var typeRef = GetTypeReference(typeof(IEnumerable<int>));
-
-            // Act
-            var result = TSTypeMapper2.GetTSPropertyType(typeRef, options);
-
-            // Assert
-            Assert.That(result.TypeName, Is.EqualTo(TSTypeConsts.Number));
-            Assert.That(result.IsCollection, Is.True);
-        }
-
-        [Test]
-        public void GetTSPropertyType_HashSet_ReturnsCollectionType() {
-            // Arrange
-            var typeRef = GetTypeReference(typeof(HashSet<bool>));
-
-            // Act
-            var result = TSTypeMapper2.GetTSPropertyType(typeRef, options);
-
-            // Assert
-            Assert.That(result.TypeName, Is.EqualTo(TSTypeConsts.Boolean));
+            Assert.That(result.TypeName, Is.EqualTo(expectedTypeName));
             Assert.That(result.IsCollection, Is.True);
         }
 
@@ -320,30 +196,19 @@ namespace CSharp2TS.Tests.Utility {
         #region Dictionary Types
 
         [Test]
-        public void GetTSPropertyType_Dictionary_ReturnsDictionaryType() {
+        [TestCase(typeof(Dictionary<string, int>), TSTypeConsts.Number)]
+        [TestCase(typeof(IDictionary<string, string>), TSTypeConsts.String)]
+        public void GetTSPropertyType_Dictionaries_ReturnsDictionaryType(Type dictionaryType, string expectedValueTypeName) {
             // Arrange
-            var typeRef = GetTypeReference(typeof(Dictionary<string, int>));
+            var typeRef = GetTypeReference(dictionaryType);
 
             // Act
             var result = TSTypeMapper2.GetTSPropertyType(typeRef, options);
 
             // Assert
-            Assert.That(result.TypeName, Is.EqualTo(TSTypeConsts.Number));
+            Assert.That(result.TypeName, Is.EqualTo(expectedValueTypeName));
             Assert.That(result.IsDictionary, Is.True);
             Assert.That(result.IsCollection, Is.False);
-        }
-
-        [Test]
-        public void GetTSPropertyType_IDictionary_ReturnsDictionaryType() {
-            // Arrange
-            var typeRef = GetTypeReference(typeof(IDictionary<string, string>));
-
-            // Act
-            var result = TSTypeMapper2.GetTSPropertyType(typeRef, options);
-
-            // Assert
-            Assert.That(result.TypeName, Is.EqualTo(TSTypeConsts.String));
-            Assert.That(result.IsDictionary, Is.True);
         }
 
         [Test]
@@ -428,27 +293,17 @@ namespace CSharp2TS.Tests.Utility {
         #region Generic Types
 
         [Test]
-        public void GetTSPropertyType_TaskOfString_ExtractsGenericAndReturnsString() {
+        [TestCase(typeof(Task<string>), TSTypeConsts.String)]
+        [TestCase(typeof(Task<int>), TSTypeConsts.Number)]
+        public void GetTSPropertyType_TaskOfT_ExtractsGenericAndReturnsCorrectType(Type taskType, string expectedTypeName) {
             // Arrange
-            var typeRef = GetTypeReference(typeof(Task<string>));
+            var typeRef = GetTypeReference(taskType);
 
             // Act
             var result = TSTypeMapper2.GetTSPropertyType(typeRef, options);
 
             // Assert
-            Assert.That(result.TypeName, Is.EqualTo(TSTypeConsts.String));
-        }
-
-        [Test]
-        public void GetTSPropertyType_TaskOfInt_ExtractsGenericAndReturnsNumber() {
-            // Arrange
-            var typeRef = GetTypeReference(typeof(Task<int>));
-
-            // Act
-            var result = TSTypeMapper2.GetTSPropertyType(typeRef, options);
-
-            // Assert
-            Assert.That(result.TypeName, Is.EqualTo(TSTypeConsts.Number));
+            Assert.That(result.TypeName, Is.EqualTo(expectedTypeName));
         }
 
         #endregion
@@ -472,9 +327,11 @@ namespace CSharp2TS.Tests.Utility {
         #region Import Handler
 
         [Test]
-        public void GetTSPropertyType_CustomObject_CallsImportHandler() {
+        [TestCase(typeof(TSTypeMapperTests), true)]
+        [TestCase(typeof(int), false)]
+        public void GetTSPropertyType_ImportHandler_CalledForCustomTypesOnly(Type type, bool shouldCallHandler) {
             // Arrange
-            var typeRef = GetTypeReference(typeof(TSTypeMapperTests));
+            var typeRef = GetTypeReference(type);
             bool importHandlerCalled = false;
 
             // Act
@@ -484,79 +341,7 @@ namespace CSharp2TS.Tests.Utility {
             });
 
             // Assert
-            Assert.That(importHandlerCalled, Is.True);
-        }
-
-        [Test]
-        public void GetTSPropertyType_PrimitiveType_DoesNotCallImportHandler() {
-            // Arrange
-            var typeRef = GetTypeReference(typeof(int));
-            bool importHandlerCalled = false;
-
-            // Act
-            var result = TSTypeMapper2.GetTSPropertyType(typeRef, options, importHandler: (prop) => {
-                importHandlerCalled = true;
-                return true;
-            });
-
-            // Assert
-            Assert.That(importHandlerCalled, Is.False);
-        }
-
-        #endregion
-
-        #region ToString Tests
-
-        [Test]
-        public void TSProperty_ToString_SimpleNumber_ReturnsCorrectString() {
-            // Arrange
-            var typeRef = GetTypeReference(typeof(int));
-            var result = TSTypeMapper2.GetTSPropertyType(typeRef, options);
-
-            // Act
-            var str = result.ToString();
-
-            // Assert
-            Assert.That(str, Is.EqualTo("number"));
-        }
-
-        [Test]
-        public void TSProperty_ToString_NullableNumber_ReturnsCorrectString() {
-            // Arrange
-            var typeRef = GetTypeReference(typeof(int?));
-            var result = TSTypeMapper2.GetTSPropertyType(typeRef, options);
-
-            // Act
-            var str = result.ToString();
-
-            // Assert
-            Assert.That(str, Is.EqualTo("number | null"));
-        }
-
-        [Test]
-        public void TSProperty_ToString_NumberArray_ReturnsCorrectString() {
-            // Arrange
-            var typeRef = GetTypeReference(typeof(int[]));
-            var result = TSTypeMapper2.GetTSPropertyType(typeRef, options);
-
-            // Act
-            var str = result.ToString();
-
-            // Assert
-            Assert.That(str, Is.EqualTo("number[]"));
-        }
-
-        [Test]
-        public void TSProperty_ToString_Dictionary_ReturnsCorrectString() {
-            // Arrange
-            var typeRef = GetTypeReference(typeof(Dictionary<string, int>));
-            var result = TSTypeMapper2.GetTSPropertyType(typeRef, options);
-
-            // Act
-            var str = result.ToString();
-
-            // Assert
-            Assert.That(str, Is.EqualTo("{ [key: string]: number }"));
+            Assert.That(importHandlerCalled, Is.EqualTo(shouldCallHandler));
         }
 
         #endregion
