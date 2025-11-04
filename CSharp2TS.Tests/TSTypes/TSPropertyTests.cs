@@ -14,7 +14,7 @@ namespace CSharp2TS.Tests.TSTypes {
         public void GetTypeName_String_ReturnsString() {
             var property = new TSProperty {
                 TypeRef = CreateMockTypeReference().Object,
-                TSType = TSType.String,
+                TSType = RawTSType.String,
                 IsObject = false,
                 ObjectName = null,
                 IsTypeNullable = false,
@@ -32,7 +32,7 @@ namespace CSharp2TS.Tests.TSTypes {
         public void GetTypeName_Number_ReturnsNumber() {
             var property = new TSProperty {
                 TypeRef = CreateMockTypeReference().Object,
-                TSType = TSType.Number,
+                TSType = RawTSType.Number,
                 IsObject = false,
                 ObjectName = null,
                 IsTypeNullable = false,
@@ -50,7 +50,7 @@ namespace CSharp2TS.Tests.TSTypes {
         public void GetTypeName_Boolean_ReturnsBoolean() {
             var property = new TSProperty {
                 TypeRef = CreateMockTypeReference().Object,
-                TSType = TSType.Boolean,
+                TSType = RawTSType.Boolean,
                 IsObject = false,
                 ObjectName = null,
                 IsTypeNullable = false,
@@ -68,7 +68,7 @@ namespace CSharp2TS.Tests.TSTypes {
         public void GetTypeName_Object_ReturnsObjectName() {
             var property = new TSProperty {
                 TypeRef = CreateMockTypeReference().Object,
-                TSType = TSType.Object,
+                TSType = RawTSType.Object,
                 IsObject = true,
                 ObjectName = "MyClass",
                 IsTypeNullable = false,
@@ -86,7 +86,7 @@ namespace CSharp2TS.Tests.TSTypes {
         public void IsNullable_WhenTypeNullable_ReturnsTrue() {
             var property = new TSProperty {
                 TypeRef = CreateMockTypeReference().Object,
-                TSType = TSType.String,
+                TSType = RawTSType.String,
                 IsObject = false,
                 ObjectName = null,
                 IsTypeNullable = true,
@@ -104,7 +104,7 @@ namespace CSharp2TS.Tests.TSTypes {
         public void IsNullable_WhenPropertyNullable_ReturnsTrue() {
             var property = new TSProperty {
                 TypeRef = CreateMockTypeReference().Object,
-                TSType = TSType.String,
+                TSType = RawTSType.String,
                 IsObject = false,
                 ObjectName = null,
                 IsTypeNullable = false,
@@ -122,7 +122,7 @@ namespace CSharp2TS.Tests.TSTypes {
         public void ToString_SimpleString_ReturnsString() {
             var property = new TSProperty {
                 TypeRef = CreateMockTypeReference().Object,
-                TSType = TSType.String,
+                TSType = RawTSType.String,
                 IsObject = false,
                 ObjectName = null,
                 IsTypeNullable = false,
@@ -140,7 +140,7 @@ namespace CSharp2TS.Tests.TSTypes {
         public void ToString_TypeNullable_ReturnsStringWithNull() {
             var property = new TSProperty {
                 TypeRef = CreateMockTypeReference().Object,
-                TSType = TSType.String,
+                TSType = RawTSType.String,
                 IsObject = false,
                 ObjectName = null,
                 IsTypeNullable = true,
@@ -158,7 +158,7 @@ namespace CSharp2TS.Tests.TSTypes {
         public void ToString_PropertyNullable_ReturnsStringWithNull() {
             var property = new TSProperty {
                 TypeRef = CreateMockTypeReference().Object,
-                TSType = TSType.String,
+                TSType = RawTSType.String,
                 IsObject = false,
                 ObjectName = null,
                 IsTypeNullable = false,
@@ -176,7 +176,7 @@ namespace CSharp2TS.Tests.TSTypes {
         public void ToString_Collection_ReturnsArraySyntax() {
             var property = new TSProperty {
                 TypeRef = CreateMockTypeReference().Object,
-                TSType = TSType.String,
+                TSType = RawTSType.String,
                 IsObject = false,
                 ObjectName = null,
                 IsTypeNullable = false,
@@ -194,7 +194,7 @@ namespace CSharp2TS.Tests.TSTypes {
         public void ToString_JaggedArray_ReturnsMultipleBrackets() {
             var property = new TSProperty {
                 TypeRef = CreateMockTypeReference().Object,
-                TSType = TSType.Number,
+                TSType = RawTSType.Number,
                 IsObject = false,
                 ObjectName = null,
                 IsTypeNullable = false,
@@ -212,7 +212,7 @@ namespace CSharp2TS.Tests.TSTypes {
         public void ToString_Dictionary_ReturnsDictionarySyntax() {
             var property = new TSProperty {
                 TypeRef = CreateMockTypeReference().Object,
-                TSType = TSType.String,
+                TSType = RawTSType.String,
                 IsObject = false,
                 ObjectName = null,
                 IsTypeNullable = false,
@@ -230,7 +230,7 @@ namespace CSharp2TS.Tests.TSTypes {
         public void ToString_NullableCollection_ReturnsParenthesizedNullUnion() {
             var property = new TSProperty {
                 TypeRef = CreateMockTypeReference().Object,
-                TSType = TSType.Number,
+                TSType = RawTSType.Number,
                 IsObject = false,
                 ObjectName = null,
                 IsTypeNullable = true,
@@ -248,7 +248,7 @@ namespace CSharp2TS.Tests.TSTypes {
         public void ToString_NullableDictionary_ReturnsParenthesizedNullUnion() {
             var property = new TSProperty {
                 TypeRef = CreateMockTypeReference().Object,
-                TSType = TSType.String,
+                TSType = RawTSType.String,
                 IsObject = false,
                 ObjectName = null,
                 IsTypeNullable = true,
@@ -266,7 +266,7 @@ namespace CSharp2TS.Tests.TSTypes {
         public void ToString_GenericType_ReturnsGenericSyntax() {
             var innerProperty = new TSProperty {
                 TypeRef = CreateMockTypeReference().Object,
-                TSType = TSType.String,
+                TSType = RawTSType.String,
                 IsObject = false,
                 ObjectName = null,
                 IsTypeNullable = false,
@@ -279,7 +279,7 @@ namespace CSharp2TS.Tests.TSTypes {
 
             var property = new TSProperty {
                 TypeRef = CreateMockTypeReference(isGenericInstance: true).Object,
-                TSType = TSType.Object,
+                TSType = RawTSType.Object,
                 IsObject = true,
                 ObjectName = "TestClass",
                 IsTypeNullable = false,
@@ -297,7 +297,7 @@ namespace CSharp2TS.Tests.TSTypes {
         public void ToString_GenericType_ReturnsGenericSyntax_Multiple() {
             var innerProperty = new TSProperty {
                 TypeRef = CreateMockTypeReference().Object,
-                TSType = TSType.String,
+                TSType = RawTSType.String,
                 IsObject = false,
                 ObjectName = null,
                 IsTypeNullable = false,
@@ -310,7 +310,7 @@ namespace CSharp2TS.Tests.TSTypes {
 
             var innerProperty2 = new TSProperty {
                 TypeRef = CreateMockTypeReference().Object,
-                TSType = TSType.Number,
+                TSType = RawTSType.Number,
                 IsObject = false,
                 ObjectName = null,
                 IsTypeNullable = false,
@@ -323,7 +323,7 @@ namespace CSharp2TS.Tests.TSTypes {
 
             var property = new TSProperty {
                 TypeRef = CreateMockTypeReference(isGenericInstance: true).Object,
-                TSType = TSType.Object,
+                TSType = RawTSType.Object,
                 IsObject = true,
                 ObjectName = "TestClass",
                 IsTypeNullable = false,
@@ -341,7 +341,7 @@ namespace CSharp2TS.Tests.TSTypes {
         public void ToString_BothTypeAndPropertyNullable_OnlyAddsNullOnce() {
             var property = new TSProperty {
                 TypeRef = CreateMockTypeReference().Object,
-                TSType = TSType.String,
+                TSType = RawTSType.String,
                 IsObject = false,
                 ObjectName = null,
                 IsTypeNullable = true,
