@@ -98,6 +98,10 @@ namespace CSharp2TS.Tests.Utility {
             // Assert
             Assert.That(result.TypeName, Is.EqualTo(TSTypeConsts.Number));
             Assert.That(result.IsNullable, Is.False);
+            Assert.That(result.IsCollection, Is.False);
+            Assert.That(result.JaggedCount, Is.Zero);
+            Assert.That(result.IsDictionary, Is.False);
+            Assert.That(result.GenericArguments.Count(), Is.Zero);
         }
 
         #endregion
@@ -115,6 +119,10 @@ namespace CSharp2TS.Tests.Utility {
             // Assert
             Assert.That(result.TypeName, Is.EqualTo(TSTypeConsts.Boolean));
             Assert.That(result.IsNullable, Is.False);
+            Assert.That(result.IsCollection, Is.False);
+            Assert.That(result.JaggedCount, Is.Zero);
+            Assert.That(result.IsDictionary, Is.False);
+            Assert.That(result.GenericArguments.Count(), Is.Zero);
         }
 
         #endregion
@@ -133,6 +141,11 @@ namespace CSharp2TS.Tests.Utility {
 
             // Assert
             Assert.That(result.TypeName, Is.EqualTo(TSTypeConsts.Void));
+            Assert.That(result.IsNullable, Is.False);
+            Assert.That(result.IsCollection, Is.False);
+            Assert.That(result.JaggedCount, Is.Zero);
+            Assert.That(result.IsDictionary, Is.False);
+            Assert.That(result.GenericArguments.Count(), Is.Zero);
         }
 
         #endregion
@@ -153,6 +166,10 @@ namespace CSharp2TS.Tests.Utility {
             // Assert
             Assert.That(result.TypeName, Is.EqualTo(expectedTypeName));
             Assert.That(result.IsNullable, Is.True);
+            Assert.That(result.IsCollection, Is.False);
+            Assert.That(result.JaggedCount, Is.Zero);
+            Assert.That(result.IsDictionary, Is.False);
+            Assert.That(result.GenericArguments.Count(), Is.Zero);
         }
 
         #endregion
@@ -171,8 +188,11 @@ namespace CSharp2TS.Tests.Utility {
 
             // Assert
             Assert.That(result.TypeName, Is.EqualTo(expectedTypeName));
+            Assert.That(result.IsNullable, Is.False);
             Assert.That(result.IsCollection, Is.True);
             Assert.That(result.JaggedCount, Is.EqualTo(expectedJaggedCount));
+            Assert.That(result.IsDictionary, Is.False);
+            Assert.That(result.GenericArguments.Count(), Is.Zero);
         }
 
         [Test]
@@ -188,7 +208,11 @@ namespace CSharp2TS.Tests.Utility {
 
             // Assert
             Assert.That(result.TypeName, Is.EqualTo(expectedTypeName));
+            Assert.That(result.IsNullable, Is.False);
             Assert.That(result.IsCollection, Is.True);
+            Assert.That(result.JaggedCount, Is.EqualTo(1));
+            Assert.That(result.IsDictionary, Is.False);
+            Assert.That(result.GenericArguments.Count(), Is.Zero);
         }
 
         #endregion
@@ -207,8 +231,11 @@ namespace CSharp2TS.Tests.Utility {
 
             // Assert
             Assert.That(result.TypeName, Is.EqualTo(expectedValueTypeName));
-            Assert.That(result.IsDictionary, Is.True);
+            Assert.That(result.IsNullable, Is.False);
             Assert.That(result.IsCollection, Is.False);
+            Assert.That(result.JaggedCount, Is.Zero);
+            Assert.That(result.IsDictionary, Is.True);
+            Assert.That(result.GenericArguments.Count(), Is.Zero);
         }
 
         [Test]
@@ -221,9 +248,11 @@ namespace CSharp2TS.Tests.Utility {
 
             // Assert
             Assert.That(result.TypeName, Is.EqualTo(TSTypeConsts.Number));
-            Assert.That(result.IsDictionary, Is.True);
+            Assert.That(result.IsNullable, Is.False)
             Assert.That(result.IsCollection, Is.True);
             Assert.That(result.JaggedCount, Is.EqualTo(1));
+            Assert.That(result.IsDictionary, Is.True);
+            Assert.That(result.GenericArguments.Count(), Is.Zero);
         }
 
         #endregion
@@ -240,6 +269,11 @@ namespace CSharp2TS.Tests.Utility {
 
             // Assert
             Assert.That(result.TypeName, Is.EqualTo(TSTypeConsts.File));
+            Assert.That(result.IsNullable, Is.False);
+            Assert.That(result.IsCollection, Is.False);
+            Assert.That(result.JaggedCount, Is.Zero);
+            Assert.That(result.IsDictionary, Is.False);
+            Assert.That(result.GenericArguments.Count(), Is.Zero);
         }
 
         [Test]
@@ -252,8 +286,11 @@ namespace CSharp2TS.Tests.Utility {
 
             // Assert
             Assert.That(result.TypeName, Is.EqualTo(TSTypeConsts.File));
+            Assert.That(result.IsNullable, Is.False);
             Assert.That(result.IsCollection, Is.True);
             Assert.That(result.JaggedCount, Is.EqualTo(1));
+            Assert.That(result.IsDictionary, Is.False);
+            Assert.That(result.GenericArguments.Count(), Is.Zero);
         }
 
         #endregion
@@ -270,6 +307,11 @@ namespace CSharp2TS.Tests.Utility {
 
             // Assert
             Assert.That(result.TypeName, Is.EqualTo(TSTypeConsts.FormData));
+            Assert.That(result.IsNullable, Is.False);
+            Assert.That(result.IsCollection, Is.False);
+            Assert.That(result.JaggedCount, Is.Zero);
+            Assert.That(result.IsDictionary, Is.False);
+            Assert.That(result.GenericArguments.Count(), Is.Zero);
         }
 
         #endregion
@@ -286,6 +328,11 @@ namespace CSharp2TS.Tests.Utility {
 
             // Assert
             Assert.That(result.TypeName, Is.EqualTo(TSTypeConsts.Unknown));
+            Assert.That(result.IsNullable, Is.False);
+            Assert.That(result.IsCollection, Is.False);
+            Assert.That(result.JaggedCount, Is.Zero);
+            Assert.That(result.IsDictionary, Is.False);
+            Assert.That(result.GenericArguments.Count(), Is.Zero);
         }
 
         #endregion
@@ -304,6 +351,11 @@ namespace CSharp2TS.Tests.Utility {
 
             // Assert
             Assert.That(result.TypeName, Is.EqualTo(expectedTypeName));
+            Assert.That(result.IsNullable, Is.False);
+            Assert.That(result.IsCollection, Is.False);
+            Assert.That(result.JaggedCount, Is.Zero);
+            Assert.That(result.IsDictionary, Is.False);
+            Assert.That(result.GenericArguments.Count(), Is.Zero);
         }
 
         #endregion
@@ -320,6 +372,11 @@ namespace CSharp2TS.Tests.Utility {
 
             // Assert
             Assert.That(result.TypeName, Is.EqualTo("TSTypeMapperTests"));
+            Assert.That(result.IsNullable, Is.False);
+            Assert.That(result.IsCollection, Is.False);
+            Assert.That(result.JaggedCount, Is.Zero);
+            Assert.That(result.IsDictionary, Is.False);
+            Assert.That(result.GenericArguments.Count(), Is.Zero);
         }
 
         #endregion
