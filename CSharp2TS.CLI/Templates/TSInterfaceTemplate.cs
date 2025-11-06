@@ -115,14 +115,7 @@ namespace CSharp2TS.CLI.Templates
             this.Write("  ");
             
             #line 18 "C:\Working\CSharp2TS\CSharp2TS.CLI\Templates\TSInterfaceTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(item.Name));
-            
-            #line default
-            #line hidden
-            this.Write(": ");
-            
-            #line 18 "C:\Working\CSharp2TS\CSharp2TS.CLI\Templates\TSInterfaceTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(item.Property));
+            this.Write(this.ToStringHelper.ToStringWithCulture(item));
             
             #line default
             #line hidden

@@ -249,7 +249,7 @@ namespace CSharp2TS.CLI.Generators.TSServices {
 
             string importPath = currentType.GetImportPathTo(targetType);
 
-            service.Imports.Add(new TSImport(tsType.GetTypeName(), importPath));
+            service.Imports.Add(new TSImport(tsType.TypeRef.FullName, tsType.GetTypeName(), importPath));
         }
 
         #region Build File

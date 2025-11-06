@@ -33,15 +33,15 @@ namespace CSharp2TS.CLI.Generators.TSInterfaces {
                     continue;
                 }
 
-                var tsType = TSTypeMapper.GetTSPropertyType(property.PropertyType, options, property.HasAttribute<TSNullableAttribute>(), (tsProperty) => {
-                    if (typeDef != tsProperty.TypeRef) {
-                        TryAddTSImport(tsInterface, rootTypeDef, tsProperty, options);
+                var tsType = TSTypeMapper2.GetTSPropertyType(property.PropertyType, options, (fullName, typeName) => {
+                    if (typeDef.FullName != fullName) {
+                        TryAddTSImport(tsInterface, rootTypeDef, fullName, typeName);
                     }
 
                     return true;
                 });
 
-                tsInterface.Properties.Add(new TSInterfaceProperty(property.Name.ToCamelCase(), tsType));
+                tsInterface.Properties.Add(new TSInterfaceProperty(property.Name.ToCamelCase(), tsType, property.HasAttribute<TSNullableAttribute>()));
             }
 
             if (typeDef.BaseType != null && typeDef.BaseType.FullName != "System.Object") {
@@ -59,21 +59,20 @@ namespace CSharp2TS.CLI.Generators.TSInterfaces {
             return property.PropertyType.FullName == typeof(Type).FullName && property.FullName.EndsWith("::EqualityContract()");
         }
 
-        private void TryAddTSImport(TSInterface tsInterface, TypeDefinition typeDef, TSProperty tsType, Options options) {
-            if (tsInterface.Imports.Any(i => i.Name == tsType.GetTypeName()) || !tsType.IsObject || tsType.TypeRef.IsGenericParameter) {
+        private void TryAddTSImport(TSInterface tsInterface, TypeDefinition typeDef, string targetFullName, string targetName) {
+            if (tsInterface.Imports.Any(i => i.FullName == targetFullName)) {
                 return;
             }
 
             var currentType = files[typeDef.FullName];
-            string targetTypeName = tsType.TypeRef.Resolve().FullName;
 
-            if (!files.TryGetValue(targetTypeName, out var targetType)) {
+            if (!files.TryGetValue(targetFullName, out var targetType)) {
                 return;
             }
 
             string importPath = currentType.GetImportPathTo(targetType);
 
-            tsInterface.Imports.Add(new TSImport(tsType.GetTypeName(), importPath));
+            tsInterface.Imports.Add(new TSImport(targetFullName, targetName, importPath));
         }
 
         private string BuildTsFile(TSInterface tsInterface) {

@@ -25,7 +25,7 @@ namespace CSharp2TS.CLI.Generators.Common {
             typeof(double), typeof(decimal)
         ];
 
-        public static TSType GetTSPropertyType(TypeReference type, Options options, Func<TSType, bool>? importHandler = null) {
+        public static TSType GetTSPropertyType(TypeReference type, Options options, Func<string, string, bool>? importHandler = null) {
             string tsType;
             List<TSType> genericArguments = [];
 
@@ -36,9 +36,7 @@ namespace CSharp2TS.CLI.Generators.Common {
 
             bool isDictionary = TryExtractFromDictionary(ref type);
             bool isCollection = TryExtractFromCollection(ref type, ref jaggedCount);
-
             bool isNullable = TryExtractFromGenericIfRequired(typeof(Nullable<>), ref type);
-            bool requiresImport = false;
 
             if (type.IsGenericInstance) {
                 var generic = (GenericInstanceType)type;
@@ -72,11 +70,11 @@ namespace CSharp2TS.CLI.Generators.Common {
             } else if (unknownTypes.Any(i => SimpleTypeCheck(type, i))) {
                 tsType = TSTypeConsts.Unknown;
             } else {
-                requiresImport = true;
                 tsType = GetCleanedTypeName(type) ?? TSTypeConsts.Object;
+                importHandler?.Invoke(type.Resolve()?.FullName ?? type.FullName, tsType);
             }
 
-            var generationInfo = new TSType {
+            return new TSType {
                 TypeName = tsType,
                 GenericArguments = genericArguments,
                 IsCollection = isCollection,
@@ -84,12 +82,6 @@ namespace CSharp2TS.CLI.Generators.Common {
                 IsDictionary = isDictionary,
                 IsNullable = isNullable,
             };
-
-            if (requiresImport && importHandler != null) {
-                importHandler(generationInfo);
-            }
-
-            return generationInfo;
         }
 
         private static bool SimpleTypeCheck(TypeReference typeReference, Type type) {

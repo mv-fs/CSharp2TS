@@ -15,7 +15,7 @@ import <#= item.Name #> from '<#= item.Path #>';
 
 interface <#= TSInterface.Name #><# if (HasGenericParameters) {#><<#= string.Join(", ", TSInterface.GenericParameters) #>><# } #> {
 <# foreach (var item in TSInterface.Properties) { #>
-  <#= item.Name #>: <#= item.Property #>;
+  <#= item #>;
 <# } #>
 }
 

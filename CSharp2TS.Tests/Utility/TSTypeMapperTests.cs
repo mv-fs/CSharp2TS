@@ -392,7 +392,7 @@ namespace CSharp2TS.Tests.Utility {
             bool importHandlerCalled = false;
 
             // Act
-            var result = TSTypeMapper2.GetTSPropertyType(typeRef, options, importHandler: (prop) => {
+            var result = TSTypeMapper2.GetTSPropertyType(typeRef, options, importHandler: (fullName, typeName) => {
                 importHandlerCalled = true;
                 return true;
             });

@@ -7,6 +7,6 @@
         public const string FormData = "FormData";
         public const string Void = "void";
         public const string Object = "Object";
-        public const string Unknown = "Unknown";
+        public const string Unknown = "unknown";
     }
 }
