@@ -7,8 +7,11 @@ using System.Text.Json;
 
 namespace CSharp2TS.CLI.Generators.Common {
     public static class TSTypeMapper2 {
-        private static readonly Type[] dateTypes = [typeof(DateTime), typeof(DateTimeOffset), typeof(DateOnly)];
-        private static readonly Type[] stringTypes = [typeof(char), typeof(string), typeof(Guid), .. dateTypes];
+        private static readonly Type[] stringTypes = [
+            typeof(char), typeof(string), typeof(Guid),
+            typeof(DateTime), typeof(DateTimeOffset), typeof(DateOnly),
+            typeof(TimeOnly)
+        ];
         private static readonly Type[] voidTypes = [typeof(void), typeof(Task), typeof(ActionResult), typeof(IActionResult)];
         private static readonly Type[] fileCollectionTypes = [typeof(FormFileCollection), typeof(IFormFileCollection)];
         private static readonly Type[] fileReturnTypes = [typeof(FileContentResult), typeof(FileStreamResult), typeof(FileResult)];
@@ -17,9 +20,9 @@ namespace CSharp2TS.CLI.Generators.Common {
         private static readonly Type[] unknownTypes = [typeof(JsonElement)];
         private static readonly Type[] numberTypes = [
             typeof(sbyte), typeof(byte), typeof(short),
-                typeof(ushort), typeof(int), typeof(uint),
-                typeof(long), typeof(ulong), typeof(float),
-                typeof(double), typeof(decimal)
+            typeof(ushort), typeof(int), typeof(uint),
+            typeof(long), typeof(ulong), typeof(float),
+            typeof(double), typeof(decimal)
         ];
 
         public static TSType GetTSPropertyType(TypeReference type, Options options, Func<TSType, bool>? importHandler = null) {

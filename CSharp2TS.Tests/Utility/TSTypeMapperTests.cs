@@ -37,6 +37,7 @@ namespace CSharp2TS.Tests.Utility {
         [TestCase(typeof(DateTime))]
         [TestCase(typeof(DateTimeOffset))]
         [TestCase(typeof(DateOnly))]
+        [TestCase(typeof(TimeOnly))]
         public void GetTSPropertyType_StringTypes_ReturnsStringType(Type stringType) {
             // Arrange
             var typeRef = GetTypeReference(stringType);
@@ -63,7 +64,6 @@ namespace CSharp2TS.Tests.Utility {
             var result = TSTypeMapper2.GetTSPropertyType(typeRef, optionsWithNullableStrings);
 
             // Assert
-            Assert.That(result.TypeName, Is.EqualTo(TSTypeConsts.String));
             Assert.That(result.TypeName, Is.EqualTo(TSTypeConsts.String));
             Assert.That(result.IsNullable, Is.True);
             Assert.That(result.IsCollection, Is.False);
@@ -248,7 +248,7 @@ namespace CSharp2TS.Tests.Utility {
 
             // Assert
             Assert.That(result.TypeName, Is.EqualTo(TSTypeConsts.Number));
-            Assert.That(result.IsNullable, Is.False)
+            Assert.That(result.IsNullable, Is.False);
             Assert.That(result.IsCollection, Is.True);
             Assert.That(result.JaggedCount, Is.EqualTo(1));
             Assert.That(result.IsDictionary, Is.True);
