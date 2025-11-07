@@ -1,12 +1,10 @@
-﻿using CSharp2TS.Core.Enums;
-
-namespace CSharp2TS.Core.Attributes {
+﻿namespace CSharp2TS.Core.Attributes {
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = false)]
     public class TSEndpointAttribute : Attribute {
-        public ReturnType? TsReturnType { get; private set; }
+        public string? TsReturnType { get; private set; }
         public Type? ReturnType { get; private set; }
 
-        public TSEndpointAttribute(ReturnType returnType) {
+        public TSEndpointAttribute(string returnType) {
             TsReturnType = returnType;
         }
 

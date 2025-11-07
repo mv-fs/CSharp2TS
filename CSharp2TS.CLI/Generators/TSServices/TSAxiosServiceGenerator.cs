@@ -87,8 +87,9 @@ namespace CSharp2TS.CLI.Generators.TSServices {
 
                 bool isFormObject = param.HasAttribute<FromFormAttribute>() && tsType.TypeName != TSTypeConsts.FormData;
                 bool isBodyParam = param.HasAttribute<FromBodyAttribute>() || isFormObject || !param.ParameterType.Resolve().IsEnum && tsType.IsObject();
+                bool isNullable = param.HasAttribute<TSNullableAttribute>();
 
-                converted.Add(new TSServiceMethodParam(param.Name.ToCamelCase(), tsType, isBodyParam, isFormObject));
+                converted.Add(new TSServiceMethodParam(param.Name.ToCamelCase(), tsType, isBodyParam, isFormObject, isNullable));
             }
 
             return converted;
@@ -300,10 +301,14 @@ namespace CSharp2TS.CLI.Generators.TSServices {
 
             sb.Append($"(`{method.Route}{(method.QueryString.Length > 0 ? method.QueryString : string.Empty)}`");
 
-            if (useFormData) {
-                sb.Append(", formData");
-            } else if (method.BodyParam != null) {
-                sb.Append($", {method.BodyParam.Name}");
+            if (method.HttpMethod is Consts.HttpPost or Consts.HttpPut or Consts.HttpPatch) {
+                if (useFormData) {
+                    sb.Append(", formData");
+                } else if (method.BodyParam != null) {
+                    sb.Append($", {method.BodyParam.Name}");
+                } else {
+                    sb.Append(", null");
+                }
             }
 
             bool shouldAddFormHeader = useFormData || method.IsBodyFormData || method.IsOtherFormObject;
@@ -324,7 +329,7 @@ namespace CSharp2TS.CLI.Generators.TSServices {
 
         private void BuildMethodSignature(StringBuilder sb, TSServiceMethod method) {
             sb.Append($"  async {method.MethodName}(");
-            sb.Append(string.Join(", ", method.AllParams.Select(i => $"{i.Name}: {i.Type}")));
+            sb.Append(string.Join(", ", method.AllParams.Select(i => i.ToString())));
 
             if (method.IsBodyRawFile) {
                 sb.Append(", onUploadProgress?: (event: AxiosProgressEvent) => void");
