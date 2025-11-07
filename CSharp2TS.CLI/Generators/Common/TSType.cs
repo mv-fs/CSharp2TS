@@ -1,4 +1,6 @@
-﻿namespace CSharp2TS.CLI.Generators.Common {
+﻿using CSharp2TS.CLI.Generators.Entities;
+
+namespace CSharp2TS.CLI.Generators.Common {
     public struct TSType {
         public TSType() {
         }
@@ -9,6 +11,10 @@
         public bool IsCollection { get; init; }
         public int JaggedCount { get; init; }
         public IList<TSType> GenericArguments { get; init; } = [];
+
+        public bool IsObject() {
+            return !new[] { TSTypeConsts.String, TSTypeConsts.Number, TSTypeConsts.Boolean, TSTypeConsts.Void }.Contains(TypeName);
+        }
 
         public override string ToString() {
             string tsType = TypeName;

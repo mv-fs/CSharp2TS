@@ -18,17 +18,17 @@ namespace CSharp2TS.CLI.Generators.TSServices {
             this.files = files;
         }
 
-        public string Generate(TypeDefinition typeDef) {
-            TSService service = new(NameUtility.GetName(typeDef));
+        public string Generate(TypeDefinition serviceDef) {
+            TSService service = new(NameUtility.GetName(serviceDef));
 
-            ParseTypes(service, typeDef);
+            ParseTypes(service, serviceDef);
 
             return BuildTsFile(service);
         }
 
-        private void ParseTypes(TSService service, TypeDefinition typeDef) {
-            var methods = typeDef.Methods;
-            service.ApiClientImportPath = GetApiClientImport(typeDef);
+        private void ParseTypes(TSService service, TypeDefinition serviceDef) {
+            var methods = serviceDef.Methods;
+            service.ApiClientImportPath = GetApiClientImport(serviceDef);
 
             foreach (var method in methods) {
                 if (method == null || method.IsSpecialName || method.HasAttribute<TSExcludeAttribute>()) {
@@ -42,10 +42,10 @@ namespace CSharp2TS.CLI.Generators.TSServices {
                 }
 
                 string name = GetMethodName(service, method.Name.ToCamelCase(), null);
-                string route = GetRoute(typeDef, httpMethodAttribute);
-                var returnType = GetReturnType(service, typeDef, method);
+                string route = GetRoute(serviceDef, httpMethodAttribute);
+                var returnType = GetReturnType(service, serviceDef, method);
 
-                var allParams = ParseParams(service, typeDef, method.Parameters.ToArray());
+                var allParams = ParseParams(service, serviceDef, method.Parameters.ToArray());
                 var routeParams = GetRouteParams(route, allParams);
                 var queryParams = GetQueryParams(route, allParams);
                 TSServiceMethodParam? bodyParam = null;
@@ -79,15 +79,16 @@ namespace CSharp2TS.CLI.Generators.TSServices {
             return name + count;
         }
 
-        private List<TSServiceMethodParam> ParseParams(TSService service, TypeDefinition typeDef, ParameterDefinition[] parameterDefinitions) {
+        private List<TSServiceMethodParam> ParseParams(TSService service, TypeDefinition serviceDef, ParameterDefinition[] parameterDefinitions) {
             List<TSServiceMethodParam> converted = [];
 
             foreach (ParameterDefinition param in parameterDefinitions) {
-                var tsProperty = GetTSPropertyType(service, typeDef, param.ParameterType, options.ServicesOutputFolder!);
-                bool isFormObject = param.HasAttribute<FromFormAttribute>() && tsProperty.TSType != RawTSType.FormData;
-                bool isBodyParam = param.HasAttribute<FromBodyAttribute>() || isFormObject || !tsProperty.TypeRef.Resolve().IsEnum && tsProperty.IsObject;
+                var tsType = GetTSPropertyType(service, param.ParameterType, serviceDef);
 
-                converted.Add(new TSServiceMethodParam(param.Name.ToCamelCase(), tsProperty, isBodyParam, isFormObject));
+                bool isFormObject = param.HasAttribute<FromFormAttribute>() && tsType.TypeName != TSTypeConsts.FormData;
+                bool isBodyParam = param.HasAttribute<FromBodyAttribute>() || isFormObject || !param.ParameterType.Resolve().IsEnum && tsType.IsObject();
+
+                converted.Add(new TSServiceMethodParam(param.Name.ToCamelCase(), tsType, isBodyParam, isFormObject));
             }
 
             return converted;
@@ -183,7 +184,7 @@ namespace CSharp2TS.CLI.Generators.TSServices {
 
             foreach (var param in queryParameters) {
                 // Add null check for strings to avoid passing "null" in the query string
-                bool addNullCheck = param.Property.IsNullable || param.Property.TSType == RawTSType.String;
+                bool addNullCheck = param.Type.IsNullable || param.Type.TypeName == TSTypeConsts.String;
 
                 querySections.Add($"{param.Name}=${{{param.Name}{(addNullCheck ? " ?? ''" : string.Empty)}}}");
             }
@@ -195,16 +196,16 @@ namespace CSharp2TS.CLI.Generators.TSServices {
             return $"?{string.Join('&', querySections)}";
         }
 
-        private TSProperty GetReturnType(TSService service, TypeDefinition typeDef, MethodDefinition method) {
+        private TSType GetReturnType(TSService service, TypeDefinition serviceDef, MethodDefinition method) {
             if (method.TryGetAttribute<TSEndpointAttribute>(out CustomAttribute? attribute)) {
                 var customReturnType = attribute!.ConstructorArguments[0].Value as TypeReference;
 
                 if (customReturnType != null) {
-                    return GetTSPropertyType(service, typeDef, customReturnType, options.ServicesOutputFolder!);
+                    return GetTSPropertyType(service, customReturnType, serviceDef);
                 }
             }
 
-            return GetTSPropertyType(service, typeDef, method.ReturnType, options.ServicesOutputFolder!);
+            return GetTSPropertyType(service, method.ReturnType, serviceDef);
         }
 
         public static TSFileInfo GetFileInfo(TypeDefinition typeDef, Options options) {
@@ -225,31 +226,28 @@ namespace CSharp2TS.CLI.Generators.TSServices {
             return str;
         }
 
-        private TSProperty GetTSPropertyType(TSService service, TypeDefinition typeDef, TypeReference type, string currentFolder, bool isNullableProperty = false) {
-            return TSTypeMapper.GetTSPropertyType(type, options, isNullableProperty, (tsProperty) => {
-                if (typeDef != tsProperty.TypeRef) {
-                    TryAddTSImport(service, typeDef, tsProperty, currentFolder, options.ModelOutputFolder);
+        private TSType GetTSPropertyType(TSService service, TypeReference typeDef, TypeReference rootTypeDef) {
+            return TSTypeMapper2.GetTSPropertyType(typeDef, options, (fullName, typeName) => {
+                if (rootTypeDef.FullName != fullName) {
+                    TryAddTSImport(service, rootTypeDef, fullName, typeName);
                 }
 
                 return true;
             });
         }
 
-        private void TryAddTSImport(TSService service, TypeDefinition typeDef, TSProperty tsType, string? currentFolderRoot, string? targetFolderRoot) {
-            if (service.Imports.Any(i => i.Name == tsType.GetTypeName()) || !tsType.IsObject || string.IsNullOrEmpty(tsType.ObjectName)) {
+        private void TryAddTSImport(TSService service, TypeReference serviceRef, string targetFullName, string targetName) {
+            if (service.Imports.Any(i => i.FullName == targetFullName)) {
                 return;
             }
 
-            var currentType = files[typeDef.FullName];
-            string targetTypeName = tsType.TypeRef.Resolve().FullName;
-
-            if (!files.TryGetValue(targetTypeName, out var targetType)) {
+            if (!files.TryGetValue(targetFullName, out var targetType)) {
                 return;
             }
 
-            string importPath = currentType.GetImportPathTo(targetType);
+            string importPath = files[serviceRef.FullName].GetImportPathTo(targetType);
 
-            service.Imports.Add(new TSImport(tsType.TypeRef.FullName, tsType.GetTypeName(), importPath));
+            service.Imports.Add(new TSImport(targetFullName, targetName, importPath));
         }
 
         #region Build File
@@ -290,13 +288,13 @@ namespace CSharp2TS.CLI.Generators.TSServices {
 
             sb.Append("    ");
 
-            if (method.ReturnType.TSType != RawTSType.Void) {
+            if (method.ReturnType.TypeName != TSTypeConsts.Void) {
                 sb.Append("const response = ");
             }
 
             sb.Append($"await apiClient.instance.{method.HttpMethod}");
 
-            if (method.ReturnType.TSType != RawTSType.Void) {
+            if (method.ReturnType.TypeName != TSTypeConsts.Void) {
                 sb.Append($"<{method.ReturnType}>");
             }
 
@@ -317,7 +315,7 @@ namespace CSharp2TS.CLI.Generators.TSServices {
                 sb.AppendLine();
             }
 
-            if (method.ReturnType.TSType != RawTSType.Void) {
+            if (method.ReturnType.TypeName != TSTypeConsts.Void) {
                 sb.AppendLine($"    return response.data;");
             }
 
@@ -326,7 +324,7 @@ namespace CSharp2TS.CLI.Generators.TSServices {
 
         private void BuildMethodSignature(StringBuilder sb, TSServiceMethod method) {
             sb.Append($"  async {method.MethodName}(");
-            sb.Append(string.Join(", ", method.AllParams.Select(i => $"{i.Name}: {i.Property}")));
+            sb.Append(string.Join(", ", method.AllParams.Select(i => $"{i.Name}: {i.Type}")));
 
             if (method.IsBodyRawFile) {
                 sb.Append(", onUploadProgress?: (event: AxiosProgressEvent) => void");
@@ -362,7 +360,7 @@ namespace CSharp2TS.CLI.Generators.TSServices {
 
                 sb.AppendLine($"    const formData = new FormData();");
 
-                if (method.BodyParam!.Property.IsCollection) {
+                if (method.BodyParam!.Type.IsCollection) {
                     sb.AppendLine($"    for (let i = 0; i < {method.BodyParam.Name}.length; i++) {{");
                     sb.AppendLine($"      const f = {method.BodyParam.Name}[i];");
                     sb.AppendLine($"      formData.append('{method.BodyParam.Name}[' + i + ']', f);");
