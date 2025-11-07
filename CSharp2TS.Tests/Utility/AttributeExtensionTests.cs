@@ -65,8 +65,10 @@ namespace CSharp2TS.Tests.Utility {
             Assert.That(result, Is.False);
         }
 
+
+
         [Test]
-        public void TryGetAttribute_WithMatchingAttribute_ReturnsTruAndAttribute() {
+        public void TryGetAttribute_WithMatchingAttribute_ReturnsTrueAndAttribute() {
             // Arrange
             var attribute = new CustomAttribute(module.ImportReference(typeof(ObsoleteAttribute).GetConstructors().First()));
             typeDef.CustomAttributes.Add(attribute);
@@ -213,6 +215,26 @@ namespace CSharp2TS.Tests.Utility {
             // Assert
             Assert.That(result, Is.False);
             Assert.That(template, Is.EqualTo(string.Empty));
+        }
+
+        [Test]
+        public void GetAttribute_WithMatchingAttribute_ReturnsAttribute() {
+            // Arrange
+            var attribute = new CustomAttribute(module.ImportReference(typeof(ObsoleteAttribute).GetConstructors().First()));
+            typeDef.CustomAttributes.Add(attribute);
+
+            // Act
+            var result = typeDef.GetAttribute<ObsoleteAttribute>();
+
+            // Assert
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.AttributeType.FullName, Is.EqualTo(typeof(ObsoleteAttribute).FullName));
+        }
+
+        [Test]
+        public void GetAttribute_WithoutMatchingAttribute_ReturnsNull() {
+            // Arrange, Act & Assert
+            Assert.Throws<InvalidOperationException>(() => typeDef.GetAttribute<ObsoleteAttribute>());
         }
     }
 }
