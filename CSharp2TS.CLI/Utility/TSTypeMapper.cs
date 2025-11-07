@@ -7,8 +7,11 @@ using System.Text.Json;
 
 namespace CSharp2TS.CLI.Generators.Common {
     public static class TSTypeMapper {
-        private static readonly Type[] dateTypes = [typeof(DateTime), typeof(DateTimeOffset), typeof(DateOnly)];
-        private static readonly Type[] stringTypes = [typeof(char), typeof(string), typeof(Guid), .. dateTypes];
+        private static readonly Type[] stringTypes = [
+            typeof(char), typeof(string), typeof(Guid),
+            typeof(DateTime), typeof(DateTimeOffset), typeof(DateOnly),
+            typeof(TimeOnly)
+        ];
         private static readonly Type[] voidTypes = [typeof(void), typeof(Task), typeof(ActionResult), typeof(IActionResult)];
         private static readonly Type[] fileCollectionTypes = [typeof(FormFileCollection), typeof(IFormFileCollection)];
         private static readonly Type[] fileReturnTypes = [typeof(FileContentResult), typeof(FileStreamResult), typeof(FileResult)];
@@ -17,14 +20,14 @@ namespace CSharp2TS.CLI.Generators.Common {
         private static readonly Type[] unknownTypes = [typeof(JsonElement)];
         private static readonly Type[] numberTypes = [
             typeof(sbyte), typeof(byte), typeof(short),
-                typeof(ushort), typeof(int), typeof(uint),
-                typeof(long), typeof(ulong), typeof(float),
-                typeof(double), typeof(decimal)
+            typeof(ushort), typeof(int), typeof(uint),
+            typeof(long), typeof(ulong), typeof(float),
+            typeof(double), typeof(decimal)
         ];
 
-        public static TSProperty GetTSPropertyType(TypeReference type, Options options, bool isNullableProperty = false, Func<TSProperty, bool>? importHandler = null) {
-            RawTSType tsType;
-            List<TSProperty> genericArguments = new();
+        public static TSType GetTSPropertyType(TypeReference type, Options options, Func<string, string, bool>? importHandler = null) {
+            string tsType;
+            List<TSType> genericArguments = [];
 
             TryExtractFromGenericIfRequired(typeof(Task<>), ref type);
             TryExtractFromGenericIfRequired(typeof(ActionResult<>), ref type);
@@ -33,70 +36,52 @@ namespace CSharp2TS.CLI.Generators.Common {
 
             bool isDictionary = TryExtractFromDictionary(ref type);
             bool isCollection = TryExtractFromCollection(ref type, ref jaggedCount);
-
             bool isNullable = TryExtractFromGenericIfRequired(typeof(Nullable<>), ref type);
-            bool isObject = false;
-            string? objectName = null;
-            bool requiresImport = false;
 
             if (type.IsGenericInstance) {
                 var generic = (GenericInstanceType)type;
 
                 foreach (var arg in generic.GenericArguments) {
-                    genericArguments.Add(GetTSPropertyType(arg, options, false, importHandler));
+                    genericArguments.Add(GetTSPropertyType(arg, options, importHandler));
                 }
             }
 
             if (stringTypes.Any(i => SimpleTypeCheck(type, i))) {
-                tsType = RawTSType.String;
+                tsType = TSTypeConsts.String;
 
                 if (!isNullable && SimpleTypeCheck(type, typeof(string)) && options.UseNullableStrings) {
                     isNullable = true;
                 }
             } else if (numberTypes.Any(i => SimpleTypeCheck(type, i))) {
-                tsType = RawTSType.Number;
+                tsType = TSTypeConsts.Number;
             } else if (type.FullName == typeof(bool).FullName) {
-                tsType = RawTSType.Boolean;
+                tsType = TSTypeConsts.Boolean;
             } else if (voidTypes.Any(i => SimpleTypeCheck(type, i))) {
-                tsType = RawTSType.Void;
+                tsType = TSTypeConsts.Void;
             } else if (fileTypes.Any(i => SimpleTypeCheck(type, i))) {
-                isObject = true;
-                tsType = RawTSType.File;
+                tsType = TSTypeConsts.File;
 
                 if (fileCollectionTypes.Any(i => SimpleTypeCheck(type, i))) {
                     isCollection = true;
                     jaggedCount = 1;
                 }
             } else if (formDataTypes.Any(i => SimpleTypeCheck(type, i))) {
-                isObject = true;
-                tsType = RawTSType.FormData;
+                tsType = TSTypeConsts.FormData;
             } else if (unknownTypes.Any(i => SimpleTypeCheck(type, i))) {
-                tsType = RawTSType.Unknown;
+                tsType = TSTypeConsts.Unknown;
             } else {
-                isObject = true;
-                requiresImport = true;
-                tsType = RawTSType.Object;
-                objectName = GetCleanedTypeName(type);
+                tsType = GetCleanedTypeName(type) ?? TSTypeConsts.Object;
+                importHandler?.Invoke(type.Resolve()?.FullName ?? type.FullName, tsType);
             }
 
-            var generationInfo = new TSProperty {
-                TSType = tsType,
+            return new TSType {
+                TypeName = tsType,
                 GenericArguments = genericArguments,
                 IsCollection = isCollection,
                 JaggedCount = jaggedCount,
                 IsDictionary = isDictionary,
-                IsTypeNullable = isNullable,
-                IsPropertyNullable = isNullableProperty,
-                IsObject = isObject,
-                ObjectName = objectName,
-                TypeRef = type,
+                IsNullable = isNullable,
             };
-
-            if (requiresImport && importHandler != null) {
-                importHandler(generationInfo);
-            }
-
-            return generationInfo;
         }
 
         private static bool SimpleTypeCheck(TypeReference typeReference, Type type) {

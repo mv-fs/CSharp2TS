@@ -33,7 +33,7 @@ namespace CSharp2TS.CLI.Generators.TSInterfaces {
                     continue;
                 }
 
-                var tsType = TSTypeMapper2.GetTSPropertyType(property.PropertyType, options, (fullName, typeName) => {
+                var tsType = TSTypeMapper.GetTSPropertyType(property.PropertyType, options, (fullName, typeName) => {
                     if (typeDef.FullName != fullName) {
                         TryAddTSImport(tsInterface, rootTypeDef, fullName, typeName);
                     }

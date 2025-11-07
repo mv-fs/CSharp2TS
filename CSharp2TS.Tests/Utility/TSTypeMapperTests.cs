@@ -43,7 +43,7 @@ namespace CSharp2TS.Tests.Utility {
             var typeRef = GetTypeReference(stringType);
 
             // Act
-            var result = TSTypeMapper2.GetTSPropertyType(typeRef, options);
+            var result = TSTypeMapper.GetTSPropertyType(typeRef, options);
 
             // Assert
             Assert.That(result.TypeName, Is.EqualTo(TSTypeConsts.String));
@@ -61,7 +61,7 @@ namespace CSharp2TS.Tests.Utility {
             var optionsWithNullableStrings = new Options { UseNullableStrings = true };
 
             // Act
-            var result = TSTypeMapper2.GetTSPropertyType(typeRef, optionsWithNullableStrings);
+            var result = TSTypeMapper.GetTSPropertyType(typeRef, optionsWithNullableStrings);
 
             // Assert
             Assert.That(result.TypeName, Is.EqualTo(TSTypeConsts.String));
@@ -93,7 +93,7 @@ namespace CSharp2TS.Tests.Utility {
             var typeRef = GetTypeReference(numericType);
 
             // Act
-            var result = TSTypeMapper2.GetTSPropertyType(typeRef, options);
+            var result = TSTypeMapper.GetTSPropertyType(typeRef, options);
 
             // Assert
             Assert.That(result.TypeName, Is.EqualTo(TSTypeConsts.Number));
@@ -114,7 +114,7 @@ namespace CSharp2TS.Tests.Utility {
             var typeRef = GetTypeReference(typeof(bool));
 
             // Act
-            var result = TSTypeMapper2.GetTSPropertyType(typeRef, options);
+            var result = TSTypeMapper.GetTSPropertyType(typeRef, options);
 
             // Assert
             Assert.That(result.TypeName, Is.EqualTo(TSTypeConsts.Boolean));
@@ -137,7 +137,7 @@ namespace CSharp2TS.Tests.Utility {
             var typeRef = GetTypeReference(voidType);
 
             // Act
-            var result = TSTypeMapper2.GetTSPropertyType(typeRef, options);
+            var result = TSTypeMapper.GetTSPropertyType(typeRef, options);
 
             // Assert
             Assert.That(result.TypeName, Is.EqualTo(TSTypeConsts.Void));
@@ -161,7 +161,7 @@ namespace CSharp2TS.Tests.Utility {
             var typeRef = GetTypeReference(nullableType);
 
             // Act
-            var result = TSTypeMapper2.GetTSPropertyType(typeRef, options);
+            var result = TSTypeMapper.GetTSPropertyType(typeRef, options);
 
             // Assert
             Assert.That(result.TypeName, Is.EqualTo(expectedTypeName));
@@ -184,7 +184,7 @@ namespace CSharp2TS.Tests.Utility {
             var typeRef = GetTypeReference(arrayType);
 
             // Act
-            var result = TSTypeMapper2.GetTSPropertyType(typeRef, options);
+            var result = TSTypeMapper.GetTSPropertyType(typeRef, options);
 
             // Assert
             Assert.That(result.TypeName, Is.EqualTo(expectedTypeName));
@@ -204,7 +204,7 @@ namespace CSharp2TS.Tests.Utility {
             var typeRef = GetTypeReference(collectionType);
 
             // Act
-            var result = TSTypeMapper2.GetTSPropertyType(typeRef, options);
+            var result = TSTypeMapper.GetTSPropertyType(typeRef, options);
 
             // Assert
             Assert.That(result.TypeName, Is.EqualTo(expectedTypeName));
@@ -227,7 +227,7 @@ namespace CSharp2TS.Tests.Utility {
             var typeRef = GetTypeReference(dictionaryType);
 
             // Act
-            var result = TSTypeMapper2.GetTSPropertyType(typeRef, options);
+            var result = TSTypeMapper.GetTSPropertyType(typeRef, options);
 
             // Assert
             Assert.That(result.TypeName, Is.EqualTo(expectedValueTypeName));
@@ -244,7 +244,7 @@ namespace CSharp2TS.Tests.Utility {
             var typeRef = GetTypeReference(typeof(Dictionary<string, int[]>));
 
             // Act
-            var result = TSTypeMapper2.GetTSPropertyType(typeRef, options);
+            var result = TSTypeMapper.GetTSPropertyType(typeRef, options);
 
             // Assert
             Assert.That(result.TypeName, Is.EqualTo(TSTypeConsts.Number));
@@ -265,7 +265,7 @@ namespace CSharp2TS.Tests.Utility {
             var typeRef = module.ImportReference(typeof(Microsoft.AspNetCore.Http.IFormFile));
 
             // Act
-            var result = TSTypeMapper2.GetTSPropertyType(typeRef, options);
+            var result = TSTypeMapper.GetTSPropertyType(typeRef, options);
 
             // Assert
             Assert.That(result.TypeName, Is.EqualTo(TSTypeConsts.File));
@@ -282,7 +282,7 @@ namespace CSharp2TS.Tests.Utility {
             var typeRef = module.ImportReference(typeof(Microsoft.AspNetCore.Http.IFormFileCollection));
 
             // Act
-            var result = TSTypeMapper2.GetTSPropertyType(typeRef, options);
+            var result = TSTypeMapper.GetTSPropertyType(typeRef, options);
 
             // Assert
             Assert.That(result.TypeName, Is.EqualTo(TSTypeConsts.File));
@@ -303,7 +303,7 @@ namespace CSharp2TS.Tests.Utility {
             var typeRef = module.ImportReference(typeof(Microsoft.AspNetCore.Http.IFormCollection));
 
             // Act
-            var result = TSTypeMapper2.GetTSPropertyType(typeRef, options);
+            var result = TSTypeMapper.GetTSPropertyType(typeRef, options);
 
             // Assert
             Assert.That(result.TypeName, Is.EqualTo(TSTypeConsts.FormData));
@@ -324,7 +324,7 @@ namespace CSharp2TS.Tests.Utility {
             var typeRef = GetTypeReference(typeof(System.Text.Json.JsonElement));
 
             // Act
-            var result = TSTypeMapper2.GetTSPropertyType(typeRef, options);
+            var result = TSTypeMapper.GetTSPropertyType(typeRef, options);
 
             // Assert
             Assert.That(result.TypeName, Is.EqualTo(TSTypeConsts.Unknown));
@@ -347,7 +347,7 @@ namespace CSharp2TS.Tests.Utility {
             var typeRef = GetTypeReference(taskType);
 
             // Act
-            var result = TSTypeMapper2.GetTSPropertyType(typeRef, options);
+            var result = TSTypeMapper.GetTSPropertyType(typeRef, options);
 
             // Assert
             Assert.That(result.TypeName, Is.EqualTo(expectedTypeName));
@@ -368,7 +368,7 @@ namespace CSharp2TS.Tests.Utility {
             var typeRef = GetTypeReference(typeof(TSTypeMapperTests));
 
             // Act
-            var result = TSTypeMapper2.GetTSPropertyType(typeRef, options);
+            var result = TSTypeMapper.GetTSPropertyType(typeRef, options);
 
             // Assert
             Assert.That(result.TypeName, Is.EqualTo("TSTypeMapperTests"));
@@ -392,7 +392,7 @@ namespace CSharp2TS.Tests.Utility {
             bool importHandlerCalled = false;
 
             // Act
-            var result = TSTypeMapper2.GetTSPropertyType(typeRef, options, importHandler: (fullName, typeName) => {
+            var result = TSTypeMapper.GetTSPropertyType(typeRef, options, importHandler: (fullName, typeName) => {
                 importHandlerCalled = true;
                 return true;
             });

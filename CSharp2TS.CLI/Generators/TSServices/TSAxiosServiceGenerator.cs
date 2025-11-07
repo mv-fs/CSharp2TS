@@ -227,7 +227,7 @@ namespace CSharp2TS.CLI.Generators.TSServices {
         }
 
         private TSType GetTSPropertyType(TSService service, TypeReference typeDef, TypeReference rootTypeDef) {
-            return TSTypeMapper2.GetTSPropertyType(typeDef, options, (fullName, typeName) => {
+            return TSTypeMapper.GetTSPropertyType(typeDef, options, (fullName, typeName) => {
                 if (rootTypeDef.FullName != fullName) {
                     TryAddTSImport(service, rootTypeDef, fullName, typeName);
                 }
