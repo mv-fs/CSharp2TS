@@ -71,7 +71,6 @@ namespace CSharp2TS.CLI.Generators {
 
             GenerateApiClient();
 
-
             foreach (var assemblyPath in options.ServicesAssemblyPaths) {
                 using (var assembly = LoadAssembly(assemblyPath)) {
                     GatherModelImports(assembly.MainModule);
