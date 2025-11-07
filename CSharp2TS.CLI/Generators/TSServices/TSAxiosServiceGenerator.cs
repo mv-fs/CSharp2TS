@@ -50,7 +50,7 @@ namespace CSharp2TS.CLI.Generators.TSServices {
                 var queryParams = GetQueryParams(route, allParams);
                 TSServiceMethodParam? bodyParam = null;
 
-                if (httpMethodAttribute.HttpMethod != Consts.HttpGet) {
+                if (httpMethodAttribute.HttpMethod is Consts.HttpPost or Consts.HttpPut or Consts.HttpPatch) {
                     bodyParam = GetBodyParam(route, allParams);
                 }
 
@@ -86,7 +86,7 @@ namespace CSharp2TS.CLI.Generators.TSServices {
                 var tsType = GetTSPropertyType(service, param.ParameterType, serviceDef);
 
                 bool isFormObject = param.HasAttribute<FromFormAttribute>() && tsType.TypeName != TSTypeConsts.FormData;
-                bool isBodyParam = param.HasAttribute<FromBodyAttribute>() || isFormObject || !param.ParameterType.Resolve().IsEnum && tsType.IsObject();
+                bool isBodyParam = param.HasAttribute<FromBodyAttribute>() || isFormObject || (!tsType.IsEnum && tsType.IsObject());
                 bool isNullable = param.HasAttribute<TSNullableAttribute>();
 
                 converted.Add(new TSServiceMethodParam(param.Name.ToCamelCase(), tsType, isBodyParam, isFormObject, isNullable));

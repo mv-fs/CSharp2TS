@@ -51,6 +51,7 @@ namespace CSharp2TS.Tests.Utility {
             Assert.That(result.IsCollection, Is.False);
             Assert.That(result.JaggedCount, Is.Zero);
             Assert.That(result.IsDictionary, Is.False);
+            Assert.That(result.IsEnum, Is.False);
             Assert.That(result.GenericArguments.Count(), Is.Zero);
         }
 
@@ -69,6 +70,7 @@ namespace CSharp2TS.Tests.Utility {
             Assert.That(result.IsCollection, Is.False);
             Assert.That(result.JaggedCount, Is.Zero);
             Assert.That(result.IsDictionary, Is.False);
+            Assert.That(result.IsEnum, Is.False);
             Assert.That(result.GenericArguments.Count(), Is.Zero);
         }
 
@@ -101,6 +103,7 @@ namespace CSharp2TS.Tests.Utility {
             Assert.That(result.IsCollection, Is.False);
             Assert.That(result.JaggedCount, Is.Zero);
             Assert.That(result.IsDictionary, Is.False);
+            Assert.That(result.IsEnum, Is.False);
             Assert.That(result.GenericArguments.Count(), Is.Zero);
         }
 
@@ -122,6 +125,47 @@ namespace CSharp2TS.Tests.Utility {
             Assert.That(result.IsCollection, Is.False);
             Assert.That(result.JaggedCount, Is.Zero);
             Assert.That(result.IsDictionary, Is.False);
+            Assert.That(result.IsEnum, Is.False);
+            Assert.That(result.GenericArguments.Count(), Is.Zero);
+        }
+
+        #endregion
+
+        #region Enum Types
+
+        [Test]
+        public void GetTSPropertyType_EnumType_ReturnsEnumType() {
+            // Arrange
+            var typeRef = GetTypeReference(typeof(DayOfWeek));
+
+            // Act
+            var result = TSTypeMapper.GetTSPropertyType(typeRef, options);
+
+            // Assert
+            Assert.That(result.TypeName, Is.EqualTo(nameof(DayOfWeek)));
+            Assert.That(result.IsNullable, Is.False);
+            Assert.That(result.IsCollection, Is.False);
+            Assert.That(result.JaggedCount, Is.Zero);
+            Assert.That(result.IsDictionary, Is.False);
+            Assert.That(result.IsEnum, Is.True);
+            Assert.That(result.GenericArguments.Count(), Is.Zero);
+        }
+
+        [Test]
+        public void GetTSPropertyType_NullableEnum_ReturnsNullableEnumType() {
+            // Arrange
+            var typeRef = GetTypeReference(typeof(DayOfWeek?));
+
+            // Act
+            var result = TSTypeMapper.GetTSPropertyType(typeRef, options);
+
+            // Assert
+            Assert.That(result.TypeName, Is.EqualTo("DayOfWeek"));
+            Assert.That(result.IsNullable, Is.True);
+            Assert.That(result.IsCollection, Is.False);
+            Assert.That(result.JaggedCount, Is.Zero);
+            Assert.That(result.IsDictionary, Is.False);
+            Assert.That(result.IsEnum, Is.True);
             Assert.That(result.GenericArguments.Count(), Is.Zero);
         }
 
@@ -145,6 +189,7 @@ namespace CSharp2TS.Tests.Utility {
             Assert.That(result.IsCollection, Is.False);
             Assert.That(result.JaggedCount, Is.Zero);
             Assert.That(result.IsDictionary, Is.False);
+            Assert.That(result.IsEnum, Is.False);
             Assert.That(result.GenericArguments.Count(), Is.Zero);
         }
 
@@ -169,6 +214,7 @@ namespace CSharp2TS.Tests.Utility {
             Assert.That(result.IsCollection, Is.False);
             Assert.That(result.JaggedCount, Is.Zero);
             Assert.That(result.IsDictionary, Is.False);
+            Assert.That(result.IsEnum, Is.False);
             Assert.That(result.GenericArguments.Count(), Is.Zero);
         }
 
@@ -192,6 +238,7 @@ namespace CSharp2TS.Tests.Utility {
             Assert.That(result.IsCollection, Is.True);
             Assert.That(result.JaggedCount, Is.EqualTo(expectedJaggedCount));
             Assert.That(result.IsDictionary, Is.False);
+            Assert.That(result.IsEnum, Is.False);
             Assert.That(result.GenericArguments.Count(), Is.Zero);
         }
 
@@ -212,6 +259,7 @@ namespace CSharp2TS.Tests.Utility {
             Assert.That(result.IsCollection, Is.True);
             Assert.That(result.JaggedCount, Is.EqualTo(1));
             Assert.That(result.IsDictionary, Is.False);
+            Assert.That(result.IsEnum, Is.False);
             Assert.That(result.GenericArguments.Count(), Is.Zero);
         }
 
@@ -235,6 +283,7 @@ namespace CSharp2TS.Tests.Utility {
             Assert.That(result.IsCollection, Is.False);
             Assert.That(result.JaggedCount, Is.Zero);
             Assert.That(result.IsDictionary, Is.True);
+            Assert.That(result.IsEnum, Is.False);
             Assert.That(result.GenericArguments.Count(), Is.Zero);
         }
 
@@ -252,6 +301,7 @@ namespace CSharp2TS.Tests.Utility {
             Assert.That(result.IsCollection, Is.True);
             Assert.That(result.JaggedCount, Is.EqualTo(1));
             Assert.That(result.IsDictionary, Is.True);
+            Assert.That(result.IsEnum, Is.False);
             Assert.That(result.GenericArguments.Count(), Is.Zero);
         }
 
@@ -273,6 +323,7 @@ namespace CSharp2TS.Tests.Utility {
             Assert.That(result.IsCollection, Is.False);
             Assert.That(result.JaggedCount, Is.Zero);
             Assert.That(result.IsDictionary, Is.False);
+            Assert.That(result.IsEnum, Is.False);
             Assert.That(result.GenericArguments.Count(), Is.Zero);
         }
 
@@ -290,6 +341,7 @@ namespace CSharp2TS.Tests.Utility {
             Assert.That(result.IsCollection, Is.True);
             Assert.That(result.JaggedCount, Is.EqualTo(1));
             Assert.That(result.IsDictionary, Is.False);
+            Assert.That(result.IsEnum, Is.False);
             Assert.That(result.GenericArguments.Count(), Is.Zero);
         }
 
@@ -311,6 +363,7 @@ namespace CSharp2TS.Tests.Utility {
             Assert.That(result.IsCollection, Is.False);
             Assert.That(result.JaggedCount, Is.Zero);
             Assert.That(result.IsDictionary, Is.False);
+            Assert.That(result.IsEnum, Is.False);
             Assert.That(result.GenericArguments.Count(), Is.Zero);
         }
 
@@ -332,6 +385,7 @@ namespace CSharp2TS.Tests.Utility {
             Assert.That(result.IsCollection, Is.False);
             Assert.That(result.JaggedCount, Is.Zero);
             Assert.That(result.IsDictionary, Is.False);
+            Assert.That(result.IsEnum, Is.False);
             Assert.That(result.GenericArguments.Count(), Is.Zero);
         }
 
@@ -355,6 +409,7 @@ namespace CSharp2TS.Tests.Utility {
             Assert.That(result.IsCollection, Is.False);
             Assert.That(result.JaggedCount, Is.Zero);
             Assert.That(result.IsDictionary, Is.False);
+            Assert.That(result.IsEnum, Is.False);
             Assert.That(result.GenericArguments.Count(), Is.Zero);
         }
 
@@ -376,6 +431,7 @@ namespace CSharp2TS.Tests.Utility {
             Assert.That(result.IsCollection, Is.False);
             Assert.That(result.JaggedCount, Is.Zero);
             Assert.That(result.IsDictionary, Is.False);
+            Assert.That(result.IsEnum, Is.False);
             Assert.That(result.GenericArguments.Count(), Is.Zero);
         }
 

@@ -33,7 +33,7 @@ namespace CSharp2TS.CLI.Generators.Common {
             TryExtractFromGenericIfRequired(typeof(ActionResult<>), ref type);
 
             int jaggedCount = 0;
-
+            bool isEnum = false;
             bool isDictionary = TryExtractFromDictionary(ref type);
             bool isCollection = TryExtractFromCollection(ref type, ref jaggedCount);
             bool isNullable = TryExtractFromGenericIfRequired(typeof(Nullable<>), ref type);
@@ -72,6 +72,8 @@ namespace CSharp2TS.CLI.Generators.Common {
             } else {
                 tsType = GetCleanedTypeName(type) ?? TSTypeConsts.Object;
                 importHandler?.Invoke(type.Resolve()?.FullName ?? type.FullName, tsType);
+
+                isEnum = type.Resolve()?.IsEnum ?? false;
             }
 
             return new TSType {
@@ -81,6 +83,7 @@ namespace CSharp2TS.CLI.Generators.Common {
                 JaggedCount = jaggedCount,
                 IsDictionary = isDictionary,
                 IsNullable = isNullable,
+                IsEnum = isEnum,
             };
         }
 

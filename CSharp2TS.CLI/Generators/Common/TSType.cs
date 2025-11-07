@@ -9,6 +9,7 @@ namespace CSharp2TS.CLI.Generators.Common {
         public bool IsNullable { get; init; }
         public bool IsDictionary { get; init; }
         public bool IsCollection { get; init; }
+        public bool IsEnum { get; init; }
         public int JaggedCount { get; init; }
         public IList<TSType> GenericArguments { get; init; } = [];
 
