@@ -16,6 +16,28 @@ namespace CSharp2TS.CLI.Generators.Common {
             return !new[] { TSTypeConsts.String, TSTypeConsts.Number, TSTypeConsts.Boolean, TSTypeConsts.Void }.Contains(TypeName);
         }
 
+        public string GetDefaultValue() {
+            if (IsDictionary) {
+                return "{}";
+            }
+
+            if (IsCollection) {
+                return "[]";
+            }
+
+            if (IsNullable) {
+                return "null";
+            }
+
+            return TypeName switch {
+                TSTypeConsts.String => "''",
+                TSTypeConsts.Number => "0",
+                TSTypeConsts.Boolean => "false",
+                TSTypeConsts.Object => "new Object()",
+                _ => "{} as " + TypeName + (GenericArguments.Count > 0 ? "<" + string.Join(", ", GenericArguments.Select(i => i.ToString())) + ">" : ""),
+            };
+        }
+
         public override string ToString() {
             string tsType = TypeName;
 

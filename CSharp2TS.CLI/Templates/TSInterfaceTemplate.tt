@@ -13,14 +13,29 @@ import <#= item.Name #> from '<#= item.Path #>';
 <# } #>
 <# } #>
 
-interface <#= TSInterface.Name #><# if (HasGenericParameters) {#><<#= string.Join(", ", TSInterface.GenericParameters) #>><# } #> {
+interface <#= TSInterface.Name #><#= GenericString #> {
 <# foreach (var item in TSInterface.Properties) { #>
   <#= item #>;
 <# } #>
 }
 
 export default <#= TSInterface.Name #>;
+<# if (GenerateClass) { #>
+
+export class <#= TSInterface.Name #>Stub<#= GenericString #> implements <#= TSInterface.Name #><#= GenericString #> {
+<# foreach (var item in TSInterface.Properties) { #>
+  <#= item #> = <#= item.GetDefaultValue() #>;
+<# } #>
+
+  constructor(data?: Partial<<#= TSInterface.Name #>>) {
+    if (data) {
+      Object.assign(this, data);
+    }
+  }
+}
+<# } #>
 <#+
 public TSInterface TSInterface { get; set; }
-public bool HasGenericParameters => TSInterface.GenericParameters.Count > 0;
+public bool GenerateClass { get; set; }
+public string GenericString => TSInterface.GenericParameters.Count > 0 ? $"<{string.Join(", ", TSInterface.GenericParameters)}>" : string.Empty;
 #>

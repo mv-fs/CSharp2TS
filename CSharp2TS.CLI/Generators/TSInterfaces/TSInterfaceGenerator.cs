@@ -17,6 +17,7 @@ namespace CSharp2TS.CLI.Generators.TSInterfaces {
 
         public string Generate(TypeDefinition typeDef) {
             TSInterface tsInterface = new(NameUtility.GetName(typeDef));
+            tsInterface.GenerateClass = typeDef.GetAttribute<TSInterfaceAttribute>().GetAttributeValue<bool>(nameof(TSInterfaceAttribute.GenerateClass));
 
             ParseTypes(tsInterface, typeDef, typeDef);
 
@@ -78,6 +79,7 @@ namespace CSharp2TS.CLI.Generators.TSInterfaces {
         private string BuildTsFile(TSInterface tsInterface) {
             return new TSInterfaceTemplate {
                 TSInterface = tsInterface,
+                GenerateClass = tsInterface.GenerateClass,
             }.TransformText();
         }
     }

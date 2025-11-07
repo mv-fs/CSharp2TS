@@ -4,7 +4,7 @@
         /// <summary>
         /// Generate a method to return an object implementing the interface with all properties set to default values.
         /// </summary>
-        public bool GenerateStub { get; set; }
+        public bool GenerateClass { get; set; }
 
         public TSInterfaceAttribute() : base(null) {
         }

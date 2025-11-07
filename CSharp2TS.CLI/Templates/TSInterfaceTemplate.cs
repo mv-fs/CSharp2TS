@@ -87,21 +87,7 @@ namespace CSharp2TS.CLI.Templates
             #line hidden
             
             #line 16 "C:\Working\CSharp2TS\CSharp2TS.CLI\Templates\TSInterfaceTemplate.tt"
- if (HasGenericParameters) {
-            
-            #line default
-            #line hidden
-            this.Write("<");
-            
-            #line 16 "C:\Working\CSharp2TS\CSharp2TS.CLI\Templates\TSInterfaceTemplate.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(string.Join(", ", TSInterface.GenericParameters)));
-            
-            #line default
-            #line hidden
-            this.Write(">");
-            
-            #line 16 "C:\Working\CSharp2TS\CSharp2TS.CLI\Templates\TSInterfaceTemplate.tt"
- } 
+            this.Write(this.ToStringHelper.ToStringWithCulture(GenericString));
             
             #line default
             #line hidden
@@ -134,13 +120,89 @@ namespace CSharp2TS.CLI.Templates
             #line default
             #line hidden
             this.Write(";\r\n");
+            
+            #line 23 "C:\Working\CSharp2TS\CSharp2TS.CLI\Templates\TSInterfaceTemplate.tt"
+ if (GenerateClass) { 
+            
+            #line default
+            #line hidden
+            this.Write("\r\nexport class ");
+            
+            #line 25 "C:\Working\CSharp2TS\CSharp2TS.CLI\Templates\TSInterfaceTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(TSInterface.Name));
+            
+            #line default
+            #line hidden
+            this.Write("Stub");
+            
+            #line 25 "C:\Working\CSharp2TS\CSharp2TS.CLI\Templates\TSInterfaceTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(GenericString));
+            
+            #line default
+            #line hidden
+            this.Write(" implements ");
+            
+            #line 25 "C:\Working\CSharp2TS\CSharp2TS.CLI\Templates\TSInterfaceTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(TSInterface.Name));
+            
+            #line default
+            #line hidden
+            
+            #line 25 "C:\Working\CSharp2TS\CSharp2TS.CLI\Templates\TSInterfaceTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(GenericString));
+            
+            #line default
+            #line hidden
+            this.Write(" {\r\n");
+            
+            #line 26 "C:\Working\CSharp2TS\CSharp2TS.CLI\Templates\TSInterfaceTemplate.tt"
+ foreach (var item in TSInterface.Properties) { 
+            
+            #line default
+            #line hidden
+            this.Write("  ");
+            
+            #line 27 "C:\Working\CSharp2TS\CSharp2TS.CLI\Templates\TSInterfaceTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(item));
+            
+            #line default
+            #line hidden
+            this.Write(" = ");
+            
+            #line 27 "C:\Working\CSharp2TS\CSharp2TS.CLI\Templates\TSInterfaceTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(item.GetDefaultValue()));
+            
+            #line default
+            #line hidden
+            this.Write(";\r\n");
+            
+            #line 28 "C:\Working\CSharp2TS\CSharp2TS.CLI\Templates\TSInterfaceTemplate.tt"
+ } 
+            
+            #line default
+            #line hidden
+            this.Write("\r\n  constructor(data?: Partial<");
+            
+            #line 30 "C:\Working\CSharp2TS\CSharp2TS.CLI\Templates\TSInterfaceTemplate.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(TSInterface.Name));
+            
+            #line default
+            #line hidden
+            this.Write(">) {\r\n    if (data) {\r\n      Object.assign(this, data);\r\n    }\r\n  }\r\n}\r\n");
+            
+            #line 36 "C:\Working\CSharp2TS\CSharp2TS.CLI\Templates\TSInterfaceTemplate.tt"
+ } 
+            
+            #line default
+            #line hidden
             return this.GenerationEnvironment.ToString();
         }
         
-        #line 23 "C:\Working\CSharp2TS\CSharp2TS.CLI\Templates\TSInterfaceTemplate.tt"
+        #line 37 "C:\Working\CSharp2TS\CSharp2TS.CLI\Templates\TSInterfaceTemplate.tt"
 
 public TSInterface TSInterface { get; set; }
-public bool HasGenericParameters => TSInterface.GenericParameters.Count > 0;
+public bool GenerateClass { get; set; }
+public string GenericString => TSInterface.GenericParameters.Count > 0 ? $"<{string.Join(", ", TSInterface.GenericParameters)}>" : string.Empty;
 
         
         #line default

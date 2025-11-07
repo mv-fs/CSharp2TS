@@ -12,6 +12,12 @@ namespace CSharp2TS.CLI.Utility {
             return entity.HasAttribute(typeof(T));
         }
 
+        public static CustomAttribute GetAttribute<T>(this ICustomAttributeProvider entity) {
+            return entity.CustomAttributes
+                .Where(a => a.AttributeType.FullName == typeof(T).FullName)
+                .First();
+        }
+
         public static bool TryGetAttribute<T>(this ICustomAttributeProvider entity, out CustomAttribute attribute) {
             var customAttribute = entity.CustomAttributes
                 .Where(a => a.AttributeType.FullName == typeof(T).FullName)
