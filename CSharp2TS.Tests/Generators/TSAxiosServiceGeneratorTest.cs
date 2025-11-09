@@ -60,36 +60,12 @@ namespace CSharp2TS.Tests.Generators {
             module?.Dispose();
         }
 
-        [Test]
-        public void ServiceGenerator_ActionResult_TestController() {
-            var typeRef = module.ImportReference(typeof(ActionResult_TestController));
-
-            string result = generator.Generate(typeRef.Resolve());
-
-            TestMatchesFile("Expected/TestService.ts", result);
-        }
-
-        [Test]
-        public void ServiceGenerator_IActionResult_TestController() {
-            var typeRef = module.ImportReference(typeof(IActionResult_TestController));
-
-            string result = generator.Generate(typeRef.Resolve());
-
-            TestMatchesFile("Expected/TestService.ts", result);
-        }
-
-        [Test]
-        public void ServiceGenerator_AsyncActionResult_TestController() {
-            var typeRef = module.ImportReference(typeof(AsyncActionResult_TestController));
-
-            string result = generator.Generate(typeRef.Resolve());
-
-            TestMatchesFile("Expected/TestService.ts", result);
-        }
-
-        [Test]
-        public void ServiceGenerator_AsyncIActionResult_TestController() {
-            var typeRef = module.ImportReference(typeof(AsyncIActionResult_TestController));
+        [TestCase(typeof(IActionResult_TestController))]
+        [TestCase(typeof(ActionResult_TestController))]
+        [TestCase(typeof(AsyncIActionResult_TestController))]
+        [TestCase(typeof(AsyncActionResult_TestController))]
+        public void ServiceGenerator_AsyncIActionResult_TestController(Type controllerType) {
+            var typeRef = module.ImportReference(controllerType);
 
             string result = generator.Generate(typeRef.Resolve());
 
@@ -139,6 +115,15 @@ namespace CSharp2TS.Tests.Generators {
             string result = generator.Generate(typeRef.Resolve());
 
             TestMatchesFile("Expected/FormService.ts", result);
+        }
+
+        [Test]
+        public void GetFileInfo_StripsControllerAndAddsService() {
+            var type = typeof(IActionResult_TestController);
+
+            Assert.That(files[type.FullName!].TypeName, Is.EqualTo("IActionResult_TestService"));
+            Assert.That(files[type.FullName!].Folder, Is.EqualTo(options.ServicesOutputFolder));
+            Assert.That(files[type.FullName!].FileNameWithoutExtension, Is.EqualTo("IActionResult_TestService"));
         }
 
         private void AddModelType(Type type) {
