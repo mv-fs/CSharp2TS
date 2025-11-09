@@ -56,6 +56,7 @@ interface TestClass {
   enumInFolder: TestEnumInFolder;
   formFile: File;
   iFormFile: File;
+  json: unknown;
   intEnumerable: number[];
   tSNullableIntEnumerable: number[] | null;
   intCollection: number[];

@@ -1,9 +1,10 @@
 ﻿using CSharp2TS.CLI.Generators.TSEnums;
+using CSharp2TS.Tests.Generators;
 using CSharp2TS.Tests.Stubs.Enums;
 using Mono.Cecil;
 
 namespace CSharp2TS.Tests.Enums {
-    public class TSEnumGeneratorTest {
+    public class TSEnumGeneratorTest : GeneratorTestBase {
         private ModuleDefinition module = null!;
         private TSEnumGenerator generator = null!;
 
@@ -45,20 +46,6 @@ namespace CSharp2TS.Tests.Enums {
             string result = generator.Generate(typeRef.Resolve());
 
             TestMatchesFile("Expected/TestEnumDescriptionsAndItemArray.ts", result);
-        }
-
-        private void TestMatchesFile(string expectedFile, string actualContents) {
-            if (!File.Exists(expectedFile)) {
-                Assert.Fail("Expected file does not exist.");
-            }
-
-            string expected = File.ReadAllText(expectedFile);
-
-            // Skip commented line
-            actualContents = string.Join(Environment.NewLine, actualContents.Split(Environment.NewLine).Skip(1));
-            expected = string.Join(Environment.NewLine, expected.Split(Environment.NewLine).Skip(1));
-
-            Assert.That(actualContents, Is.EqualTo(expected));
         }
     }
 }

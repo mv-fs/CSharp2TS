@@ -85,11 +85,5 @@ namespace CSharp2TS.Tests {
             // Assert
             Assert.That(generated, Is.EqualTo(expected));
         }
-
-        [Test]
-        [TestCase("TestJsonElement.ts", "Expected\\TestJsonElement.ts")]
-        public void Generation_TestJsonElement(string generatedFile, string expectedFile) {
-            TestFilesMatch(generatedFile, expectedFile);
-        }
     }
 }
