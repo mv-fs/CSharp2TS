@@ -26,7 +26,7 @@ namespace CSharp2TS.CLI.Utility {
             };
         }
 
-        private static string? GetCustomFolderLocation(TypeDefinition typeDef) {
+        public static string? GetCustomFolderLocation(TypeDefinition typeDef) {
             var attribute = typeDef.CustomAttributes
                 .Where(a => a.AttributeType.Resolve().BaseType.FullName == typeof(TSAttributeBase).FullName)
                 .FirstOrDefault();

@@ -1,9 +1,9 @@
 // this line is ignored in tests
 
 import { apiClient } from './apiClient';
-import TestClass from '../TestClass';
-import TestClass2 from '../TestClass2';
-import GenericClass1 from '../GenericClass1';
+import TestClass from '../Models/TestClass';
+import TestClass2 from '../Models/TestClass2';
+import GenericClass1 from '../Models/GenericClass1';
 
 export default {
   async get(): Promise<string> {

@@ -27,10 +27,10 @@ namespace CSharp2TS.CLI.Generators.TSServices {
         }
 
         private void ParseTypes(TSService service, TypeDefinition serviceDef) {
-            var methods = serviceDef.Methods;
-            service.ApiClientImportPath = GetApiClientImport(serviceDef);
+            service.ApiClientImportPath = FolderUtility.GetRelativeImportPath(
+                options.ServicesOutputFolder!, files[serviceDef.FullName].Folder);
 
-            foreach (var method in methods) {
+            foreach (var method in serviceDef.Methods) {
                 if (method == null || method.IsSpecialName || method.HasAttribute<TSExcludeAttribute>()) {
                     continue;
                 }
@@ -93,11 +93,6 @@ namespace CSharp2TS.CLI.Generators.TSServices {
             }
 
             return converted;
-        }
-
-        private string GetApiClientImport(TypeDefinition typeDef) {
-            string currentFolder = Path.Combine(options.ServicesOutputFolder!, files[typeDef.FullName].Folder);
-            return FolderUtility.GetRelativeImportPath(currentFolder, options.ServicesOutputFolder!);
         }
 
         private TSServiceMethodParam[] GetRouteParams(string template, List<TSServiceMethodParam> allParams) {
@@ -209,24 +204,6 @@ namespace CSharp2TS.CLI.Generators.TSServices {
             return GetTSPropertyType(service, method.ReturnType, serviceDef);
         }
 
-        public static TSFileInfo GetFileInfo(TypeDefinition typeDef, Options options) {
-            string typeName = StripController(typeDef.Name) + newAppendedFileName;
-
-            return new TSFileInfo {
-                Folder = options.ServicesOutputFolder!,
-                TypeName = typeName,
-                FileNameWithoutExtension = typeName.ApplyCasing(options),
-            };
-        }
-
-        private static string StripController(string str) {
-            if (str.EndsWith(oldAppendedFileName, StringComparison.OrdinalIgnoreCase)) {
-                str = str[..^oldAppendedFileName.Length];
-            }
-
-            return str;
-        }
-
         private TSType GetTSPropertyType(TSService service, TypeReference typeDef, TypeReference rootTypeDef) {
             return TSTypeMapper.GetTSPropertyType(typeDef, options, (fullName, typeName) => {
                 if (rootTypeDef.FullName != fullName) {
@@ -249,6 +226,27 @@ namespace CSharp2TS.CLI.Generators.TSServices {
             string importPath = files[serviceRef.FullName].GetImportPathTo(targetType);
 
             service.Imports.Add(new TSImport(targetFullName, targetName, importPath));
+        }
+
+        public static TSFileInfo GetFileInfo(TypeDefinition typeDef, Options options) {
+            string typeName = StripController(NameUtility.GetName(typeDef)) + newAppendedFileName;
+            string? customFolder = NameUtility.GetCustomFolderLocation(typeDef);
+            string folder = string.IsNullOrWhiteSpace(customFolder) ? options.ServicesOutputFolder! :
+                $"{options.ServicesOutputFolder!}/{customFolder}";
+
+            return new TSFileInfo {
+                TypeName = typeName,
+                Folder = folder,
+                FileNameWithoutExtension = typeName.ApplyCasing(options),
+            };
+        }
+
+        private static string StripController(string str) {
+            if (str.EndsWith(oldAppendedFileName, StringComparison.OrdinalIgnoreCase)) {
+                str = str[..^oldAppendedFileName.Length];
+            }
+
+            return str;
         }
 
         #region Build File
