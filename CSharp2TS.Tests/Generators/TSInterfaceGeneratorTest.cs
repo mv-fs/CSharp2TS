@@ -38,6 +38,7 @@ namespace CSharp2TS.Tests.Generators {
             AddType(typeof(TestClassInFolder));
             AddType(typeof(TestEnum));
             AddType(typeof(TestEnumInFolder));
+            AddType(typeof(TestClassWithStub));
 
             generator = new TSInterfaceGenerator(files, options);
         }
@@ -90,6 +91,15 @@ namespace CSharp2TS.Tests.Generators {
             string result = generator.Generate(typeRef.Resolve());
 
             TestMatchesFile("Expected/GenericClass2.ts", result);
+        }
+
+        [Test]
+        public void InterfaceGenerator_StubGeneration() {
+            var typeRef = module.ImportReference(typeof(TestClassWithStub));
+
+            string result = generator.Generate(typeRef.Resolve());
+
+            TestMatchesFile("Expected/TestClassWithStub.ts", result);
         }
 
         private void AddType(Type type) {

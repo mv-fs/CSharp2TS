@@ -47,6 +47,8 @@ namespace CSharp2TS.Tests.Stubs.Models {
         public DateTimeOffset? NullableDateTimeOffsetProperty { get; set; }
         public DateOnly DateOnlyProperty { get; set; }
         public DateOnly? NullableDateOnlyProperty { get; set; }
+        public TimeOnly TimeOnlyProperty { get; set; }
+        public TimeOnly? NullableTimeOnlyProperty { get; set; }
 
         public TestClass ThisClass { get; set; }
         public TestClass2 Class2 { get; set; }

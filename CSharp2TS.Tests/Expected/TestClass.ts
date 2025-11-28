@@ -44,6 +44,8 @@ interface TestClass {
   nullableDateTimeOffsetProperty: string | null;
   dateOnlyProperty: string;
   nullableDateOnlyProperty: string | null;
+  timeOnlyProperty: string;
+  nullableTimeOnlyProperty: string | null;
   thisClass: TestClass;
   class2: TestClass2;
   classInFolder: TestClassInFolder;
