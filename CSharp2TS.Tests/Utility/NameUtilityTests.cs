@@ -19,14 +19,18 @@ namespace CSharp2TS.Tests.Utility {
             module.Types.Clear();
         }
 
-        [TestCase(nameof(Object), "Object")]
+        private TypeDefinition AddType(Type type) {
+            return module.ImportReference(type).Resolve();
+        }
+
+        [TestCase(typeof(object), "Object")]
         // Built in objects with generic params
-        [TestCase(nameof(List<int>), "List")]
-        [TestCase(nameof(Dictionary<int, int>), "Dictionary")]
-        [TestCase(nameof(Tuple<int, int, string>), "Tuple")]
-        public void GetName_WithoutTSAttribute_ReturnsTypeName(string typeName, string expected) {
+        [TestCase(typeof(List<int>), "List")]
+        [TestCase(typeof(Dictionary<int, int>), "Dictionary")]
+        [TestCase(typeof(Tuple<int, int, string>), "Tuple")]
+        public void GetName_WithoutTSAttribute_ReturnsTypeName(Type type, string expected) {
             // Arrange
-            var typeDef = CreateTypeDefinition(typeName);
+            var typeDef = AddType(type);
 
             // Act
             var result = NameUtility.GetName(typeDef);
@@ -36,36 +40,34 @@ namespace CSharp2TS.Tests.Utility {
         }
 
         [Test]
-        public void GetName_WithTSAttributeAndCustomName_ReturnsCustomName() {
+        public void GetName_WithTSAttributeButNoCustomName_ReturnsOriginalName() {
             // Arrange
-            var typeDef = CreateTypeDefinition("OriginalName");
-            AddTSAttribute(typeDef, "CustomTypeName");
+            var typeDef = AddType(typeof(DummyClass));
 
             // Act
             var result = NameUtility.GetName(typeDef);
 
             // Assert
-            Assert.That(result, Is.EqualTo("CustomTypeName"));
+            Assert.That(result, Is.EqualTo(nameof(DummyClass)));
         }
 
         [Test]
-        public void GetName_WithTSAttributeButNoCustomName_ReturnsOriginalName() {
+        public void GetName_WithTSAttributeAndCustomName_ReturnsCustomName() {
             // Arrange
-            var typeDef = CreateTypeDefinition("OriginalName`1");
-            AddTSAttribute(typeDef, null);
+            var typeDef = AddType(typeof(DummyClass2));
 
             // Act
             var result = NameUtility.GetName(typeDef);
 
             // Assert
-            Assert.That(result, Is.EqualTo("OriginalName"));
+            Assert.That(result, Is.EqualTo("CustomName"));
         }
 
-        [TestCase(Consts.PascalCase, "MyType", "MyType")]
-        [TestCase(Consts.CamelCase, "MyType", "myType")]
-        public void GetFileDetails_WithDifferentCasing_ReturnsCorrectFileInfo(string casing, string typeName, string expectedFileName) {
+        [TestCase(Consts.PascalCase, typeof(DummyClass), "DummyClass")]
+        [TestCase(Consts.CamelCase, typeof(DummyClass), "dummyClass")]
+        public void GetFileDetails_WithDifferentCasing_ReturnsCorrectFileInfo(string casing, Type type, string expectedFileName) {
             // Arrange
-            var typeDef = CreateTypeDefinition(typeName);
+            var typeDef = AddType(type);
             var options = new Options { FileNameCasingStyle = casing };
             var basePath = "/base/path";
 
@@ -73,7 +75,7 @@ namespace CSharp2TS.Tests.Utility {
             var result = NameUtility.GetFileDetails(typeDef, options, basePath);
 
             // Assert
-            Assert.That(result.TypeName, Is.EqualTo(typeName));
+            Assert.That(result.TypeName, Is.EqualTo(type.Name));
             Assert.That(result.Folder, Is.EqualTo(basePath));
             Assert.That(result.FileNameWithoutExtension, Is.EqualTo(expectedFileName));
         }
@@ -81,8 +83,7 @@ namespace CSharp2TS.Tests.Utility {
         [Test]
         public void GetFileDetails_WithCustomFolder_ReturnsCorrectPath() {
             // Arrange
-            var typeDef = CreateTypeDefinition("TestType");
-            AddTSAttributeWithFolder(typeDef, null, "custom/folder");
+            var typeDef = AddType(typeof(DummyClass3));
             var options = new Options { FileNameCasingStyle = Consts.PascalCase };
             var basePath = "/base/path";
 
@@ -91,13 +92,13 @@ namespace CSharp2TS.Tests.Utility {
 
             // Assert
             Assert.That(result.Folder, Is.EqualTo($"{basePath}/custom/folder"));
-            Assert.That(result.TypeName, Is.EqualTo("TestType"));
+            Assert.That(result.TypeName, Is.EqualTo(nameof(DummyClass3)));
         }
 
         [Test]
         public void GetFileDetails_WithoutCustomFolder_UsesBasePath() {
             // Arrange
-            var typeDef = CreateTypeDefinition("TestType");
+            var typeDef = AddType(typeof(DummyClass));
             var options = new Options { FileNameCasingStyle = Consts.PascalCase };
             var basePath = "/base/path";
 
@@ -106,15 +107,14 @@ namespace CSharp2TS.Tests.Utility {
 
             // Assert
             Assert.That(result.Folder, Is.EqualTo(basePath));
-            Assert.That(result.TypeName, Is.EqualTo("TestType"));
-            Assert.That(result.FileNameWithoutExtension, Is.EqualTo("TestType"));
+            Assert.That(result.TypeName, Is.EqualTo(nameof(DummyClass)));
+            Assert.That(result.FileNameWithoutExtension, Is.EqualTo(nameof(DummyClass)));
         }
 
         [Test]
         public void GetFileDetails_WithCustomNameAndFolder_ReturnsCorrectInfo() {
             // Arrange
-            var typeDef = CreateTypeDefinition("OriginalType");
-            AddTSAttributeWithFolder(typeDef, "CustomType", "models");
+            var typeDef = AddType(typeof(DummyClass4));
             var options = new Options { FileNameCasingStyle = Consts.PascalCase };
             var basePath = "/output";
 
@@ -122,85 +122,45 @@ namespace CSharp2TS.Tests.Utility {
             var result = NameUtility.GetFileDetails(typeDef, options, basePath);
 
             // Assert
-            Assert.That(result.TypeName, Is.EqualTo("CustomType"));
-            Assert.That(result.Folder, Is.EqualTo($"{basePath}/models"));
-            Assert.That(result.FileNameWithoutExtension, Is.EqualTo("CustomType"));
+            Assert.That(result.TypeName, Is.EqualTo("CustomName"));
+            Assert.That(result.Folder, Is.EqualTo($"{basePath}/custom/folder"));
+            Assert.That(result.FileNameWithoutExtension, Is.EqualTo("CustomName"));
         }
 
-        [TestCase("", "/base", "/base")]
-        [TestCase("subfolder", "/base", "/base/subfolder")]
-        [TestCase("nested/deep/folder", "/base", "/base/nested/deep/folder")]
-        public void GetFileDetails_WithVariousFolderPaths_CombinesCorrectly(string customFolder, string basePath, string expectedPath) {
+        [Test]
+        public void GetCustomFolderLocation_WithoutFolder() {
             // Arrange
-            var typeDef = CreateTypeDefinition("TestType");
-            if (!string.IsNullOrEmpty(customFolder)) {
-                AddTSAttributeWithFolder(typeDef, null, customFolder);
-            }
-
-            var options = new Options { FileNameCasingStyle = "pascal" };
+            var typeDef = AddType(typeof(DummyClass));
 
             // Act
-            var result = NameUtility.GetFileDetails(typeDef, options, basePath);
+            var result = NameUtility.GetCustomFolderLocation(typeDef);
 
             // Assert
-            Assert.That(result.Folder, Is.EqualTo(expectedPath));
+            Assert.That(result, Is.Null);
         }
 
-        private TypeDefinition CreateTypeDefinition(string name) {
-            var typeDef = new TypeDefinition("TestNamespace", name, TypeAttributes.Public | TypeAttributes.Class);
-            module.Types.Add(typeDef);
-            return typeDef;
+        [Test]
+        public void GetCustomFolderLocation_WithFolder() {
+            // Arrange
+            var typeDef = AddType(typeof(DummyClass3));
+
+            // Act
+            var result = NameUtility.GetCustomFolderLocation(typeDef);
+
+            // Assert
+            Assert.That(result, Is.EqualTo("custom/folder"));
         }
 
-        private void AddTSAttribute(TypeDefinition typeDef, string? customName) {
-            var attrType = CreateTSAttributeType();
-            var constructor = new MethodDefinition(".ctor", MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName, module.TypeSystem.Void);
+        [TSInterface]
+        private class DummyClass { }
 
-            if (customName != null) {
-                constructor.Parameters.Add(new ParameterDefinition(module.TypeSystem.String));
-            }
+        [TSInterface("CustomName")]
+        private class DummyClass2 { }
 
-            attrType.Methods.Add(constructor);
+        [TSInterface(Folder = "custom/folder")]
+        private class DummyClass3 { }
 
-            var attribute = new CustomAttribute(constructor);
-            if (customName != null) {
-                attribute.ConstructorArguments.Add(new CustomAttributeArgument(module.TypeSystem.String, customName));
-            }
-
-            typeDef.CustomAttributes.Add(attribute);
-        }
-
-        private void AddTSAttributeWithFolder(TypeDefinition typeDef, string? customName, string folder) {
-            var attrType = CreateTSAttributeType();
-            var constructor = new MethodDefinition(".ctor", MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName, module.TypeSystem.Void);
-
-            if (customName != null) {
-                constructor.Parameters.Add(new ParameterDefinition(module.TypeSystem.String));
-            }
-
-            attrType.Methods.Add(constructor);
-
-            var folderProperty = new PropertyDefinition("Folder", PropertyAttributes.None, module.TypeSystem.String);
-            attrType.Properties.Add(folderProperty);
-
-            var attribute = new CustomAttribute(constructor);
-            if (customName != null) {
-                attribute.ConstructorArguments.Add(new CustomAttributeArgument(module.TypeSystem.String, customName));
-            }
-
-            attribute.Properties.Add(new CustomAttributeNamedArgument("Folder", new CustomAttributeArgument(module.TypeSystem.String, folder)));
-
-            typeDef.CustomAttributes.Add(attribute);
-        }
-
-        private TypeDefinition CreateTSAttributeType() {
-            var baseAttrType = new TypeDefinition(typeof(TSAttributeBase).Namespace, nameof(TSAttributeBase), TypeAttributes.Public | TypeAttributes.Abstract | TypeAttributes.Class);
-            module.Types.Add(baseAttrType);
-
-            var attrType = new TypeDefinition("CSharp2TS.Core.Attributes", "TSAttribute", TypeAttributes.Public | TypeAttributes.Class, baseAttrType);
-            module.Types.Add(attrType);
-
-            return attrType;
-        }
+        [TSInterface("CustomName", Folder = "custom/folder")]
+        private class DummyClass4 { }
     }
 }
