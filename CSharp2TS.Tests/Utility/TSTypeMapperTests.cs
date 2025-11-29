@@ -53,6 +53,7 @@ namespace CSharp2TS.Tests.Utility {
             Assert.That(result.IsDictionary, Is.False);
             Assert.That(result.IsEnum, Is.False);
             Assert.That(result.GenericArguments.Count(), Is.Zero);
+            Assert.That(result.GetDefaultValue(), Is.EqualTo("''"));
         }
 
         [Test]
@@ -72,6 +73,7 @@ namespace CSharp2TS.Tests.Utility {
             Assert.That(result.IsDictionary, Is.False);
             Assert.That(result.IsEnum, Is.False);
             Assert.That(result.GenericArguments.Count(), Is.Zero);
+            Assert.That(result.GetDefaultValue(), Is.EqualTo("null"));
         }
 
         #endregion
@@ -105,6 +107,7 @@ namespace CSharp2TS.Tests.Utility {
             Assert.That(result.IsDictionary, Is.False);
             Assert.That(result.IsEnum, Is.False);
             Assert.That(result.GenericArguments.Count(), Is.Zero);
+            Assert.That(result.GetDefaultValue(), Is.EqualTo("0"));
         }
 
         #endregion
@@ -127,6 +130,7 @@ namespace CSharp2TS.Tests.Utility {
             Assert.That(result.IsDictionary, Is.False);
             Assert.That(result.IsEnum, Is.False);
             Assert.That(result.GenericArguments.Count(), Is.Zero);
+            Assert.That(result.GetDefaultValue(), Is.EqualTo("false"));
         }
 
         #endregion
@@ -149,6 +153,7 @@ namespace CSharp2TS.Tests.Utility {
             Assert.That(result.IsDictionary, Is.False);
             Assert.That(result.IsEnum, Is.True);
             Assert.That(result.GenericArguments.Count(), Is.Zero);
+            //Assert.That(result.GetDefaultValue(), Is.EqualTo());
         }
 
         [Test]
@@ -167,6 +172,7 @@ namespace CSharp2TS.Tests.Utility {
             Assert.That(result.IsDictionary, Is.False);
             Assert.That(result.IsEnum, Is.True);
             Assert.That(result.GenericArguments.Count(), Is.Zero);
+            Assert.That(result.GetDefaultValue(), Is.EqualTo("null"));
         }
 
         #endregion
@@ -190,7 +196,6 @@ namespace CSharp2TS.Tests.Utility {
             Assert.That(result.JaggedCount, Is.Zero);
             Assert.That(result.IsDictionary, Is.False);
             Assert.That(result.IsEnum, Is.False);
-            Assert.That(result.GenericArguments.Count(), Is.Zero);
         }
 
         #endregion
@@ -216,6 +221,7 @@ namespace CSharp2TS.Tests.Utility {
             Assert.That(result.IsDictionary, Is.False);
             Assert.That(result.IsEnum, Is.False);
             Assert.That(result.GenericArguments.Count(), Is.Zero);
+            Assert.That(result.GetDefaultValue(), Is.EqualTo("null"));
         }
 
         #endregion
@@ -240,6 +246,7 @@ namespace CSharp2TS.Tests.Utility {
             Assert.That(result.IsDictionary, Is.False);
             Assert.That(result.IsEnum, Is.False);
             Assert.That(result.GenericArguments.Count(), Is.Zero);
+            Assert.That(result.GetDefaultValue(), Is.EqualTo("[]"));
         }
 
         [Test]
@@ -261,6 +268,7 @@ namespace CSharp2TS.Tests.Utility {
             Assert.That(result.IsDictionary, Is.False);
             Assert.That(result.IsEnum, Is.False);
             Assert.That(result.GenericArguments.Count(), Is.Zero);
+            Assert.That(result.GetDefaultValue(), Is.EqualTo("[]"));
         }
 
         #endregion
@@ -285,6 +293,7 @@ namespace CSharp2TS.Tests.Utility {
             Assert.That(result.IsDictionary, Is.True);
             Assert.That(result.IsEnum, Is.False);
             Assert.That(result.GenericArguments.Count(), Is.Zero);
+            Assert.That(result.GetDefaultValue(), Is.EqualTo("{}"));
         }
 
         [Test]
@@ -303,6 +312,7 @@ namespace CSharp2TS.Tests.Utility {
             Assert.That(result.IsDictionary, Is.True);
             Assert.That(result.IsEnum, Is.False);
             Assert.That(result.GenericArguments.Count(), Is.Zero);
+            Assert.That(result.GetDefaultValue(), Is.EqualTo("{}"));
         }
 
         #endregion
@@ -325,6 +335,7 @@ namespace CSharp2TS.Tests.Utility {
             Assert.That(result.IsDictionary, Is.False);
             Assert.That(result.IsEnum, Is.False);
             Assert.That(result.GenericArguments.Count(), Is.Zero);
+            Assert.That(result.GetDefaultValue(), Is.EqualTo("{} as File"));
         }
 
         [Test]
@@ -343,6 +354,7 @@ namespace CSharp2TS.Tests.Utility {
             Assert.That(result.IsDictionary, Is.False);
             Assert.That(result.IsEnum, Is.False);
             Assert.That(result.GenericArguments.Count(), Is.Zero);
+            Assert.That(result.GetDefaultValue(), Is.EqualTo("[]"));
         }
 
         #endregion
@@ -365,6 +377,7 @@ namespace CSharp2TS.Tests.Utility {
             Assert.That(result.IsDictionary, Is.False);
             Assert.That(result.IsEnum, Is.False);
             Assert.That(result.GenericArguments.Count(), Is.Zero);
+            Assert.That(result.GetDefaultValue(), Is.EqualTo("{} as FormData"));
         }
 
         #endregion
@@ -387,6 +400,7 @@ namespace CSharp2TS.Tests.Utility {
             Assert.That(result.IsDictionary, Is.False);
             Assert.That(result.IsEnum, Is.False);
             Assert.That(result.GenericArguments.Count(), Is.Zero);
+            Assert.That(result.GetDefaultValue(), Is.EqualTo("{} as unknown"));
         }
 
         #endregion
@@ -433,6 +447,7 @@ namespace CSharp2TS.Tests.Utility {
             Assert.That(result.IsDictionary, Is.False);
             Assert.That(result.IsEnum, Is.False);
             Assert.That(result.GenericArguments.Count(), Is.Zero);
+            Assert.That(result.GetDefaultValue(), Is.EqualTo("{} as TSTypeMapperTests"));
         }
 
         #endregion
