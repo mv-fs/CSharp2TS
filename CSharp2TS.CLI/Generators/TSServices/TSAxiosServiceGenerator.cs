@@ -305,7 +305,7 @@ namespace CSharp2TS.CLI.Generators.TSServices {
                 } else if (method.BodyParam != null) {
                     sb.Append($", {method.BodyParam.Name}");
                 } else {
-                    sb.Append(", null");
+                    sb.Append(", undefined");
                 }
             }
 
