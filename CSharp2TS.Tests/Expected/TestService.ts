@@ -51,6 +51,11 @@ export default {
     return response.data;
   },
 
+  async createNoBody(): Promise<TestClass> {
+    const response = await apiClient.instance.post<TestClass>(`api/Test`);
+    return response.data;
+  },
+
   async createFromBody(model: string): Promise<string> {
     const response = await apiClient.instance.post<string>(`api/Test`, model);
     return response.data;

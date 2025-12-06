@@ -299,19 +299,20 @@ namespace CSharp2TS.CLI.Generators.TSServices {
 
             sb.Append($"(`{method.Route}{(method.QueryString.Length > 0 ? method.QueryString : string.Empty)}`");
 
+            bool shouldAddFormHeader = useFormData || method.IsBodyFormData || method.IsOtherFormObject;
+            bool shouldAddOptions = method.IsResponseFile || shouldAddFormHeader || method.IsBodyRawFile;
+
             if (method.HttpMethod is Consts.HttpPost or Consts.HttpPut or Consts.HttpPatch) {
                 if (useFormData) {
                     sb.Append(", formData");
                 } else if (method.BodyParam != null) {
                     sb.Append($", {method.BodyParam.Name}");
-                } else {
+                } else if (shouldAddOptions) {
                     sb.Append(", undefined");
                 }
             }
 
-            bool shouldAddFormHeader = useFormData || method.IsBodyFormData || method.IsOtherFormObject;
-
-            if (method.IsResponseFile || shouldAddFormHeader || method.IsBodyRawFile) {
+            if (shouldAddOptions) {
                 BuildOptions(sb, method, shouldAddFormHeader);
             } else {
                 sb.Append(");");

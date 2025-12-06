@@ -59,6 +59,11 @@ namespace CSharp2TS.Tests.Stubs.Controllers {
         }
 
         [HttpPost]
+        public TestClass CreateNoBody() {
+            throw new NotImplementedException();
+        }
+
+        [HttpPost]
         public ActionResult<string> CreateFromBody([FromBody] string model) {
             throw new NotImplementedException();
         }
