@@ -42,10 +42,7 @@ namespace CSharp2TS.Tests.Generators {
             AddModelType(typeof(TestEnumInFolder));
 
             // Add controller types to files dictionary
-            AddServiceType(typeof(ActionResult_TestController));
-            AddServiceType(typeof(IActionResult_TestController));
-            AddServiceType(typeof(AsyncActionResult_TestController));
-            AddServiceType(typeof(AsyncIActionResult_TestController));
+            AddServiceType(typeof(TestController));
             AddServiceType(typeof(CustomRouteController));
             AddServiceType(typeof(NoRouteController));
             AddServiceType(typeof(TemplatedRouteController));
@@ -60,12 +57,9 @@ namespace CSharp2TS.Tests.Generators {
             module?.Dispose();
         }
 
-        [TestCase(typeof(IActionResult_TestController))]
-        [TestCase(typeof(ActionResult_TestController))]
-        [TestCase(typeof(AsyncIActionResult_TestController))]
-        [TestCase(typeof(AsyncActionResult_TestController))]
-        public void ServiceGenerator_AsyncIActionResult_TestController(Type controllerType) {
-            var typeRef = module.ImportReference(controllerType);
+        [Test]
+        public void ServiceGenerator_TestController() {
+            var typeRef = module.ImportReference(typeof(TestController));
 
             string result = generator.Generate(typeRef.Resolve());
 
@@ -119,11 +113,11 @@ namespace CSharp2TS.Tests.Generators {
 
         [Test]
         public void GetFileInfo_StripsControllerAndAddsService() {
-            var type = typeof(IActionResult_TestController);
+            var type = typeof(TestController);
 
-            Assert.That(files[type.FullName!].TypeName, Is.EqualTo("IActionResult_TestService"));
+            Assert.That(files[type.FullName!].TypeName, Is.EqualTo("TestService"));
             Assert.That(files[type.FullName!].Folder, Is.EqualTo(options.ServicesOutputFolder));
-            Assert.That(files[type.FullName!].FileNameWithoutExtension, Is.EqualTo("IActionResult_TestService"));
+            Assert.That(files[type.FullName!].FileNameWithoutExtension, Is.EqualTo("TestService"));
         }
 
         private void AddModelType(Type type) {

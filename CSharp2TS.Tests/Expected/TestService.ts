@@ -11,6 +11,21 @@ export default {
     return response.data;
   },
 
+  async actionResultGet(): Promise<string> {
+    const response = await apiClient.instance.get<string>(`api/Test`);
+    return response.data;
+  },
+
+  async actionResultGetAsync(): Promise<string> {
+    const response = await apiClient.instance.get<string>(`api/Test`);
+    return response.data;
+  },
+
+  async tSEndpointOverride(): Promise<string> {
+    const response = await apiClient.instance.get<string>(`api/Test`);
+    return response.data;
+  },
+
   async get2(id: number): Promise<TestClass> {
     const response = await apiClient.instance.get<TestClass>(`api/Test/${id}`);
     return response.data;
