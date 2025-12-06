@@ -1,16 +1,16 @@
 ﻿#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 using CSharp2TS.Core.Attributes;
+using CSharp2TS.Tests.Stubs.Enums;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
 using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
+using System.Text.Json;
 
 namespace CSharp2TS.Tests.Stubs.Models {
     [TSInterface]
     public class TestClass {
-        // Primitives
         public int IntProperty { get; set; }
-        [TSNullable]
         public int? NullableIntProperty { get; set; }
         public long LongProperty { get; set; }
         public long? NullableLongProperty { get; set; }
@@ -47,6 +47,8 @@ namespace CSharp2TS.Tests.Stubs.Models {
         public DateTimeOffset? NullableDateTimeOffsetProperty { get; set; }
         public DateOnly DateOnlyProperty { get; set; }
         public DateOnly? NullableDateOnlyProperty { get; set; }
+        public TimeOnly TimeOnlyProperty { get; set; }
+        public TimeOnly? NullableTimeOnlyProperty { get; set; }
 
         public TestClass ThisClass { get; set; }
         public TestClass2 Class2 { get; set; }
@@ -60,8 +62,9 @@ namespace CSharp2TS.Tests.Stubs.Models {
         public TestEnumInFolder EnumInFolder { get; set; }
         public FormFile FormFile { get; set; }
         public IFormFile IFormFile { get; set; }
+        public JsonElement Json { get; set; }
 
-        // Enumerable types
+        // Array / Enumerable types
         public IEnumerable<int> IntEnumerable { get; set; }
         [TSNullable]
         public IEnumerable<int> TSNullableIntEnumerable { get; set; }
@@ -94,7 +97,7 @@ namespace CSharp2TS.Tests.Stubs.Models {
         public IFormFileCollection IFormFileCollection { get; set; }
 
 
-        // NullableEnumerable types
+        // Nullable Array / Enumerable types
         public IEnumerable<int?> NullableIntEnumerable { get; set; }
         [TSNullable]
         public IEnumerable<int?> TSNullableNullableIntEnumerable { get; set; }

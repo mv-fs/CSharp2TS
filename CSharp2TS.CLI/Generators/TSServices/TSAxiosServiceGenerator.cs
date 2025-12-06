@@ -1,0 +1,390 @@
+﻿using CSharp2TS.CLI.Generators.Common;
+using CSharp2TS.CLI.Generators.Entities;
+using CSharp2TS.CLI.Utility;
+using CSharp2TS.Core.Attributes;
+using Microsoft.AspNetCore.Mvc;
+using Mono.Cecil;
+using System.Text;
+
+namespace CSharp2TS.CLI.Generators.TSServices {
+    public class TSAxiosServiceGenerator {
+        private const string oldAppendedFileName = "Controller";
+        private const string newAppendedFileName = "Service";
+        private readonly Dictionary<string, TSFileInfo> files;
+        private readonly Options options;
+
+        public TSAxiosServiceGenerator(Options options, Dictionary<string, TSFileInfo> files) {
+            this.options = options;
+            this.files = files;
+        }
+
+        public string Generate(TypeDefinition serviceDef) {
+            TSService service = new(NameUtility.GetName(serviceDef));
+
+            ParseTypes(service, serviceDef);
+
+            return BuildTsFile(service);
+        }
+
+        private void ParseTypes(TSService service, TypeDefinition serviceDef) {
+            service.ApiClientImportPath = FolderUtility.GetRelativeImportPath(
+                options.ServicesOutputFolder!, files[serviceDef.FullName].Folder);
+
+            foreach (var method in serviceDef.Methods) {
+                if (method == null || method.IsSpecialName || method.HasAttribute<TSExcludeAttribute>()) {
+                    continue;
+                }
+
+                var httpMethodAttribute = GetHttpAttribute(method);
+
+                if (httpMethodAttribute == null) {
+                    continue;
+                }
+
+                string name = GetMethodName(service, method.Name.ToCamelCase(), null);
+                string route = GetRoute(serviceDef, httpMethodAttribute);
+                var returnType = GetReturnType(service, serviceDef, method);
+
+                var allParams = ParseParams(service, serviceDef, method.Parameters.ToArray());
+                var routeParams = GetRouteParams(route, allParams);
+                var queryParams = GetQueryParams(route, allParams);
+                TSServiceMethodParam? bodyParam = null;
+
+                if (httpMethodAttribute.HttpMethod is Consts.HttpPost or Consts.HttpPut or Consts.HttpPatch) {
+                    bodyParam = GetBodyParam(route, allParams);
+                }
+
+                string queryString = GetQueryString(route, queryParams);
+
+                service.Methods.Add(new TSServiceMethod(
+                    name,
+                    httpMethodAttribute.HttpMethod,
+                    route,
+                    returnType,
+                    routeParams,
+                    queryParams,
+                    bodyParam,
+                    queryString));
+            }
+
+            service.ImportFormFactory = service.Methods.Any(i => i.IsBodyFormObject);
+            service.ImportProgressEvent = service.Methods.Any(i => i.IsBodyRawFile);
+        }
+
+        private string GetMethodName(TSService service, string name, int? count) {
+            if (service.Methods.Any(i => i.MethodName.Equals(name + count, StringComparison.OrdinalIgnoreCase))) {
+                return GetMethodName(service, name, count == null ? 2 : count + 1);
+            }
+
+            return name + count;
+        }
+
+        private List<TSServiceMethodParam> ParseParams(TSService service, TypeDefinition serviceDef, ParameterDefinition[] parameterDefinitions) {
+            List<TSServiceMethodParam> converted = [];
+
+            foreach (ParameterDefinition param in parameterDefinitions) {
+                var tsType = GetTSPropertyType(service, param.ParameterType, serviceDef);
+
+                bool isFormObject = param.HasAttribute<FromFormAttribute>() && tsType.TypeName != TSTypeConsts.FormData;
+                bool isBodyParam = param.HasAttribute<FromBodyAttribute>() || isFormObject || (!tsType.IsEnum && tsType.IsObject());
+                bool isNullable = param.HasAttribute<TSNullableAttribute>();
+
+                converted.Add(new TSServiceMethodParam(param.Name.ToCamelCase(), tsType, isBodyParam, isFormObject, isNullable));
+            }
+
+            return converted;
+        }
+
+        private TSServiceMethodParam[] GetRouteParams(string template, List<TSServiceMethodParam> allParams) {
+            if (string.IsNullOrWhiteSpace(template)) {
+                return [];
+            }
+
+            var routeParams = allParams
+                .Where(i => template.Contains($"{{{i.Name}}}"))
+                .Where(row => !row.IsBodyParam)
+                .ToArray();
+
+            foreach (var item in routeParams) {
+                allParams.Remove(item);
+            }
+
+            return routeParams;
+        }
+
+        private TSServiceMethodParam[] GetQueryParams(string template, List<TSServiceMethodParam> allParams) {
+            if (string.IsNullOrWhiteSpace(template)) {
+                return [];
+            }
+
+            var queryParams = allParams
+                .Where(row => !row.IsBodyParam)
+                .ToArray();
+
+            foreach (var item in queryParams) {
+                allParams.Remove(item);
+            }
+
+            return queryParams;
+        }
+
+        private TSServiceMethodParam? GetBodyParam(string template, List<TSServiceMethodParam> allParams) {
+            return allParams
+                .Where(row => row.IsBodyParam)
+                .FirstOrDefault();
+        }
+
+        private HttpAttribute? GetHttpAttribute(MethodDefinition methodDefinition) {
+            string template;
+
+            if (methodDefinition.TryGetHttpAttributeTemplate<HttpGetAttribute>(out template)) {
+                return new HttpAttribute(Consts.HttpGet, template);
+            } else if (methodDefinition.TryGetHttpAttributeTemplate<HttpPostAttribute>(out template)) {
+                return new HttpAttribute(Consts.HttpPost, template);
+            } else if (methodDefinition.TryGetHttpAttributeTemplate<HttpPutAttribute>(out template)) {
+                return new HttpAttribute(Consts.HttpPut, template);
+            } else if (methodDefinition.TryGetHttpAttributeTemplate<HttpDeleteAttribute>(out template)) {
+                return new HttpAttribute(Consts.HttpDelete, template);
+            } else if (methodDefinition.TryGetHttpAttributeTemplate<HttpPatchAttribute>(out template)) {
+                return new HttpAttribute(Consts.HttpPatch, template);
+            }
+
+            return null;
+        }
+
+        private string GetRoute(TypeDefinition typeDef, HttpAttribute httpMethodAttribute) {
+            string controllerRoute;
+            string controllerName = StripController(typeDef.Name).ToLowerInvariant();
+
+            if (typeDef.TryGetAttribute<RouteAttribute>(out CustomAttribute? attribute)) {
+                string? controllerTemplate = (string)attribute!.ConstructorArguments[0].Value;
+                controllerRoute = controllerTemplate.Replace("[controller]", controllerName, StringComparison.OrdinalIgnoreCase);
+            } else {
+                controllerRoute = controllerName;
+            }
+
+            if (!string.IsNullOrWhiteSpace(httpMethodAttribute.Template)) {
+                var template = RouteUtility.GetCleanRouteConstraints(httpMethodAttribute.Template);
+                controllerRoute += "/" + template;
+            }
+
+            return controllerRoute;
+        }
+
+        private string GetQueryString(string template, TSServiceMethodParam[] queryParameters) {
+            if (string.IsNullOrEmpty(template)) {
+                return string.Empty;
+            }
+
+            IList<string> querySections = [];
+
+            foreach (var param in queryParameters) {
+                // Add null check for strings to avoid passing "null" in the query string
+                bool addNullCheck = param.Type.IsNullable || param.Type.TypeName == TSTypeConsts.String;
+
+                querySections.Add($"{param.Name}=${{{param.Name}{(addNullCheck ? " ?? ''" : string.Empty)}}}");
+            }
+
+            if (querySections.Count == 0) {
+                return string.Empty;
+            }
+
+            return $"?{string.Join('&', querySections)}";
+        }
+
+        private TSType GetReturnType(TSService service, TypeDefinition serviceDef, MethodDefinition method) {
+            if (method.TryGetAttribute<TSEndpointAttribute>(out CustomAttribute? attribute)) {
+                var customReturnType = attribute!.ConstructorArguments[0].Value as TypeReference;
+
+                if (customReturnType != null) {
+                    return GetTSPropertyType(service, customReturnType, serviceDef);
+                }
+            }
+
+            return GetTSPropertyType(service, method.ReturnType, serviceDef);
+        }
+
+        private TSType GetTSPropertyType(TSService service, TypeReference typeDef, TypeReference rootTypeDef) {
+            return TSTypeMapper.GetTSPropertyType(typeDef, options, (fullName, typeName) => {
+                if (rootTypeDef.FullName != fullName) {
+                    TryAddTSImport(service, rootTypeDef, fullName, typeName);
+                }
+
+                return true;
+            });
+        }
+
+        private void TryAddTSImport(TSService service, TypeReference serviceRef, string targetFullName, string targetName) {
+            if (service.Imports.Any(i => i.FullName == targetFullName)) {
+                return;
+            }
+
+            if (!files.TryGetValue(targetFullName, out var targetType)) {
+                return;
+            }
+
+            string importPath = files[serviceRef.FullName].GetImportPathTo(targetType);
+
+            service.Imports.Add(new TSImport(targetFullName, targetName, importPath));
+        }
+
+        public static TSFileInfo GetFileInfo(TypeDefinition typeDef, Options options) {
+            string typeName = StripController(NameUtility.GetName(typeDef)) + newAppendedFileName;
+            string? customFolder = NameUtility.GetCustomFolderLocation(typeDef);
+            string folder = string.IsNullOrWhiteSpace(customFolder) ? options.ServicesOutputFolder! :
+                $"{options.ServicesOutputFolder!}/{customFolder}";
+
+            return new TSFileInfo {
+                TypeName = typeName,
+                Folder = folder,
+                FileNameWithoutExtension = typeName.ApplyCasing(options),
+            };
+        }
+
+        private static string StripController(string str) {
+            if (str.EndsWith(oldAppendedFileName, StringComparison.OrdinalIgnoreCase)) {
+                str = str[..^oldAppendedFileName.Length];
+            }
+
+            return str;
+        }
+
+        #region Build File
+
+        private string BuildTsFile(TSService service) {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine($"// Auto-generated from {service.Name}.cs");
+            sb.AppendLine();
+            sb.AppendLine($"import {{ apiClient{(service.ImportFormFactory ? ", FormDataFactory" : string.Empty)} }} from '{service.ApiClientImportPath}apiClient';");
+
+            if (service.ImportProgressEvent) {
+                sb.AppendLine("import type { AxiosProgressEvent } from 'axios';");
+            }
+
+            foreach (var import in service.Imports) {
+                sb.AppendLine($"import {import.Name} from '{import.Path}';");
+            }
+
+            sb.AppendLine();
+            sb.AppendLine("export default {");
+
+            for (int i = 0; i < service.Methods.Count; i++) {
+                BuildMethod(sb, service.Methods[i]);
+
+                if (i != service.Methods.Count - 1) {
+                    sb.AppendLine();
+                }
+            }
+
+            sb.AppendLine("};");
+
+            return sb.ToString();
+        }
+
+        private void BuildMethod(StringBuilder sb, TSServiceMethod method) {
+            BuildMethodSignature(sb, method);
+            bool useFormData = BuildFormDataCreation(sb, method);
+
+            sb.Append("    ");
+
+            if (method.ReturnType.TypeName != TSTypeConsts.Void) {
+                sb.Append("const response = ");
+            }
+
+            sb.Append($"await apiClient.instance.{method.HttpMethod}");
+
+            if (method.ReturnType.TypeName != TSTypeConsts.Void) {
+                sb.Append($"<{method.ReturnType}>");
+            }
+
+            sb.Append($"(`{method.Route}{(method.QueryString.Length > 0 ? method.QueryString : string.Empty)}`");
+
+            bool shouldAddFormHeader = useFormData || method.IsBodyFormData || method.IsOtherFormObject;
+            bool shouldAddOptions = method.IsResponseFile || shouldAddFormHeader || method.IsBodyRawFile;
+
+            if (method.HttpMethod is Consts.HttpPost or Consts.HttpPut or Consts.HttpPatch) {
+                if (useFormData) {
+                    sb.Append(", formData");
+                } else if (method.BodyParam != null) {
+                    sb.Append($", {method.BodyParam.Name}");
+                } else if (shouldAddOptions) {
+                    sb.Append(", undefined");
+                }
+            }
+
+            if (shouldAddOptions) {
+                BuildOptions(sb, method, shouldAddFormHeader);
+            } else {
+                sb.Append(");");
+                sb.AppendLine();
+            }
+
+            if (method.ReturnType.TypeName != TSTypeConsts.Void) {
+                sb.AppendLine($"    return response.data;");
+            }
+
+            sb.AppendLine($"  }},");
+        }
+
+        private void BuildMethodSignature(StringBuilder sb, TSServiceMethod method) {
+            sb.Append($"  async {method.MethodName}(");
+            sb.Append(string.Join(", ", method.AllParams.Select(i => i.ToString())));
+
+            if (method.IsBodyRawFile) {
+                sb.Append(", onUploadProgress?: (event: AxiosProgressEvent) => void");
+            }
+
+            sb.AppendLine($"): Promise<{method.ReturnType}> {{");
+        }
+
+        private void BuildOptions(StringBuilder sb, TSServiceMethod method, bool shouldAddFormHeader) {
+            sb.Append(", {");
+            sb.AppendLine();
+
+            if (method.IsResponseFile) {
+                sb.AppendLine("      responseType: 'blob',");
+            }
+
+            if (shouldAddFormHeader) {
+                sb.AppendLine("      headers: { 'Content-Type': 'multipart/form-data' },");
+            }
+
+            if (method.IsBodyRawFile) {
+                sb.AppendLine("      onUploadProgress,");
+            }
+
+            sb.AppendLine("    });");
+        }
+
+        private bool BuildFormDataCreation(StringBuilder sb, TSServiceMethod method) {
+            bool useFormData = false;
+
+            if (method.IsBodyRawFile) {
+                useFormData = true;
+
+                sb.AppendLine($"    const formData = new FormData();");
+
+                if (method.BodyParam!.Type.IsCollection) {
+                    sb.AppendLine($"    for (let i = 0; i < {method.BodyParam.Name}.length; i++) {{");
+                    sb.AppendLine($"      const f = {method.BodyParam.Name}[i];");
+                    sb.AppendLine($"      formData.append('{method.BodyParam.Name}[' + i + ']', f);");
+                    sb.AppendLine($"    }}");
+                } else {
+                    sb.AppendLine($"    formData.append('{method.BodyParam.Name}', {method.BodyParam.Name});");
+                }
+
+                sb.AppendLine();
+            } else if (method.IsBodyFormObject) {
+                useFormData = true;
+                sb.AppendLine($"    const formData = FormDataFactory.Create({method.BodyParam!.Name});");
+                sb.AppendLine();
+            }
+
+            return useFormData;
+        }
+
+        #endregion
+
+        private record HttpAttribute(string HttpMethod, string? Template);
+    }
+}

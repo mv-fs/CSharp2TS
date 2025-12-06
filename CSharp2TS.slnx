@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="CSharp2TS.CLI/CSharp2TS.CLI.csproj" />
+  <Project Path="CSharp2TS.Core/CSharp2TS.Core.csproj" />
+  <Project Path="CSharp2TS.Tests/CSharp2TS.Tests.csproj" />
+</Solution>

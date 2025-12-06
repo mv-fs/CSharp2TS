@@ -1,12 +1,27 @@
 // this line is ignored in tests
 
 import { apiClient } from './apiClient';
-import TestClass from '../TestClass';
-import TestClass2 from '../TestClass2';
-import GenericClass1 from '../GenericClass1';
+import TestClass from '../Models/TestClass';
+import TestClass2 from '../Models/TestClass2';
+import GenericClass1 from '../Models/GenericClass1';
 
 export default {
   async get(): Promise<string> {
+    const response = await apiClient.instance.get<string>(`api/Test`);
+    return response.data;
+  },
+
+  async actionResultGet(): Promise<string> {
+    const response = await apiClient.instance.get<string>(`api/Test`);
+    return response.data;
+  },
+
+  async actionResultGetAsync(): Promise<string> {
+    const response = await apiClient.instance.get<string>(`api/Test`);
+    return response.data;
+  },
+
+  async tSEndpointOverride(): Promise<string> {
     const response = await apiClient.instance.get<string>(`api/Test`);
     return response.data;
   },
@@ -33,6 +48,11 @@ export default {
 
   async create(testClass: TestClass): Promise<TestClass> {
     const response = await apiClient.instance.post<TestClass>(`api/Test`, testClass);
+    return response.data;
+  },
+
+  async createNoBody(): Promise<TestClass> {
+    const response = await apiClient.instance.post<TestClass>(`api/Test`);
     return response.data;
   },
 

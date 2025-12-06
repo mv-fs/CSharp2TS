@@ -1,4 +1,8 @@
-﻿using CSharp2TS.CLI.Templates;
+﻿using CSharp2TS.CLI.Generators.Common;
+using CSharp2TS.CLI.Generators.TSEnums;
+using CSharp2TS.CLI.Generators.TSInterfaces;
+using CSharp2TS.CLI.Generators.TSServices;
+using CSharp2TS.CLI.Templates;
 using CSharp2TS.CLI.Utility;
 using CSharp2TS.Core.Attributes;
 using Mono.Cecil;
@@ -6,6 +10,7 @@ using Mono.Cecil;
 namespace CSharp2TS.CLI.Generators {
     public class Generator {
         private readonly Options options;
+        private readonly Dictionary<string, TSFileInfo> files = [];
 
         public Generator(Options options) {
             this.options = options;
@@ -28,11 +33,32 @@ namespace CSharp2TS.CLI.Generators {
 
             Directory.CreateDirectory(options.ModelOutputFolder!);
 
+            // Gather all imports so we know if we can reference them later on
+            foreach (var assemblyPath in options.ModelAssemblyPaths) {
+                using (var assembly = LoadAssembly(assemblyPath)) {
+                    GatherModelImports(assembly.MainModule);
+                }
+            }
+
             foreach (var assemblyPath in options.ModelAssemblyPaths) {
                 using (var assembly = LoadAssembly(assemblyPath)) {
                     GenerateInterfaces(assembly.MainModule, options);
                     GenerateEnums(assembly.MainModule, options);
                 }
+            }
+        }
+
+        private void GatherModelImports(ModuleDefinition module) {
+            var enums = GetTypesByAttribute(module, typeof(TSEnumAttribute));
+
+            foreach (var type in enums) {
+                files.Add(type.FullName, NameUtility.GetFileDetails(type, options, options.ModelOutputFolder!));
+            }
+
+            var interfaces = GetTypesByAttribute(module, typeof(TSInterfaceAttribute));
+
+            foreach (var type in interfaces) {
+                files.Add(type.FullName, NameUtility.GetFileDetails(type, options, options.ModelOutputFolder!));
             }
         }
 
@@ -44,6 +70,12 @@ namespace CSharp2TS.CLI.Generators {
             Directory.CreateDirectory(options.ServicesOutputFolder!);
 
             GenerateApiClient();
+
+            foreach (var assemblyPath in options.ServicesAssemblyPaths) {
+                using (var assembly = LoadAssembly(assemblyPath)) {
+                    GatherModelImports(assembly.MainModule);
+                }
+            }
 
             foreach (var assemblyPath in options.ServicesAssemblyPaths) {
                 using (var assembly = LoadAssembly(assemblyPath)) {
@@ -71,24 +103,48 @@ namespace CSharp2TS.CLI.Generators {
         private void GenerateInterfaces(ModuleDefinition module, Options options) {
             var types = GetTypesByAttribute(module, typeof(TSInterfaceAttribute));
 
+            if (!types.Any()) {
+                return;
+            }
+
+            TSInterfaceGenerator generator = new(files, options);
+
             foreach (TypeDefinition type in types) {
-                GenerateFile(options.ModelOutputFolder!, new TSInterfaceGenerator(type, options));
+                string fileContents = generator.Generate(type);
+
+                GenerateFile(files[type.FullName], fileContents);
             }
         }
 
         private void GenerateEnums(ModuleDefinition module, Options options) {
             var types = GetTypesByAttribute(module, typeof(TSEnumAttribute));
 
+            if (!types.Any()) {
+                return;
+            }
+
+            TSEnumGenerator generator = new();
+
             foreach (TypeDefinition type in types) {
-                GenerateFile(options.ModelOutputFolder!, new TSEnumGenerator(type, options));
+                string fileContents = generator.Generate(type);
+
+                GenerateFile(files[type.FullName], fileContents);
             }
         }
 
         private void GenerateServices(ModuleDefinition module, Options options) {
             var types = GetTypesByAttribute(module, typeof(TSServiceAttribute));
 
+            foreach (var type in types) {
+                files.Add(type.FullName, TSAxiosServiceGenerator.GetFileInfo(type, options));
+            }
+
+            var generator = new TSAxiosServiceGenerator(options, files);
+
             foreach (TypeDefinition type in types) {
-                GenerateFile(options.ServicesOutputFolder!, new TSAxiosServiceGenerator(type, options));
+                string fileContents = generator.Generate(type);
+
+                GenerateFile(files[type.FullName], fileContents);
             }
         }
 
@@ -100,21 +156,16 @@ namespace CSharp2TS.CLI.Generators {
             }
         }
 
-        private void GenerateFile<TAttribute>(string outputFolder, GeneratorBase<TAttribute> generator) where TAttribute : TSAttributeBase {
-            string output = generator.Generate();
-            string folder = Path.Combine(outputFolder, generator.GetFolderLocation());
-
-            if (!Directory.Exists(folder)) {
-                Directory.CreateDirectory(folder);
+        private void GenerateFile(TSFileInfo fileInfo, string fileContents) {
+            if (!Directory.Exists(fileInfo.Folder)) {
+                Directory.CreateDirectory(fileInfo.Folder);
             }
 
-            string file = Path.Combine(folder, $"{generator.GetFileName()}.ts");
-
-            if (File.Exists(file)) {
-                throw new InvalidOperationException($"File {file} already exists.");
+            if (File.Exists(fileInfo.FileFullPath)) {
+                throw new InvalidOperationException($"File {fileInfo.FileFullPath} already exists.");
             }
 
-            File.WriteAllText(file, output);
+            File.WriteAllText(fileInfo.FileFullPath, fileContents);
         }
     }
 }

@@ -105,7 +105,7 @@ namespace CSharp2TS.Tests {
             // Act
             var result = OptionParser.Validate(options);
 
-            // Assert0
+            // Assert
             Assert.That(result, Is.EqualTo("Models output folder is required"));
         }
 

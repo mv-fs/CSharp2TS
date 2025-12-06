@@ -44,6 +44,8 @@ interface TestClass {
   nullableDateTimeOffsetProperty: string | null;
   dateOnlyProperty: string;
   nullableDateOnlyProperty: string | null;
+  timeOnlyProperty: string;
+  nullableTimeOnlyProperty: string | null;
   thisClass: TestClass;
   class2: TestClass2;
   classInFolder: TestClassInFolder;
@@ -56,6 +58,7 @@ interface TestClass {
   enumInFolder: TestEnumInFolder;
   formFile: File;
   iFormFile: File;
+  json: unknown;
   intEnumerable: number[];
   tSNullableIntEnumerable: number[] | null;
   intCollection: number[];

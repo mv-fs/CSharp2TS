@@ -1,7 +1,7 @@
 // Auto-generated from FormController.cs
 
 import { apiClient, FormDataFactory } from './apiClient';
-import TestClass from '../TestClass';
+import TestClass from '../Models/TestClass';
 
 export default {
   async postForm(form: FormData): Promise<void> {

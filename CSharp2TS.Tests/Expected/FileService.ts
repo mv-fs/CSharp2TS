@@ -45,4 +45,11 @@ export default {
     });
     return response.data;
   },
+
+  async emptyPostAndReceiveFile(): Promise<File> {
+    const response = await apiClient.instance.post<File>(`api/file`, undefined, {
+      responseType: 'blob',
+    });
+    return response.data;
+  },
 };
