@@ -34,6 +34,12 @@ namespace CSharp2TS.CLI.Generators.TSInterfaces {
                     continue;
                 }
 
+                string propertyName = property.Name.ToCamelCase();
+
+                if (tsInterface.Properties.Any(p => p.Name == propertyName)) {
+                    continue;
+                }
+
                 var tsType = TSTypeMapper.GetTSPropertyType(property.PropertyType, options, (fullName, typeName) => {
                     if (typeDef.FullName != fullName) {
                         TryAddTSImport(tsInterface, rootTypeDef, fullName, typeName);
@@ -42,7 +48,7 @@ namespace CSharp2TS.CLI.Generators.TSInterfaces {
                     return true;
                 });
 
-                tsInterface.Properties.Add(new TSInterfaceProperty(property.Name.ToCamelCase(), tsType, property.HasAttribute<TSNullableAttribute>()));
+                tsInterface.Properties.Add(new TSInterfaceProperty(propertyName, tsType, property.HasAttribute<TSNullableAttribute>()));
             }
 
             if (typeDef.BaseType != null && typeDef.BaseType.FullName != "System.Object") {
