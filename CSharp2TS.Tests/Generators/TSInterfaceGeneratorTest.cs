@@ -67,6 +67,15 @@ namespace CSharp2TS.Tests.Generators {
         }
 
         [Test]
+        public void InterfaceGenerator_ChildClassWithInheritanceOverride() {
+            var typeRef = module.ImportReference(typeof(ChildClassOverride));
+
+            string result = generator.Generate(typeRef.Resolve());
+
+            TestMatchesFile("Expected/ChildClassOverride.ts", result);
+        }
+
+        [Test]
         public void InterfaceGenerator_Record() {
             var typeRef = module.ImportReference(typeof(TestRecord));
 
