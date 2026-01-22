@@ -66,6 +66,18 @@ namespace CSharp2TS.Tests.Generators {
             TestMatchesFile("Expected/ChildClass.ts", result);
         }
 
+        /// <summary>
+        /// This test checks of the generation adds duplicated attributes when a child class overrides properties from a parent class.
+        /// </summary>
+        [Test]
+        public void InterfaceGenerator_ChildClassWithInheritanceOverride() {
+            var typeRef = module.ImportReference(typeof(ChildClassOverride));
+
+            string result = generator.Generate(typeRef.Resolve());
+
+            TestMatchesFile("Expected/ChildClassOverride.ts", result);
+        }
+
         [Test]
         public void InterfaceGenerator_Record() {
             var typeRef = module.ImportReference(typeof(TestRecord));
