@@ -1,13 +1,13 @@
 ﻿using CSharp2TS.CLI.Generators.Common;
 
 namespace CSharp2TS.CLI.Generators.TSInterfaces {
-    public record TSInterfaceProperty(string Name, TSType Type, bool IsNullableProperty) {
+    public record TSInterfaceProperty(string Name, TSType Type, bool IsNullableProperty, string? defaultValue) {
         public string GetDefaultValue() {
             if (IsNullableProperty) {
                 return "null";
             }
 
-            return Type.GetDefaultValue();
+            return Type.GetDefaultValue(defaultValue);
         }
 
         public override string ToString() {

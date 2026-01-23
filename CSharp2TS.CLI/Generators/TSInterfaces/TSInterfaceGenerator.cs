@@ -48,7 +48,22 @@ namespace CSharp2TS.CLI.Generators.TSInterfaces {
                     return true;
                 });
 
-                tsInterface.Properties.Add(new TSInterfaceProperty(propertyName, tsType, property.HasAttribute<TSNullableAttribute>()));
+                string? defaultValue = null;
+
+                if (tsType.IsEnum) {
+                    defaultValue = property.PropertyType.Resolve().Fields
+                        .Where(i => !i.IsSpecialName)
+                        .Select(i => i.Name)
+                        .FirstOrDefault();
+                }
+
+                var tsProperty = new TSInterfaceProperty(
+                    propertyName,
+                    tsType,
+                    property.HasAttribute<TSNullableAttribute>(),
+                    defaultValue);
+
+                tsInterface.Properties.Add(tsProperty);
             }
 
             if (typeDef.BaseType != null && typeDef.BaseType.FullName != "System.Object") {

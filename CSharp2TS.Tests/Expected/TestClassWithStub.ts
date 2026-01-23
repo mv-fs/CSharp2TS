@@ -159,9 +159,9 @@ export class TestClassWithStubStub implements TestClassWithStub {
   nullableGeneric: GenericClass1<number | null> = {} as GenericClass1<number | null>;
   genericClass1: GenericClass1<TestClass> = {} as GenericClass1<TestClass>;
   genericClass2: GenericClass2<TestClass, TestEnum> = {} as GenericClass2<TestClass, TestEnum>;
-  enum: TestEnum = {} as TestEnum;
+  enum: TestEnum = TestEnum.Value1;
   nullableEnum: TestEnum | null = null;
-  enumInFolder: TestEnumInFolder = {} as TestEnumInFolder;
+  enumInFolder: TestEnumInFolder = TestEnumInFolder.Value1;
   formFile: File = {} as File;
   iFormFile: File = {} as File;
   json: unknown = {} as unknown;

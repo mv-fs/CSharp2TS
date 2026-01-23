@@ -17,7 +17,7 @@ namespace CSharp2TS.CLI.Generators.Common {
             return !new[] { TSTypeConsts.String, TSTypeConsts.Number, TSTypeConsts.Boolean, TSTypeConsts.Void }.Contains(TypeName);
         }
 
-        public string GetDefaultValue() {
+        public string GetDefaultValue(string? defaultValue = null) {
             if (IsDictionary) {
                 return "{}";
             }
@@ -28,6 +28,10 @@ namespace CSharp2TS.CLI.Generators.Common {
 
             if (IsNullable) {
                 return "null";
+            }
+
+            if (IsEnum) {
+                return $"{TypeName}.{defaultValue}";
             }
 
             return TypeName switch {
