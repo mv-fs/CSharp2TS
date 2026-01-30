@@ -24,15 +24,15 @@ Example
 csharp2ts --model-output-folder C:\models_output --model-assembly-path C:\models_assembly --file-casing camel
 ```
 
-| Option                               | Description                                              |
-| ------------------------------------ | -------------------------------------------------------- |
-| --model-output-folder, -mo <path>    | The folder where the generated model files will be saved |
-| --model-assembly-path, -ma <path>    | The path to the model assembly                           |
-| --services-output-folder, -so <path> | The folder where the services will be saved              |
-| --services-assembly-path, -sa <path> | The path to the assembly with the controllers            |
-| --service-generator, -sg <path>      | The type of service - currently only Axios is supported  |
-| --file-casing, -fc <path>            | The file name casing style (camel \| pascal)             |
-| --nullable-strings                   | Make all strings nullable in the generated code          |
+| Option                               | Description                                                                          |
+| ------------------------------------ | ------------------------------------------------------------------------------------ |
+| --model-output-folder, -mo <path>    | The folder where the generated model files will be saved                             |
+| --model-assembly-path, -ma <path>    | The path(s) to the model assembly (comma-separated for multiple)                     |
+| --services-output-folder, -so <path> | The folder where the services will be saved                                          |
+| --services-assembly-path, -sa <path> | The path(s) to the assembly with the controllers (comma-separated for multiple)      |
+| --service-generator, -sg <path>      | The type of service - currently only Axios is supported                              |
+| --file-casing, -fc <path>            | The file name casing style (camel \| pascal)                                         |
+| --nullable-strings                   | Make all strings nullable in the generated code                                      |
 
 **Commands**
 

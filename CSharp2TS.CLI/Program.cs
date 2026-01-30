@@ -74,9 +74,9 @@ namespace CSharp2TS.CLI {
             Console.WriteLine("--config, -c <path to config>        Path to the config file");
             Console.WriteLine();
             Console.WriteLine("CLI Options:");
-            Console.WriteLine("--model-assembly-path, -ma <path>    Path to the assembly containing the models");
+            Console.WriteLine("--model-assembly-path, -ma <path>    Path(s) to the assembly containing the models (comma-separated for multiple)");
             Console.WriteLine("--model-output-folder, -mo <path>    Path to the output folder for the generated models");
-            Console.WriteLine("--services-assembly-path, -sa <path> Path to the assembly containing the services");
+            Console.WriteLine("--services-assembly-path, -sa <path> Path(s) to the assembly containing the services (comma-separated for multiple)");
             Console.WriteLine("--services-output-folder, -so <path> Path to the output folder for the generated services");
             Console.WriteLine("--service-generator, -sg <name>      Service generator to use (axios)");
             Console.WriteLine("--file-casing, -fc <style>           File name casing style (camel | pascal)");
