@@ -21,7 +21,7 @@ Usage: `csharp2ts [option] [option value]`
 Example
 
 ```
-csharp2ts --model-output-folder C:\models_output --model-assembly-path C:\models_assembly --file-casing camel
+csharp2ts --model-output-folder C:\models_output --model-assembly-path C:\models_assembly1,C:\models_assembly2 --file-casing camel
 ```
 
 | Option                               | Description                                                                          |
