@@ -36,6 +36,7 @@ namespace CSharp2TS.CLI.Generators.TSInterfaces {
 
                 string propertyName = property.Name.ApplyCasing(options);
 
+                // Skip existing properties to not duplicate inherited properties
                 if (tsInterface.Properties.Any(p => p.Name == propertyName)) {
                     continue;
                 }
