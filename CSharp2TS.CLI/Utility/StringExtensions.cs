@@ -31,7 +31,7 @@
             }
             if (string.IsNullOrEmpty(caseStyle)) {
                 return str;
-            } else if (caseStyle.Equals(Consts.CamelCase, StringComparison.OrdinalIgnoreCase){
+            } else if (caseStyle.Equals(Consts.CamelCase, StringComparison.OrdinalIgnoreCase)){
                 return str.ToCamelCase();
             } else if (caseStyle.Equals(Consts.PascalCase, StringComparison.OrdinalIgnoreCase)) {
                 return str.ToPascalCase();
