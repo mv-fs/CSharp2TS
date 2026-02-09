@@ -32,6 +32,7 @@ csharp2ts --model-output-folder C:\models_output --model-assembly-path C:\models
 | --services-assembly-path, -sa <path> | The path(s) to the assembly with the controllers (comma-separated for multiple)      |
 | --service-generator, -sg <path>      | The type of service - currently only Axios is supported                              |
 | --file-casing, -fc <path>            | The file name casing style (camel \| pascal)                                         |
+| --member-casing, -mc <path>          | The TS members casing style (camel \| pascal)                                        |
 | --nullable-strings                   | Make all strings nullable in the generated code                                      |
 
 **Commands**

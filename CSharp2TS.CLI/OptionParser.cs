@@ -42,6 +42,7 @@ namespace CSharp2TS.CLI {
                 ServiceGenerator = TryParseSwitch(args, "--service-generator", "-sg") ?? Consts.AxiosService,
 
                 FileNameCasingStyle = TryParseSwitch(args, "--file-casing", "-fc") ?? Consts.PascalCase,
+                MemberNameCasingStyle = TryParseSwitch(args, "--member-casing", "-mc") ?? Consts.CamelCase,
                 UseNullableStrings = SwitchExists(args, "--nullable-strings"),
             };
 
@@ -164,6 +165,10 @@ namespace CSharp2TS.CLI {
             }
 
             if (options.FileNameCasingStyle != Consts.CamelCase && options.FileNameCasingStyle != Consts.PascalCase) {
+                return $"Invalid file name casing style ({Consts.CamelCase} | {Consts.PascalCase})";
+            }
+
+            if (options.MemberNameCasingStyle != Consts.CamelCase && options.FileNameCasingStyle != Consts.PascalCase) {
                 return $"Invalid file name casing style ({Consts.CamelCase} | {Consts.PascalCase})";
             }
 

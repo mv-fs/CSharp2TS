@@ -10,6 +10,7 @@
         public string ServiceGenerator { get; set; } = Consts.AxiosService;
 
         public string FileNameCasingStyle { get; set; } = Consts.PascalCase;
+        public string MemberNameCasingStyle { get; set; } = Consts.CamelCase;
         public bool UseNullableStrings { get; set; } = false;
     }
 }
