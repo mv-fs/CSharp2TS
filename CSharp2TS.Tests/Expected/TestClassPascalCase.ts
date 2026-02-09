@@ -34,9 +34,9 @@ interface TestClass {
   NullableUIntProperty: number | null;
   ULongProperty: number;
   NullableULongProperty: number | null;
-  UtringProperty: string;
+  StringProperty: string;
   NullableStringProperty: string | null;
-  UuidProperty: string;
+  GuidProperty: string;
   NullableGuidProperty: string | null;
   DateTimeProperty: string;
   NullableDateTimeProperty: string | null;
