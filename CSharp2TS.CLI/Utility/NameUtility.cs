@@ -22,7 +22,7 @@ namespace CSharp2TS.CLI.Utility {
             return new TSFileInfo {
                 TypeName = typeName,
                 Folder = folder,
-                FileNameWithoutExtension = typeName.ApplyCasing(options),
+                FileNameWithoutExtension = typeName.ApplyCasing(options.FileNameCasingStyle),
             };
         }
 
