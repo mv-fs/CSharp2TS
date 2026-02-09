@@ -61,6 +61,7 @@ This will create a csharp2ts.json file:
     "ServicesAssemblyPaths": ["path_to_assembly_with_models_1", "path_to_assembly_with_models_2"],
     "ServiceGenerator": "axios", // Only axios supported at the current time
     
-    "FileNameCasingStyle": "pascal" // 'pascal' or 'camel'
+    "FileNameCasingStyle": "pascal" // 'pascal' or 'camel',
+    "MemberNameCasingStyle": "camel" // 'pascal' or 'camel'
 }
 ```
