@@ -78,6 +78,23 @@ namespace CSharp2TS.Tests {
         }
 
         [Test]
+        public void Validate_KebabMemberCasing_ReturnsErrorMessage() {
+            // Arrange
+            var options = new Options {
+                GenerateModels = true,
+                ModelOutputFolder = "out",
+                ModelAssemblyPaths = ["CSharp2TS.Tests.dll"],
+                MemberNameCasingStyle = CasingStyle.KebabCase,
+            };
+
+            // Act
+            var result = OptionParser.Validate(options);
+
+            // Assert
+            Assert.That(result, Contains.Substring("Kebab case is not valid for member names"));
+        }
+
+        [Test]
         public void Validate_InvalidCasingStyle_ReturnsErrorMessage() {
             // Arrange & Act
             Assert.Throws<ArgumentException>(() => OptionParser.ParseFromArgs([

@@ -121,6 +121,17 @@ namespace CSharp2TS.Tests {
         }
 
         [Test]
+        [TestCase("-fc")]
+        [TestCase("--file-casing")]
+        public void OptionParser_Args_FileNameCasingStyle_Kebab(string option) {
+            // Act
+            var result = OptionParser.ParseFromArgs([option, "kebab"])!;
+
+            // Assert
+            Assert.That(result.FileNameCasingStyle, Is.EqualTo(CasingStyle.KebabCase));
+        }
+
+        [Test]
         [TestCase("--nullable-strings")]
         public void OptionParser_Args_NullableStrings(string option) {
             // Act

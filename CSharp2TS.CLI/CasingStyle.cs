@@ -2,5 +2,6 @@
     public enum CasingStyle {
         CamelCase,
         PascalCase,
+        KebabCase,
     }
 }

@@ -9,7 +9,8 @@ namespace CSharp2TS.CLI {
             return value?.ToLowerInvariant() switch {
                 "camel" => CasingStyle.CamelCase,
                 "pascal" => CasingStyle.PascalCase,
-                _ => throw new JsonException($"Invalid casing style '{value}'. Valid options: 'camel', 'pascal'"),
+                "kebab" => CasingStyle.KebabCase,
+                _ => throw new JsonException($"Invalid casing style '{value}'. Valid options: 'camel', 'pascal', 'kebab'"),
             };
         }
 
@@ -17,6 +18,7 @@ namespace CSharp2TS.CLI {
             string str = value switch {
                 CasingStyle.CamelCase => "camel",
                 CasingStyle.PascalCase => "pascal",
+                CasingStyle.KebabCase => "kebab",
                 _ => throw new JsonException($"Unknown casing style '{value}'"),
             };
 

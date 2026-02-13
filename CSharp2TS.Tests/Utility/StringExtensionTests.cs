@@ -27,5 +27,19 @@ namespace CSharp2TS.Tests.Utility {
         public void ToPascalCase(string input, string expected) {
             Assert.That(input.ToPascalCase(), Is.EqualTo(expected));
         }
+
+        [TestCase(null!, null!)]
+        [TestCase("", "")]
+        [TestCase(" ", " ")]
+        [TestCase("A", "a")]
+        [TestCase("a", "a")]
+        [TestCase("Test", "test")]
+        [TestCase("test", "test")]
+        [TestCase("TestString", "test-string")]
+        [TestCase("TestStringValue", "test-string-value")]
+        [TestCase("DummyClass", "dummy-class")]
+        public void ToKebabCase(string input, string expected) {
+            Assert.That(input.ToKebabCase(), Is.EqualTo(expected));
+        }
     }
 }

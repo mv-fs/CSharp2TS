@@ -65,6 +65,7 @@ namespace CSharp2TS.Tests.Utility {
 
         [TestCase(CasingStyle.PascalCase, typeof(DummyClass), "DummyClass")]
         [TestCase(CasingStyle.CamelCase, typeof(DummyClass), "dummyClass")]
+        [TestCase(CasingStyle.KebabCase, typeof(DummyClass), "dummy-class")]
         public void GetFileDetails_WithDifferentCasing_ReturnsCorrectFileInfo(CasingStyle casing, Type type, string expectedFileName) {
             // Arrange
             var typeDef = AddType(type);

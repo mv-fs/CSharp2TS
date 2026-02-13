@@ -78,8 +78,9 @@ namespace CSharp2TS.CLI {
             return value?.ToLowerInvariant() switch {
                 "camel" => CasingStyle.CamelCase,
                 "pascal" => CasingStyle.PascalCase,
+                "kebab" => CasingStyle.KebabCase,
                 null => defaultValue,
-                _ => throw new ArgumentException($"Invalid casing style '{value}'. Valid options: 'camel', 'pascal'"),
+                _ => throw new ArgumentException($"Invalid casing style '{value}'. Valid options: 'camel', 'pascal', 'kebab'"),
             };
         }
 
@@ -152,6 +153,10 @@ namespace CSharp2TS.CLI {
         public static string? Validate(Options? options) {
             if (options == null) {
                 return "Failed to parse options";
+            }
+
+            if (options.MemberNameCasingStyle == CasingStyle.KebabCase) {
+                return "Kebab case is not valid for member names as hyphens are not allowed in TypeScript identifiers";
             }
 
             if (!options.GenerateModels && !options.GenerateServices) {
