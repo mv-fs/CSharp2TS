@@ -9,8 +9,8 @@
         public string[] ServicesAssemblyPaths { get; set; } = [];
         public string ServiceGenerator { get; set; } = Consts.AxiosService;
 
-        public string FileNameCasingStyle { get; set; } = Consts.PascalCase;
-        public string MemberNameCasingStyle { get; set; } = Consts.CamelCase;
+        public CasingStyle FileNameCasingStyle { get; set; } = CasingStyle.PascalCase;
+        public CasingStyle MemberNameCasingStyle { get; set; } = CasingStyle.CamelCase;
         public bool UseNullableStrings { get; set; } = false;
     }
 }

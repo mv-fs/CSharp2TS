@@ -27,7 +27,7 @@ namespace CSharp2TS.Tests.Generators {
             };
             optionsPascalCase = new Options {
                 UseNullableStrings = false,
-                MemberNameCasingStyle = "PascalCase",
+                MemberNameCasingStyle = CasingStyle.PascalCase,
             };
 
             // Setup files dictionary - needed for import resolution

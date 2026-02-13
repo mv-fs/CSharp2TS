@@ -24,19 +24,16 @@
             return char.ToUpperInvariant(value[0]) + value[1..];
         }
 
-        /// <param name="caseStyle">One of the two strings defined in <see cref="Consts"/></param>
-        public static string ApplyCasing(this string str, string caseStyle) {
+        public static string ApplyCasing(this string str, CasingStyle caseStyle) {
             if (string.IsNullOrEmpty(str)) {
                 return str;
             }
-            if (string.IsNullOrEmpty(caseStyle)) {
-                return str;
-            } else if (caseStyle.Equals(Consts.CamelCase, StringComparison.OrdinalIgnoreCase)){
-                return str.ToCamelCase();
-            } else if (caseStyle.Equals(Consts.PascalCase, StringComparison.OrdinalIgnoreCase)) {
-                return str.ToPascalCase();
-            }
-            return str;
+
+            return caseStyle switch {
+                CasingStyle.CamelCase => str.ToCamelCase(),
+                CasingStyle.PascalCase => str.ToPascalCase(),
+                _ => str
+            };
         }
     }
 }

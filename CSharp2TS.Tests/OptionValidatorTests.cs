@@ -31,7 +31,7 @@ namespace CSharp2TS.Tests {
                 GenerateModels = true,
                 ModelOutputFolder = "out",
                 ModelAssemblyPaths = ["CSharp2TS.Tests.dll"],
-                FileNameCasingStyle = Consts.PascalCase,
+                FileNameCasingStyle = CasingStyle.PascalCase,
                 ServiceGenerator = Consts.AxiosService
             };
 
@@ -49,7 +49,7 @@ namespace CSharp2TS.Tests {
                 GenerateServices = true,
                 ServicesOutputFolder = "services",
                 ServicesAssemblyPaths = ["CSharp2TS.Tests.dll"],
-                FileNameCasingStyle = Consts.PascalCase,
+                FileNameCasingStyle = CasingStyle.PascalCase,
                 ServiceGenerator = Consts.AxiosService
             };
 
@@ -79,19 +79,12 @@ namespace CSharp2TS.Tests {
 
         [Test]
         public void Validate_InvalidCasingStyle_ReturnsErrorMessage() {
-            // Arrange
-            var options = new Options {
-                GenerateModels = true,
-                ModelOutputFolder = "out",
-                ModelAssemblyPaths = ["CSharp2TS.Tests.dll"],
-                FileNameCasingStyle = "invalid"
-            };
-
-            // Act
-            var result = OptionParser.Validate(options);
-
-            // Assert
-            Assert.That(result, Contains.Substring("Invalid file name casing style"));
+            // Arrange & Act
+            Assert.Throws<ArgumentException>(() => OptionParser.ParseFromArgs([
+                "--model-output-folder", "out",
+                "--model-assembly-path", "CSharp2TS.Tests.dll",
+                "--file-casing", "invalid"
+            ]));
         }
 
         [Test]

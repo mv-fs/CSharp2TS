@@ -63,9 +63,9 @@ namespace CSharp2TS.Tests.Utility {
             Assert.That(result, Is.EqualTo("CustomName"));
         }
 
-        [TestCase(Consts.PascalCase, typeof(DummyClass), "DummyClass")]
-        [TestCase(Consts.CamelCase, typeof(DummyClass), "dummyClass")]
-        public void GetFileDetails_WithDifferentCasing_ReturnsCorrectFileInfo(string casing, Type type, string expectedFileName) {
+        [TestCase(CasingStyle.PascalCase, typeof(DummyClass), "DummyClass")]
+        [TestCase(CasingStyle.CamelCase, typeof(DummyClass), "dummyClass")]
+        public void GetFileDetails_WithDifferentCasing_ReturnsCorrectFileInfo(CasingStyle casing, Type type, string expectedFileName) {
             // Arrange
             var typeDef = AddType(type);
             var options = new Options { FileNameCasingStyle = casing };
@@ -84,7 +84,7 @@ namespace CSharp2TS.Tests.Utility {
         public void GetFileDetails_WithCustomFolder_ReturnsCorrectPath() {
             // Arrange
             var typeDef = AddType(typeof(DummyClass3));
-            var options = new Options { FileNameCasingStyle = Consts.PascalCase };
+            var options = new Options { FileNameCasingStyle = CasingStyle.PascalCase };
             var basePath = "/base/path";
 
             // Act
@@ -99,7 +99,7 @@ namespace CSharp2TS.Tests.Utility {
         public void GetFileDetails_WithoutCustomFolder_UsesBasePath() {
             // Arrange
             var typeDef = AddType(typeof(DummyClass));
-            var options = new Options { FileNameCasingStyle = Consts.PascalCase };
+            var options = new Options { FileNameCasingStyle = CasingStyle.PascalCase };
             var basePath = "/base/path";
 
             // Act
@@ -115,7 +115,7 @@ namespace CSharp2TS.Tests.Utility {
         public void GetFileDetails_WithCustomNameAndFolder_ReturnsCorrectInfo() {
             // Arrange
             var typeDef = AddType(typeof(DummyClass4));
-            var options = new Options { FileNameCasingStyle = Consts.PascalCase };
+            var options = new Options { FileNameCasingStyle = CasingStyle.PascalCase };
             var basePath = "/output";
 
             // Act

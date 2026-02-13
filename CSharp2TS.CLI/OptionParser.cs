@@ -41,8 +41,8 @@ namespace CSharp2TS.CLI {
                 ServicesAssemblyPaths = servicesAssemblyPaths,
                 ServiceGenerator = TryParseSwitch(args, "--service-generator", "-sg") ?? Consts.AxiosService,
 
-                FileNameCasingStyle = TryParseSwitch(args, "--file-casing", "-fc") ?? Consts.PascalCase,
-                MemberNameCasingStyle = TryParseSwitch(args, "--member-casing", "-mc") ?? Consts.CamelCase,
+                FileNameCasingStyle = ParseCasingStyle(TryParseSwitch(args, "--file-casing", "-fc"), CasingStyle.PascalCase),
+                MemberNameCasingStyle = ParseCasingStyle(TryParseSwitch(args, "--member-casing", "-mc"), CasingStyle.CamelCase),
                 UseNullableStrings = SwitchExists(args, "--nullable-strings"),
             };
 
@@ -73,6 +73,15 @@ namespace CSharp2TS.CLI {
             return Array.IndexOf(args, @switch) != -1;
         }
 
+        private static CasingStyle ParseCasingStyle(string? value, CasingStyle defaultValue) {
+            return value?.ToLowerInvariant() switch {
+                "camel" => CasingStyle.CamelCase,
+                "pascal" => CasingStyle.PascalCase,
+                null => defaultValue,
+                _ => throw new ArgumentException($"Invalid casing style '{value}'. Valid options: 'camel', 'pascal'"),
+            };
+        }
+
         public static Options? ParseFromFile(string optionsPath) {
             if (!File.Exists(optionsPath)) {
                 throw new FileNotFoundException($"Config file does not exist at path: {optionsPath}");
@@ -83,6 +92,7 @@ namespace CSharp2TS.CLI {
             using (var stream = File.OpenRead(optionsPath)) {
                 options = JsonSerializer.Deserialize<Options>(stream, new JsonSerializerOptions {
                     PropertyNameCaseInsensitive = true,
+                    Converters = { new CasingStyleJsonConverter() },
                 });
             }
 
@@ -162,14 +172,6 @@ namespace CSharp2TS.CLI {
                 if (options.ServiceGenerator != Consts.AxiosService) {
                     return $"Invalid service generator {options.ServiceGenerator}. Available options: {Consts.AxiosService})";
                 }
-            }
-
-            if (options.FileNameCasingStyle != Consts.CamelCase && options.FileNameCasingStyle != Consts.PascalCase) {
-                return $"Invalid file name casing style ({Consts.CamelCase} | {Consts.PascalCase})";
-            }
-
-            if (options.MemberNameCasingStyle != Consts.CamelCase && options.FileNameCasingStyle != Consts.PascalCase) {
-                return $"Invalid file name casing style ({Consts.CamelCase} | {Consts.PascalCase})";
             }
 
             return null;

@@ -116,8 +116,8 @@ namespace CSharp2TS.Tests {
             var noValueResult = OptionParser.ParseFromArgs([option])!;
 
             // Assert
-            Assert.That(result.FileNameCasingStyle, Is.EqualTo(casingStyle));
-            Assert.That(noValueResult.FileNameCasingStyle, Is.EqualTo(Consts.PascalCase));
+            Assert.That(result.FileNameCasingStyle, Is.EqualTo(CasingStyle.CamelCase));
+            Assert.That(noValueResult.FileNameCasingStyle, Is.EqualTo(CasingStyle.PascalCase));
         }
 
         [Test]
@@ -150,7 +150,7 @@ namespace CSharp2TS.Tests {
             Assert.That(options.ServicesOutputFolder, Is.EqualTo(Path.GetFullPath(Path.Combine(fullPath, "../service-output"))));
             Assert.That(options.ServicesAssemblyPaths[0], Is.EqualTo(Path.Combine(fullPath, "service-assembly-1")));
             Assert.That(options.ServicesAssemblyPaths[1], Is.EqualTo(Path.Combine(fullPath, "service-assembly-2")));
-            Assert.That(options.FileNameCasingStyle, Is.EqualTo("camel"));
+            Assert.That(options.FileNameCasingStyle, Is.EqualTo(CasingStyle.CamelCase));
             Assert.That(options.ServiceGenerator, Is.EqualTo("axios"));
             Assert.That(options.UseNullableStrings, Is.True);
         }

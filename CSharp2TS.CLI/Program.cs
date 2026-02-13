@@ -48,6 +48,7 @@ namespace CSharp2TS.CLI {
             using (var stream = File.Create("csharp2ts.json")) {
                 JsonSerializer.Serialize(stream, options, new JsonSerializerOptions {
                     WriteIndented = true,
+                    Converters = { new CasingStyleJsonConverter() },
                 });
             }
 
