@@ -80,6 +80,7 @@ namespace CSharp2TS.CLI {
             Console.WriteLine("--services-output-folder, -so <path> Path to the output folder for the generated services");
             Console.WriteLine("--service-generator, -sg <name>      Service generator to use (axios)");
             Console.WriteLine("--file-casing, -fc <style>           File name casing style (camel | pascal)");
+            Console.WriteLine("--member-casing, -mc <style>         Casing style of TS members (camel | pascal)");
             Console.WriteLine("--nullable-strings                   Mark string properties as nullable in the generated code");
             Console.WriteLine();
             Console.WriteLine("Commands:");

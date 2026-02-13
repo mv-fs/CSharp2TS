@@ -237,7 +237,7 @@ namespace CSharp2TS.CLI.Generators.TSServices {
             return new TSFileInfo {
                 TypeName = typeName,
                 Folder = folder,
-                FileNameWithoutExtension = typeName.ApplyCasing(options),
+                FileNameWithoutExtension = typeName.ApplyCasing(options.FileNameCasingStyle),
             };
         }
 

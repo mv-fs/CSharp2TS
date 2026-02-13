@@ -34,8 +34,9 @@ namespace CSharp2TS.CLI.Generators.TSInterfaces {
                     continue;
                 }
 
-                string propertyName = property.Name.ToCamelCase();
+                string propertyName = property.Name.ApplyCasing(options.MemberNameCasingStyle);
 
+                // Skip existing properties to not duplicate inherited properties
                 if (tsInterface.Properties.Any(p => p.Name == propertyName)) {
                     continue;
                 }

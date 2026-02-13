@@ -10,8 +10,10 @@ namespace CSharp2TS.Tests.Generators {
     public class TSInterfaceGeneratorTest : GeneratorTestBase {
         private ModuleDefinition module = null!;
         private TSInterfaceGenerator generator = null!;
+        private TSInterfaceGenerator generatorPascalCase = null!;
         private Dictionary<string, TSFileInfo> files = null!;
         private Options options = null!;
+        private Options optionsPascalCase = null!;
 
         [SetUp]
         public void Setup() {
@@ -22,6 +24,10 @@ namespace CSharp2TS.Tests.Generators {
             // Setup options
             options = new Options {
                 UseNullableStrings = false,
+            };
+            optionsPascalCase = new Options {
+                UseNullableStrings = false,
+                MemberNameCasingStyle = "PascalCase",
             };
 
             // Setup files dictionary - needed for import resolution
@@ -41,6 +47,7 @@ namespace CSharp2TS.Tests.Generators {
             AddType(typeof(TestClassWithStub));
 
             generator = new TSInterfaceGenerator(files, options);
+            generatorPascalCase = new TSInterfaceGenerator(files, optionsPascalCase);
         }
 
         [TearDown]
@@ -55,6 +62,16 @@ namespace CSharp2TS.Tests.Generators {
             string result = generator.Generate(typeRef.Resolve());
 
             TestMatchesFile("Expected/TestClass.ts", result);
+        }
+
+        [Test]
+        public void InterfaceGenerator_Class_AllProperties_PascalCase() {
+            var typeRef = module.ImportReference(typeof(TestClass));
+
+
+            string result = generatorPascalCase.Generate(typeRef.Resolve());
+
+            TestMatchesFile("Expected/TestClassPascalCase.ts", result);
         }
 
         [Test]
