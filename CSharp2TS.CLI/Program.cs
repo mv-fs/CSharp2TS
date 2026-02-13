@@ -61,9 +61,9 @@ namespace CSharp2TS.CLI {
             Console.WriteLine("Run csharp2ts [-h | -help] to see commands");
             Console.WriteLine();
             Console.WriteLine("Usage:");
-            Console.WriteLine("  cshart2ts -c <path to config>");
+            Console.WriteLine("  csharp2ts -c <path to config>");
             Console.WriteLine("  --- OR ---");
-            Console.WriteLine("  cshart2ts <arguments>");
+            Console.WriteLine("  csharp2ts <arguments>");
             Console.WriteLine("-------------");
         }
 
@@ -83,6 +83,7 @@ namespace CSharp2TS.CLI {
             Console.WriteLine("--file-casing, -fc <style>           File name casing style (camel | pascal)");
             Console.WriteLine("--member-casing, -mc <style>         Casing style of TS members (camel | pascal)");
             Console.WriteLine("--nullable-strings                   Mark string properties as nullable in the generated code");
+            Console.WriteLine("--type-mapping, -tm <mapping>        Custom type mapping in format CSharpFullName=tsType (repeatable)");
             Console.WriteLine();
             Console.WriteLine("Commands:");
             Console.WriteLine("create-config                        Create a default config file");

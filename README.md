@@ -51,7 +51,7 @@ For more examples check out the [docs](CSharp2TS.Core/PACKAGE.md).
 
 ![NuGet Version](https://img.shields.io/nuget/v/csharp2ts.cli)
 
-CSharp2TS.CLI is a dotnet tool to generate TypeScript files from .NET assemblies which have classes, enums and controllers marked with the attributes in the Core package. It an be run via command line arguments or a config file. For more information see the [CSharp2TS.CLI Docs](CSharp2TS.CLI/PACKAGE.md).
+CSharp2TS.CLI is a dotnet tool to generate TypeScript files from .NET assemblies which have classes, enums and controllers marked with the attributes in the Core package. It can be run via command line arguments or a config file. For more information see the [CSharp2TS.CLI Docs](CSharp2TS.CLI/PACKAGE.md).
 
 ### Installation
 

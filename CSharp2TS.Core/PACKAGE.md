@@ -60,7 +60,7 @@ public int ExcludedProperty { get; set; } // Property will not be included in th
 
 ```c#
 [HttpGet]
-[TSExclude)] // Endpoint will not be included in the TypeScript file
+[TSExclude] // Endpoint will not be included in the TypeScript file
 public IActionResult Get() {
     return Ok("Hello World");
 }
