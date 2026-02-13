@@ -12,5 +12,6 @@
         public CasingStyle FileNameCasingStyle { get; set; } = CasingStyle.PascalCase;
         public CasingStyle MemberNameCasingStyle { get; set; } = CasingStyle.CamelCase;
         public bool UseNullableStrings { get; set; } = false;
+        public Dictionary<string, string> CustomTypeMappings { get; set; } = [];
     }
 }

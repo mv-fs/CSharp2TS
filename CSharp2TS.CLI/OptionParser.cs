@@ -44,6 +44,7 @@ namespace CSharp2TS.CLI {
                 FileNameCasingStyle = ParseCasingStyle(TryParseSwitch(args, "--file-casing", "-fc"), CasingStyle.PascalCase),
                 MemberNameCasingStyle = ParseCasingStyle(TryParseSwitch(args, "--member-casing", "-mc"), CasingStyle.CamelCase),
                 UseNullableStrings = SwitchExists(args, "--nullable-strings"),
+                CustomTypeMappings = ParseTypeMappings(args),
             };
 
             if (!string.IsNullOrWhiteSpace(options.ModelOutputFolder)) {
@@ -80,6 +81,25 @@ namespace CSharp2TS.CLI {
                 null => defaultValue,
                 _ => throw new ArgumentException($"Invalid casing style '{value}'. Valid options: 'camel', 'pascal'"),
             };
+        }
+
+        private static Dictionary<string, string> ParseTypeMappings(string[] args) {
+            var mappings = new Dictionary<string, string>();
+
+            for (int i = 0; i < args.Length; i++) {
+                if (args[i] is "--type-mapping" or "-tm" && args.Length > i + 1) {
+                    string mapping = args[i + 1];
+                    int separatorIndex = mapping.IndexOf('=');
+
+                    if (separatorIndex > 0 && separatorIndex < mapping.Length - 1) {
+                        string csharpType = mapping[..separatorIndex];
+                        string tsType = mapping[(separatorIndex + 1)..];
+                        mappings[csharpType] = tsType;
+                    }
+                }
+            }
+
+            return mappings;
         }
 
         public static Options? ParseFromFile(string optionsPath) {

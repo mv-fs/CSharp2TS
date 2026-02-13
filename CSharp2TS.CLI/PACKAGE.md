@@ -34,6 +34,7 @@ csharp2ts --model-output-folder C:\models_output --model-assembly-path C:\models
 | --file-casing, -fc <path>            | The file name casing style (camel \| pascal)                                         |
 | --member-casing, -mc <path>          | The TS members casing style (camel \| pascal)                                        |
 | --nullable-strings                   | Make all strings nullable in the generated code                                      |
+| --type-mapping, -tm <mapping>        | Custom type mapping in format CSharpFullName=tsType (repeatable)                     |
 
 **Commands**
 
@@ -63,5 +64,9 @@ This will create a csharp2ts.json file:
     
     "FileNameCasingStyle": "pascal" // 'pascal' or 'camel',
     "MemberNameCasingStyle": "camel" // 'pascal' or 'camel'
+    "CustomTypeMappings": {
+        "System.Uri": "string",
+        "NodaTime.Instant": "string"
+    }
 }
 ```

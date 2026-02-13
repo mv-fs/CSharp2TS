@@ -46,7 +46,9 @@ namespace CSharp2TS.CLI.Generators.Common {
                 }
             }
 
-            if (stringTypes.Any(i => SimpleTypeCheck(type, i))) {
+            if (options.CustomTypeMappings.TryGetValue(type.FullName, out string? customTsType)) {
+                tsType = customTsType;
+            } else if (stringTypes.Any(i => SimpleTypeCheck(type, i))) {
                 tsType = TSTypeConsts.String;
 
                 if (!isNullable && SimpleTypeCheck(type, typeof(string)) && options.UseNullableStrings) {

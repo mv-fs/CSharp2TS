@@ -473,5 +473,117 @@ namespace CSharp2TS.Tests.Utility {
         }
 
         #endregion
+
+        #region Custom Type Mappings
+
+        [Test]
+        public void GetTSPropertyType_CustomMapping_ReturnsCustomType() {
+            // Arrange
+            var typeRef = GetTypeReference(typeof(Uri));
+            var optionsWithMapping = new Options {
+                CustomTypeMappings = new Dictionary<string, string> {
+                    { typeof(Uri).FullName!, "string" }
+                }
+            };
+
+            // Act
+            var result = TSTypeMapper.GetTSPropertyType(typeRef, optionsWithMapping);
+
+            // Assert
+            Assert.That(result.TypeName, Is.EqualTo("string"));
+            Assert.That(result.IsNullable, Is.False);
+            Assert.That(result.IsCollection, Is.False);
+            Assert.That(result.IsDictionary, Is.False);
+            Assert.That(result.IsEnum, Is.False);
+        }
+
+        [Test]
+        public void GetTSPropertyType_CustomMapping_OverridesBuiltInType() {
+            // Arrange
+            var typeRef = GetTypeReference(typeof(DateTime));
+            var optionsWithMapping = new Options {
+                CustomTypeMappings = new Dictionary<string, string> {
+                    { typeof(DateTime).FullName!, "Date" }
+                }
+            };
+
+            // Act
+            var result = TSTypeMapper.GetTSPropertyType(typeRef, optionsWithMapping);
+
+            // Assert
+            Assert.That(result.TypeName, Is.EqualTo("Date"));
+        }
+
+        [Test]
+        public void GetTSPropertyType_CustomMapping_WithCollection() {
+            // Arrange
+            var typeRef = GetTypeReference(typeof(List<Uri>));
+            var optionsWithMapping = new Options {
+                CustomTypeMappings = new Dictionary<string, string> {
+                    { typeof(Uri).FullName!, "string" }
+                }
+            };
+
+            // Act
+            var result = TSTypeMapper.GetTSPropertyType(typeRef, optionsWithMapping);
+
+            // Assert
+            Assert.That(result.TypeName, Is.EqualTo("string"));
+            Assert.That(result.IsCollection, Is.True);
+        }
+
+        [Test]
+        public void GetTSPropertyType_CustomMapping_WithNullable() {
+            // Arrange
+            var typeRef = GetTypeReference(typeof(DateTime?));
+            var optionsWithMapping = new Options {
+                CustomTypeMappings = new Dictionary<string, string> {
+                    { typeof(DateTime).FullName!, "Date" }
+                }
+            };
+
+            // Act
+            var result = TSTypeMapper.GetTSPropertyType(typeRef, optionsWithMapping);
+
+            // Assert
+            Assert.That(result.TypeName, Is.EqualTo("Date"));
+            Assert.That(result.IsNullable, Is.True);
+        }
+
+        [Test]
+        public void GetTSPropertyType_NoCustomMapping_FallsBackToDefault() {
+            // Arrange
+            var typeRef = GetTypeReference(typeof(int));
+            var optionsWithMapping = new Options {
+                CustomTypeMappings = new Dictionary<string, string> {
+                    { typeof(Uri).FullName!, "string" }
+                }
+            };
+
+            // Act
+            var result = TSTypeMapper.GetTSPropertyType(typeRef, optionsWithMapping);
+
+            // Assert
+            Assert.That(result.TypeName, Is.EqualTo(TSTypeConsts.Number));
+        }
+
+        [Test]
+        public void GetTSPropertyType_CustomMapping_InlineObjectType() {
+            // Arrange
+            var typeRef = GetTypeReference(typeof(TSTypeMapperTests));
+            var optionsWithMapping = new Options {
+                CustomTypeMappings = new Dictionary<string, string> {
+                    { typeof(TSTypeMapperTests).FullName!, "{ lat: number, lng: number }" }
+                }
+            };
+
+            // Act
+            var result = TSTypeMapper.GetTSPropertyType(typeRef, optionsWithMapping);
+
+            // Assert
+            Assert.That(result.TypeName, Is.EqualTo("{ lat: number, lng: number }"));
+        }
+
+        #endregion
     }
 }

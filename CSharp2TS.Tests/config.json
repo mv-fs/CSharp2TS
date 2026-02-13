@@ -7,5 +7,9 @@
   "servicesOutputFolder": "../service-output",
   "servicesAssemblyPaths": [ "service-assembly-1", "service-assembly-2" ],
   "serviceGenerator": "axios",
-  "useNullableStrings": true
+  "useNullableStrings": true,
+  "customTypeMappings": {
+    "System.Uri": "string",
+    "NodaTime.Instant": "string"
+  }
 }

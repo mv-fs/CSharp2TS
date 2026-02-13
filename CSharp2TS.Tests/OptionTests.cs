@@ -133,6 +133,34 @@ namespace CSharp2TS.Tests {
         }
 
         [Test]
+        [TestCase("-tm")]
+        [TestCase("--type-mapping")]
+        public void OptionParser_Args_TypeMapping(string option) {
+            // Act
+            var result = OptionParser.ParseFromArgs([option, "System.Uri=string"])!;
+            var noValueResult = OptionParser.ParseFromArgs([string.Empty])!;
+
+            // Assert
+            Assert.That(result.CustomTypeMappings, Has.Count.EqualTo(1));
+            Assert.That(result.CustomTypeMappings["System.Uri"], Is.EqualTo("string"));
+            Assert.That(noValueResult.CustomTypeMappings, Is.Empty);
+        }
+
+        [Test]
+        public void OptionParser_Args_MultipleTypeMappings() {
+            // Act
+            var result = OptionParser.ParseFromArgs([
+                "--type-mapping", "System.Uri=string",
+                "--type-mapping", "NodaTime.Instant=string"
+            ])!;
+
+            // Assert
+            Assert.That(result.CustomTypeMappings, Has.Count.EqualTo(2));
+            Assert.That(result.CustomTypeMappings["System.Uri"], Is.EqualTo("string"));
+            Assert.That(result.CustomTypeMappings["NodaTime.Instant"], Is.EqualTo("string"));
+        }
+
+        [Test]
         public void OptionParser_Config_Exists() {
             // Arrange
             string fileName = "config.json";
@@ -153,6 +181,9 @@ namespace CSharp2TS.Tests {
             Assert.That(options.FileNameCasingStyle, Is.EqualTo(CasingStyle.CamelCase));
             Assert.That(options.ServiceGenerator, Is.EqualTo("axios"));
             Assert.That(options.UseNullableStrings, Is.True);
+            Assert.That(options.CustomTypeMappings, Has.Count.EqualTo(2));
+            Assert.That(options.CustomTypeMappings["System.Uri"], Is.EqualTo("string"));
+            Assert.That(options.CustomTypeMappings["NodaTime.Instant"], Is.EqualTo("string"));
         }
 
         [Test]
