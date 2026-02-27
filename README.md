@@ -45,7 +45,7 @@ public class TestController : ControllerBase {
 }
 ```
 
-For more examples check out the [docs](CSharp2TS.Core/PACKAGE.md).
+Additional attributes include `TSEndpoint` (override return types), `TSExclude` (exclude properties/endpoints), `TSNullable` (mark types as nullable), and `TSImport` (add custom imports to generated services). For more examples check out the [docs](CSharp2TS.Core/PACKAGE.md).
 
 ## CSharp2TS.CLI
 

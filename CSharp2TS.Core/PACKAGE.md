@@ -74,3 +74,70 @@ public IActionResult Get() {
 [TSNullable]
 public string NullableString { get; set; } // Produces nullableString: string | null
 ```
+
+
+
+**TSImport** can be added to a controller to include custom TypeScript import statements in the generated service file. This is useful when an endpoint returns a custom type that is not a generated model.
+
+```c#
+[TSService]
+[TSImport("CustomType", "../types/customType")]
+[ApiController]
+[Route("api/[controller]")]
+public class ImportController : ControllerBase {
+    [HttpGet]
+    [TSEndpoint("CustomType")]
+    public IActionResult Get() {
+        return Ok(...);
+    }
+}
+```
+
+This generates the following import in the TypeScript service file:
+
+```ts
+import CustomType from '../types/customType';
+```
+
+Multiple `TSImport` attributes can be added to a single controller.
+
+
+
+## Additional Options
+
+**TypeName** can be passed to `TSInterface`, `TSEnum`, or `TSService` to override the generated TypeScript type name.
+
+```c#
+[TSInterface("MyCustomName")]
+public class TestModel {
+    ...
+}
+```
+
+**Folder** can be set on `TSInterface`, `TSEnum`, or `TSService` to place the generated file in a subfolder of the output directory.
+
+```c#
+[TSInterface(Folder = "subfolder")]
+public class TestModel {
+    ...
+}
+```
+
+**GenerateClass** can be set on `TSInterface` to also generate a function that returns a default instance of the interface.
+
+```c#
+[TSInterface(GenerateClass = true)]
+public class TestModel {
+    ...
+}
+```
+
+**TSEndpoint with a string** can be used instead of a `Type` to specify a raw TypeScript return type.
+
+```c#
+[HttpGet]
+[TSEndpoint("CustomType")]
+public IActionResult Get() {
+    return Ok(...);
+}
+```
