@@ -1,6 +1,7 @@
 // this line is ignored in tests
 
 import { apiClient } from './apiClient';
+import CustomStringType from './custom-string-type';
 import TestClass from '../Models/TestClass';
 import TestClass2 from '../Models/TestClass2';
 import GenericClass1 from '../Models/GenericClass1';
@@ -23,6 +24,11 @@ export default {
 
   async tSEndpointOverride(): Promise<string> {
     const response = await apiClient.instance.get<string>(`api/Test`);
+    return response.data;
+  },
+
+  async tSEndpointStringOverride(): Promise<CustomStringType> {
+    const response = await apiClient.instance.get<CustomStringType>(`api/Test`);
     return response.data;
   },
 

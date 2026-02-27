@@ -48,6 +48,7 @@ namespace CSharp2TS.Tests.Generators {
             AddServiceType(typeof(TemplatedRouteController));
             AddServiceType(typeof(FileController));
             AddServiceType(typeof(FormController));
+            AddServiceType(typeof(ImportController));
 
             generator = new TSAxiosServiceGenerator(options, files);
         }
@@ -109,6 +110,15 @@ namespace CSharp2TS.Tests.Generators {
             string result = generator.Generate(typeRef.Resolve());
 
             TestMatchesFile("Expected/FormService.ts", result);
+        }
+
+        [Test]
+        public void ServiceGenerator_ImportController() {
+            var typeRef = module.ImportReference(typeof(ImportController));
+
+            string result = generator.Generate(typeRef.Resolve());
+
+            TestMatchesFile("Expected/ImportService.ts", result);
         }
 
         [Test]

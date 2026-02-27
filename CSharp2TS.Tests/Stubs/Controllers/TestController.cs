@@ -6,6 +6,7 @@ namespace CSharp2TS.Tests.Stubs.Controllers {
     [TSService]
     [ApiController]
     [Route("api/Test")]
+    [TSImport("CustomStringType", "./custom-string-type")]
     public class TestController : ControllerBase {
         public TestController() {
         }
@@ -29,6 +30,13 @@ namespace CSharp2TS.Tests.Stubs.Controllers {
         [HttpGet]
         [TSEndpoint(typeof(string))]
         public async Task<IActionResult> TSEndpointOverride() {
+            await Task.CompletedTask;
+            throw new NotImplementedException();
+        }
+
+        [HttpGet]
+        [TSEndpoint("CustomStringType")]
+        public async Task<IActionResult> TSEndpointStringOverride() {
             await Task.CompletedTask;
             throw new NotImplementedException();
         }

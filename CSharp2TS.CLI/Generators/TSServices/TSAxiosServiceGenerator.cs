@@ -30,6 +30,8 @@ namespace CSharp2TS.CLI.Generators.TSServices {
             service.ApiClientImportPath = FolderUtility.GetRelativeImportPath(
                 options.ServicesOutputFolder!, files[serviceDef.FullName].Folder);
 
+            AddCustomImports(service, serviceDef);
+
             foreach (var method in serviceDef.Methods) {
                 if (method == null || method.IsSpecialName || method.HasAttribute<TSExcludeAttribute>()) {
                     continue;
@@ -194,10 +196,14 @@ namespace CSharp2TS.CLI.Generators.TSServices {
 
         private TSType GetReturnType(TSService service, TypeDefinition serviceDef, MethodDefinition method) {
             if (method.TryGetAttribute<TSEndpointAttribute>(out CustomAttribute? attribute)) {
-                var customReturnType = attribute!.ConstructorArguments[0].Value as TypeReference;
+                var constructorArg = attribute!.ConstructorArguments[0].Value;
 
-                if (customReturnType != null) {
+                if (constructorArg is TypeReference customReturnType) {
                     return GetTSPropertyType(service, customReturnType, serviceDef);
+                }
+
+                if (constructorArg is string tsReturnType) {
+                    return new TSType { TypeName = tsReturnType };
                 }
             }
 
@@ -226,6 +232,20 @@ namespace CSharp2TS.CLI.Generators.TSServices {
             string importPath = files[serviceRef.FullName].GetImportPathTo(targetType);
 
             service.Imports.Add(new TSImport(targetFullName, targetName, importPath));
+        }
+
+        private void AddCustomImports(TSService service, TypeDefinition serviceDef) {
+            var tsImportAttributes = serviceDef.CustomAttributes
+                .Where(a => a.AttributeType.FullName == typeof(TSImportAttribute).FullName);
+
+            foreach (var attr in tsImportAttributes) {
+                var name = attr.GetConstructorArgument<string>(0);
+                var path = attr.GetConstructorArgument<string>(1);
+
+                if (!string.IsNullOrWhiteSpace(name) && !string.IsNullOrWhiteSpace(path)) {
+                    service.Imports.Add(new TSImport(name, name, path));
+                }
+            }
         }
 
         public static TSFileInfo GetFileInfo(TypeDefinition typeDef, Options options) {
