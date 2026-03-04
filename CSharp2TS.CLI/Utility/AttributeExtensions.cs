@@ -55,6 +55,18 @@ namespace CSharp2TS.CLI.Utility {
                 .FirstOrDefault();
         }
 
+        public static bool TryGetAttributeValue<T>(this CustomAttribute attr, string name, out T? value) {
+            var property = attr.Properties.FirstOrDefault(i => i.Name == name);
+
+            if (property.Name == null || property.Argument.Value is not T typedValue) {
+                value = default;
+                return false;
+            }
+
+            value = typedValue;
+            return true;
+        }
+
         public static T? GetConstructorArgument<T>(this CustomAttribute attr, int index = 0) {
             if (!attr.HasConstructorArguments || attr.ConstructorArguments.Count - 1 < index) {
                 return default;
