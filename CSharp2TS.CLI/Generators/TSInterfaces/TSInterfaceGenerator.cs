@@ -18,7 +18,11 @@ namespace CSharp2TS.CLI.Generators.TSInterfaces {
             TSInterface tsInterface = new(NameUtility.GetName(typeDef));
             var interfaceAttribute = typeDef.GetAttribute<TSInterfaceAttribute>();
             tsInterface.GenerateClass = interfaceAttribute.GetAttributeValue<bool>(nameof(TSInterfaceAttribute.GenerateClass));
-            tsInterface.IncludeMethods = interfaceAttribute.GetAttributeValue<bool>(nameof(TSInterfaceAttribute.IncludeMethods));
+            if (interfaceAttribute.TryGetAttributeValue<bool>(nameof(TSInterfaceAttribute.IncludeMethods), out var includeMethods)) {
+                tsInterface.IncludeMethods = includeMethods;
+            } else {
+                tsInterface.IncludeMethods = interfaceAttribute.GetConstructorArgument<bool>();
+            }
 
             ParseTypes(tsInterface, typeDef, typeDef);
 
