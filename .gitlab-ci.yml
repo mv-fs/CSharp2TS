@@ -18,7 +18,7 @@ test-job:   # This job runs in the test stage.
   image: mcr.microsoft.com/dotnet/sdk:10.0
   script:
     - echo "Running unit tests..."
-    - dotnet nuget add source "${CI_API_V4_URL}/projects/5018/packages/nuget/index.json" --name gitlab --username gitlab-ci-token --password $CI_JOB_TOKEN --store-password-in-clear-text
+    - dotnet nuget add source "${CI_API_V4_URL}/projects/${GD_REGISTRY_PROJ_ID}/packages/nuget/index.json" --name gitlab --username gitlab-ci-token --password $CI_JOB_TOKEN --store-password-in-clear-text
     - dotnet test -c Release --property:WarningLevel=0
 
 deploy-job:      # This job runs in the deploy stage.
