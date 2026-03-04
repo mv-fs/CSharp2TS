@@ -12,11 +12,6 @@
             actualContents = NormalizeLineEndings(actualContents);
 
 
-            // Skip commented line
-            actualContents = string.Join(Environment.NewLine, actualContents.Split(Environment.NewLine).Skip(1));
-            expected = string.Join(Environment.NewLine, expected.Split(Environment.NewLine).Skip(1));
-
-
             Assert.That(actualContents, Is.EqualTo(expected));
         }
     }
