@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 using System.Text.Json;
 
 namespace CSharp2TS.Tests.Stubs.Models {
-    [TSInterface(true)]
+    [TSInterface(IncludeMethods = true)]
     public class TestClassMethodReturnTypes {
         public int Id { get; set; }
 

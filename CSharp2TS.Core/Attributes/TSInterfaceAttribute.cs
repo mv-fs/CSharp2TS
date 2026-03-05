@@ -14,10 +14,6 @@
         public TSInterfaceAttribute() : base(null) {
         }
 
-        public TSInterfaceAttribute(bool includeMethods) : base(null) {
-            IncludeMethods = includeMethods;
-        }
-
         public TSInterfaceAttribute(string typeName) : base(typeName) {
         }
     }
