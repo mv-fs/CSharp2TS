@@ -54,6 +54,11 @@ namespace CSharp2TS.CLI.Generators.Common {
                 }
             }
 
+            // Type parameters syntax needs to happen before collection symbols
+            if (GenericArguments.Any()) {
+                tsType += "<" + string.Join(", ", GenericArguments.Select(i => i.ToString())) + ">";
+            }
+
             if (IsCollection) {
                 for (int i = 0; i < JaggedCount; i++) {
                     tsType += "[]";
@@ -64,9 +69,7 @@ namespace CSharp2TS.CLI.Generators.Common {
                 tsType = $"{{ [key: string]: {tsType} }}";
             }
 
-            if (GenericArguments.Any()) {
-                tsType += "<" + string.Join(", ", GenericArguments.Select(i => i.ToString())) + ">";
-            }
+
 
             return tsType;
         }

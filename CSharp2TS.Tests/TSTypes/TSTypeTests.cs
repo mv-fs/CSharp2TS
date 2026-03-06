@@ -136,6 +136,70 @@ namespace CSharp2TS.Tests.TSTypes {
         }
 
         [Test]
+        public void ToString_GenericTypeCollection_ReturnsGenericSyntax_Multiple() {
+            var innerType1 = new TSType {
+                TypeName = "string"
+            };
+
+            var innerType2 = new TSType {
+                TypeName = "number"
+            };
+
+            var tsType = new TSType {
+                TypeName = "TestClass",
+                IsCollection = true,
+                JaggedCount = 1,
+                GenericArguments = [innerType1, innerType2]
+            };
+
+            Assert.That(tsType.ToString(), Is.EqualTo("TestClass<string, number>[]"));
+        }
+
+        [Test]
+        public void ToString_GenericNestedTypeCollection_ReturnsGenericSyntax_Multiple() {
+            var innerType1 = new TSType {
+                TypeName = "string"
+            };
+
+            var innerType2 = new TSType {
+                TypeName = "number",
+                IsCollection = true,
+                JaggedCount = 3,
+            };
+
+            var tsType = new TSType {
+                TypeName = "TestClass",
+                IsCollection = true,
+                JaggedCount = 1,
+                GenericArguments = [innerType1, innerType2]
+            };
+
+            Assert.That(tsType.ToString(), Is.EqualTo("TestClass<string, number[][][]>[]"));
+        }
+
+        [Test]
+        public void ToString_CustomTypeCollection_ReturnsGenericSyntax_Multiple() {
+            var innerType1 = new TSType {
+                TypeName = "TestClassInner1"
+            };
+
+            var innerType2 = new TSType {
+                TypeName = "TestCalssInner2",
+                IsCollection = true,
+                JaggedCount = 1,
+            };
+
+            var tsType = new TSType {
+                TypeName = "TestClass",
+                IsCollection = true,
+                JaggedCount = 1,
+                GenericArguments = [innerType1, innerType2]
+            };
+
+            Assert.That(tsType.ToString(), Is.EqualTo("TestClass<TestClassInner1, TestCalssInner2[]>[]"));
+        }
+
+        [Test]
         public void ToString_CollectionWithoutJaggedCount_ReturnsTypeWithoutBrackets() {
             var tsType = new TSType {
                 TypeName = "string",
