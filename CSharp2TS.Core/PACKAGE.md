@@ -128,7 +128,9 @@ public class TestModel {
 ```c#
 [TSInterface(IncludeMethods = true)]
 public class TestModel {
-    public bool Test() {}
+    public bool Test() {
+        return true;
+    }
     ...
 }
 ```
