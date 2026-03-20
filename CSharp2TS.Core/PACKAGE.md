@@ -123,6 +123,18 @@ public class TestModel {
 }
 ```
 
+**IncludeMethods** can be passed to `TSInterface` to include public methods in the generated TypeScript type.
+
+```c#
+[TSInterface(IncludeMethods = true)]
+public class TestModel {
+    public bool Test() {
+        return true;
+    }
+    ...
+}
+```
+
 **GenerateClass** can be set on `TSInterface` to also generate a function that returns a default instance of the interface.
 
 ```c#

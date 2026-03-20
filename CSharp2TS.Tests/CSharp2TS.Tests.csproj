@@ -45,6 +45,15 @@
     <None Update="Expected\TestClassWithStub.ts">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Expected\TestClassWithMethods.ts">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Expected\TestClassWithMethodsDefault.ts">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Expected\TestClassMethodReturnTypes.ts">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Expected\TestEnumDescriptionsAndItemArray.ts">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

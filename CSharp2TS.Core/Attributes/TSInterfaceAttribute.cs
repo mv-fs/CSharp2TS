@@ -6,6 +6,11 @@
         /// </summary>
         public bool GenerateClass { get; set; }
 
+        /// <summary>
+        /// Include public methods in generated TypeScript interfaces/classes.
+        /// </summary>
+        public bool IncludeMethods { get; set; }
+
         public TSInterfaceAttribute() : base(null) {
         }
 
