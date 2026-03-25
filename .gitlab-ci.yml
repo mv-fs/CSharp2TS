@@ -6,6 +6,8 @@ stages:          # List of stages for jobs, and their order of execution
 build-job:       # This job runs in the build stage, which runs first.
   stage: build
   image: mcr.microsoft.com/dotnet/sdk:10.0
+  tags:
+    - devdev-docker-build
   script:
     # add gd nuget source
     - dotnet nuget add source "${CI_API_V4_URL}/projects/5018/packages/nuget/index.json" --name gitlab --username gitlab-ci-token --password $CI_JOB_TOKEN --store-password-in-clear-text
@@ -16,6 +18,8 @@ build-job:       # This job runs in the build stage, which runs first.
 test-job:   # This job runs in the test stage.
   stage: test    # It only starts when the job in the build stage completes successfully.
   image: mcr.microsoft.com/dotnet/sdk:10.0
+  tags:
+    - devdev-docker-build
   script:
     - echo "Running unit tests..."
     - dotnet nuget add source "${CI_API_V4_URL}/projects/${GD_REGISTRY_PROJ_ID}/packages/nuget/index.json" --name gitlab --username gitlab-ci-token --password $CI_JOB_TOKEN --store-password-in-clear-text
@@ -24,6 +28,8 @@ test-job:   # This job runs in the test stage.
 deploy-job:      # This job runs in the deploy stage.
   stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
   image: mcr.microsoft.com/dotnet/sdk:10.0
+  tags:
+    - devdev-docker-build
   needs:
     - job: test-job
     - job: build-job
