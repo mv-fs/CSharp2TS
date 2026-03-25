@@ -77,7 +77,16 @@ public string NullableString { get; set; } // Produces nullableString: string | 
 
 
 
-**TSImport** can be added to a controller to include custom TypeScript import statements in the generated service file. This is useful when an endpoint returns a custom type that is not a generated model.
+**TSDefault** can be added to a property to specify the default value used in the generated TypeScript stub class. This is useful for types such as `Guid` where the value cannot be expressed as a C# compile-time constant.
+
+```c#
+[TSDefault("018b1a05-8f0f-477d-8d95-c7effcde2eeb")]
+public Guid PredicateId { get; set; } // Stub produces predicateId: string = '018b1a05-8f0f-477d-8d95-c7effcde2eeb'
+```
+
+
+
+**TSImport**
 
 ```c#
 [TSService]

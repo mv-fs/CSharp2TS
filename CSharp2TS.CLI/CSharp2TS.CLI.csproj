@@ -13,11 +13,11 @@
     <RepositoryUrl>https://github.com/ormesam/CSharp2TS</RepositoryUrl>
     <Title>$(AssemblyName)</Title>
     <Authors>Sam Orme</Authors>
-    <PackageVersion>0.0.38-alpha</PackageVersion>
+    <PackageVersion>0.0.38-beta</PackageVersion>
     <PackageReadmeFile>PACKAGE.md</PackageReadmeFile>
     <Copyright>Sam Orme</Copyright>
     <PackageTags>csharp2ts;typescript-generator</PackageTags>
-    <PackageReleaseNotes>Fixed syntax symbols order for collection type parameters</PackageReleaseNotes>
+    <PackageReleaseNotes>Added TSDefault attribute</PackageReleaseNotes>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
     <Description>CSharp2TS.CLI is a tool to generate TypeScript files for C# classes, enums and API endpoints. Requires the CSharp2TS.Core nuget package to be installed on the target project.</Description>
   </PropertyGroup>

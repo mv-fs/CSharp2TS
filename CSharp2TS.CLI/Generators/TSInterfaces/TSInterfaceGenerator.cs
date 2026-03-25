@@ -61,6 +61,8 @@ namespace CSharp2TS.CLI.Generators.TSInterfaces {
                         .Where(i => !i.IsSpecialName)
                         .Select(i => i.Name)
                         .FirstOrDefault();
+                } else if (property.TryGetAttribute<TSDefaultAttribute>(out var defaultAttr)) {
+                    defaultValue = defaultAttr.GetConstructorArgument<string>();
                 }
 
                 var tsProperty = new TSInterfaceProperty(
