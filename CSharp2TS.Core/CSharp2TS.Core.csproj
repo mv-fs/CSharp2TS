@@ -11,9 +11,9 @@
     <PackageProjectUrl>https://github.com/ormesam/CSharp2TS</PackageProjectUrl>
     <RepositoryUrl>https://github.com/ormesam/CSharp2TS</RepositoryUrl>
     <PackageOutputPath>../nupkg</PackageOutputPath>
-    <PackageVersion>0.0.8-beta</PackageVersion>
+    <PackageVersion>0.0.9-beta</PackageVersion>
     <PackageReadmeFile>PACKAGE.md</PackageReadmeFile>
-    <Copyright>Sam Orme</Copyright>
+    <Copyright>Sam Orme, Maxime Fouillat</Copyright>
     <PackageTags>csharp2ts;typescript-generator</PackageTags>
     <PackageReleaseNotes>Added TSDefault attribute</PackageReleaseNotes>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
