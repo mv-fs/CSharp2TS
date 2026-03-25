@@ -48,6 +48,7 @@ namespace CSharp2TS.Tests.Generators {
             AddType(typeof(TestClassWithMethods));
             AddType(typeof(TestClassWithMethodsDefault));
             AddType(typeof(TestClassMethodReturnTypes));
+            AddType(typeof(TestClassWithDefault));
 
             generator = new TSInterfaceGenerator(files, options);
             generatorPascalCase = new TSInterfaceGenerator(files, optionsPascalCase);
@@ -159,6 +160,15 @@ namespace CSharp2TS.Tests.Generators {
             string result = generator.Generate(typeRef.Resolve());
 
             TestMatchesFile("Expected/TestClassMethodReturnTypes.ts", result);
+        }
+
+        [Test]
+        public void InterfaceGenerator_DefaultAttribute() {
+            var typeRef = module.ImportReference(typeof(TestClassWithDefault));
+
+            string result = generator.Generate(typeRef.Resolve());
+
+            TestMatchesFile("Expected/TestClassWithDefault.ts", result);
         }
 
         private void AddType(Type type) {

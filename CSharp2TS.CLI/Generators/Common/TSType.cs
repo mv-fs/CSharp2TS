@@ -35,7 +35,7 @@ namespace CSharp2TS.CLI.Generators.Common {
             }
 
             return TypeName switch {
-                TSTypeConsts.String => "''",
+                TSTypeConsts.String => defaultValue != null ? $"'{defaultValue}'" : "''",
                 TSTypeConsts.Number => "0",
                 TSTypeConsts.Boolean => "false",
                 TSTypeConsts.Object => "new Object()",
